@@ -67,7 +67,6 @@ std::vector<DToken<Tokenization::TToken>> Tokenization::Tokenizer::tokenize(std:
             pos = token.endPos;
         }
     }
-    std::cout << tokens.size() << std::endl;
     return tokens;
 }
 
