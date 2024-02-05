@@ -17,10 +17,20 @@ MAIN_OBJ = main.o
 OBJS =  \
 	components/tokenization/Tokenization.o \
 	my-language/tokenizer/Tokenizer.o \
-	components/text/RegexPattern.o
+	components/text/RegexPattern.o \
+	components/parsing/ExpressionChain.o \
+	components/parsing/TokenSequence.o \
+	components/parsing/ExpressionMap.o \
+	components/parsing/UnaryExpression.o \
+	components/parsing/BinaryExpression.o \
+	components/parsing/LiteralExpression.o
 
 TEST_OBJS = \
-	my-language/tokenizer/test/Tokenizer.test.o
+	my-language/tokenizer/test/Tokenizer.test.o \
+	components/parsing/test/ExpressionChain.test.o
+
+TEST_OBJ = \
+	components/parsing/test/ExpressionChain.test.o
 
 # Here is a Make Macro defined by two Macro Expansions.
 # A Macro Expansion may be treated as a textual replacement of the Make Macro.
@@ -62,7 +72,7 @@ $(LINK_TARGET) : $(MAIN_OBJ) $(OBJS)
 	g++ -g -o $@ $^
 
 # Compiles the test target.
-$(TEST_TARGET) : $(OBJS) $(TEST_OBJS)
+$(TEST_TARGET) : $(OBJS) $(TEST_OBJ)
 	g++ -g -o $@ $^
 
 # Here is a Pattern Rule, often used for compile-line.
@@ -71,7 +81,7 @@ $(TEST_TARGET) : $(OBJS) $(TEST_OBJS)
 # $@ for the pattern-matched target
 # $< for the pattern-matched dependency
 %.o : %.cpp
-	g++ -g -o $@ -c $<
+	g++ -std=c++20 -g -o $@ -c $<
 
 # These are Dependency Rules, which are rules without any command.
 # Dependency Rules indicate that if any file to the right of the colon changes,
