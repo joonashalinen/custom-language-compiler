@@ -2,7 +2,7 @@
 #include "TokenSequence.h"
 
 ExpressionChain::ExpressionChain(
-        std::vector<DToken<>>& tokens,
+        std::vector<DToken>& tokens,
         ExpressionMap& expressions,
         std::set<std::string> nonUnaryOperators
     ):

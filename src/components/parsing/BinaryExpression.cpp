@@ -1,7 +1,7 @@
 #include "BinaryExpression.h"
 
 BinaryExpression::BinaryExpression(
-        std::vector<DToken<>>& tokens,
+        std::vector<DToken>& tokens,
         std::string operatorType,
         ExpressionMap& expressionMap
     ):

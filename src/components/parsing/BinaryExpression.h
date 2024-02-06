@@ -16,14 +16,14 @@
 class BinaryExpression: public IParseable {
     public:
         BinaryExpression(
-            std::vector<DToken<>>& tokens,
+            std::vector<DToken>& tokens,
             std::string operatorType,
             ExpressionMap& expressionMap
         );
         std::shared_ptr<DExpression> parse(int position);
     private:
         std::string _operatorType;
-        std::vector<DToken<>>& _tokens;
+        std::vector<DToken>& _tokens;
         TokenSequence _tokenSequence;
         ExpressionMap& _expressionMap;
 };

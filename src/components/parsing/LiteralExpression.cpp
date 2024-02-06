@@ -1,7 +1,7 @@
 #include "LiteralExpression.h"
 
 LiteralExpression::LiteralExpression(
-        std::vector<DToken<>>& tokens,
+        std::vector<DToken>& tokens,
         std::string type
     ):
     _tokenSequence(TokenSequence{tokens}), 

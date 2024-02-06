@@ -11,13 +11,13 @@
 
 
 
-std::shared_ptr<ExpressionMap> createExpressionMap(std::vector<DToken<>>& tokens) {
+std::shared_ptr<ExpressionMap> createExpressionMap(std::vector<DToken>& tokens) {
     auto expressionMap = std::shared_ptr<ExpressionMap>(new ExpressionMap{tokens});
 
     expressionMap->expressionConstructors().insert(
         std::pair<std::string, TExpressions::ExpressionConstructor>(
             "identifier", 
-            [](std::vector<DToken<>>& tokens) {
+            [](std::vector<DToken>& tokens) {
                 return std::shared_ptr<IParseable>(new LiteralExpression{tokens, "identifier"});
             }
         )
@@ -26,7 +26,7 @@ std::shared_ptr<ExpressionMap> createExpressionMap(std::vector<DToken<>>& tokens
     expressionMap->expressionConstructors().insert(
         std::pair<std::string, TExpressions::ExpressionConstructor>(
             "AND",
-            [expressionMap](std::vector<DToken<>>& tokens) {
+            [expressionMap](std::vector<DToken>& tokens) {
                 return std::shared_ptr<IParseable>(new BinaryExpression{tokens, "AND", *expressionMap});
             }
         )
@@ -35,12 +35,12 @@ std::shared_ptr<ExpressionMap> createExpressionMap(std::vector<DToken<>>& tokens
     expressionMap->expressionConstructors().insert(
         std::pair<std::string, TExpressions::ExpressionConstructor>(
             "NOT",
-            [expressionMap](std::vector<DToken<>>& tokens) {
+            [expressionMap](std::vector<DToken>& tokens) {
                 return std::shared_ptr<IParseable>(
                     new UnaryExpression{
                             tokens, 
                             "NOT",
-                            [expressionMap](std::vector<DToken<>>&  tokens) {
+                            [expressionMap](std::vector<DToken>&  tokens) {
                                 return expressionMap;
                             }
                     }
@@ -53,10 +53,10 @@ std::shared_ptr<ExpressionMap> createExpressionMap(std::vector<DToken<>>& tokens
 }
 
 TEST_CASE("simple binary expression", "[parse]") {
-    auto tokens = std::vector<DToken<>>{
-        DToken<>{"identifier", "abc", 0, 3},
-        DToken<>{"AND", "AND", 3, 6},
-        DToken<>{"identifier", "efg", 6, 9},
+    auto tokens = std::vector<DToken>{
+        DToken{"identifier", "abc", 0, 3},
+        DToken{"AND", "AND", 3, 6},
+        DToken{"identifier", "efg", 6, 9},
     };
 
     auto expressionMap = createExpressionMap(tokens);
@@ -71,14 +71,14 @@ TEST_CASE("simple binary expression", "[parse]") {
 }
 
 TEST_CASE("combination of chained unary operators and binary operators", "[parse]") {
-    auto tokens = std::vector<DToken<>>{
-        DToken<>{"NOT", "NOT", 0, 1},
-        DToken<>{"NOT", "NOT", 1, 2},
-        DToken<>{"identifier", "abc", 2, 5},
-        DToken<>{"AND", "AND", -1, -1},
-        DToken<>{"NOT", "NOT", -1, -1},
-        DToken<>{"NOT", "NOT", -1, -1},
-        DToken<>{"identifier", "efg", -1, -1},
+    auto tokens = std::vector<DToken>{
+        DToken{"NOT", "NOT", 0, 1},
+        DToken{"NOT", "NOT", 1, 2},
+        DToken{"identifier", "abc", 2, 5},
+        DToken{"AND", "AND", -1, -1},
+        DToken{"NOT", "NOT", -1, -1},
+        DToken{"NOT", "NOT", -1, -1},
+        DToken{"identifier", "efg", -1, -1},
     };
 
     auto expressionMap = createExpressionMap(tokens);

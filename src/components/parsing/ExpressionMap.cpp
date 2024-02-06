@@ -1,7 +1,7 @@
 #include "ExpressionMap.h"
 
 ExpressionMap::ExpressionMap(
-            std::vector<DToken<>>& tokens
+            std::vector<DToken>& tokens
     ): 
     _expressionConstructors(std::map<std::string, TExpressions::ExpressionConstructor>()),
     _tokens(tokens),

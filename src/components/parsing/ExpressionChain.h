@@ -18,13 +18,13 @@
 class ExpressionChain: public IParseable {
     public:
         ExpressionChain(
-            std::vector<DToken<>>& tokens,
+            std::vector<DToken>& tokens,
             ExpressionMap& expressions,
             std::set<std::string> nonUnaryOperators
         );
         std::shared_ptr<DExpression> parse(int position);
     private:
-        std::vector<DToken<>>& _tokens;
+        std::vector<DToken>& _tokens;
         TokenSequence _tokenSequence;
         ExpressionMap& _expressions;
         std::set<std::string> _nonUnaryOperators;

@@ -1,7 +1,7 @@
 #include "UnaryExpression.h"
 
 UnaryExpression::UnaryExpression(
-        std::vector<DToken<>>& tokens,
+        std::vector<DToken>& tokens,
         std::string operatorType,
         TExpressions::ExpressionConstructor makeExpression
     ):

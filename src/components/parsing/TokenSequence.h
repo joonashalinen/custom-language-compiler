@@ -10,13 +10,13 @@
  */
 class TokenSequence {
     public:
-        TokenSequence(std::vector<DToken<>>& tokens);
-        DToken<> peek();
-        DToken<> consume();
+        TokenSequence(std::vector<DToken>& tokens);
+        DToken peek();
+        DToken consume();
         void setPosition(int position);
         int position();
     private:
-        std::vector<DToken<>>& _tokens;
+        std::vector<DToken>& _tokens;
         int _position;
 };
 
