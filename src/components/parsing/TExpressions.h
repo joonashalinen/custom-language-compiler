@@ -8,7 +8,7 @@
 
 namespace TExpressions {
     using ExpressionConstructor = const std::function<
-        std::shared_ptr<IParseable>(std::vector<DToken>&)
+        std::shared_ptr<IParseable>()
     >;
 }
 

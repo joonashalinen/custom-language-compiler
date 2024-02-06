@@ -15,14 +15,11 @@
 class LiteralExpression: public IParseable {
     public:
         LiteralExpression(
-            std::vector<DToken>& tokens,
             std::string type
         );
-        std::shared_ptr<DExpression> parse(int position);
+        std::shared_ptr<DExpression> parse(std::vector<DToken>& tokens, int position);
     private:
         std::string _type;
-        std::vector<DToken>& _tokens;
-        TokenSequence _tokenSequence;
 };
 
 #endif

@@ -12,13 +12,13 @@
 
 
 std::shared_ptr<ExpressionMap> createExpressionMap(std::vector<DToken>& tokens) {
-    auto expressionMap = std::shared_ptr<ExpressionMap>(new ExpressionMap{tokens});
+    auto expressionMap = std::shared_ptr<ExpressionMap>(new ExpressionMap{});
 
     expressionMap->expressionConstructors().insert(
         std::pair<std::string, TExpressions::ExpressionConstructor>(
             "identifier", 
-            [](std::vector<DToken>& tokens) {
-                return std::shared_ptr<IParseable>(new LiteralExpression{tokens, "identifier"});
+            []() {
+                return std::shared_ptr<IParseable>(new LiteralExpression{"identifier"});
             }
         )
     );
@@ -26,8 +26,8 @@ std::shared_ptr<ExpressionMap> createExpressionMap(std::vector<DToken>& tokens) 
     expressionMap->expressionConstructors().insert(
         std::pair<std::string, TExpressions::ExpressionConstructor>(
             "AND",
-            [expressionMap](std::vector<DToken>& tokens) {
-                return std::shared_ptr<IParseable>(new BinaryExpression{tokens, "AND", *expressionMap});
+            [expressionMap]() {
+                return std::shared_ptr<IParseable>(new BinaryExpression{"AND", *expressionMap});
             }
         )
     );
@@ -35,12 +35,11 @@ std::shared_ptr<ExpressionMap> createExpressionMap(std::vector<DToken>& tokens) 
     expressionMap->expressionConstructors().insert(
         std::pair<std::string, TExpressions::ExpressionConstructor>(
             "NOT",
-            [expressionMap](std::vector<DToken>& tokens) {
+            [expressionMap]() {
                 return std::shared_ptr<IParseable>(
                     new UnaryExpression{
-                            tokens, 
                             "NOT",
-                            [expressionMap](std::vector<DToken>&  tokens) {
+                            [expressionMap]() {
                                 return expressionMap;
                             }
                     }
@@ -61,8 +60,8 @@ TEST_CASE("simple binary expression", "[parse]") {
 
     auto expressionMap = createExpressionMap(tokens);
 
-    auto chain = ExpressionChain{tokens, *expressionMap, std::set<std::string>{"AND"}};
-    auto parseTree = chain.parse(0);
+    auto chain = ExpressionChain{*expressionMap, std::set<std::string>{"AND"}};
+    auto parseTree = chain.parse(tokens, 0);
     
     REQUIRE(parseTree->type == "AND");
     REQUIRE(parseTree->children.size() == 2);
@@ -83,8 +82,8 @@ TEST_CASE("combination of chained unary operators and binary operators", "[parse
 
     auto expressionMap = createExpressionMap(tokens);
 
-    auto chain = ExpressionChain{tokens, *expressionMap, std::set<std::string>{"AND"}};
-    auto parseTree = chain.parse(0);
+    auto chain = ExpressionChain{*expressionMap, std::set<std::string>{"AND"}};
+    auto parseTree = chain.parse(tokens, 0);
 
     REQUIRE(parseTree->type == "AND");
     REQUIRE(parseTree->children.at(0)->type == "NOT");

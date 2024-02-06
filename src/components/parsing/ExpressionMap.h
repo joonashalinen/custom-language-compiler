@@ -18,17 +18,13 @@
 class ExpressionMap: public IParseable {
 
     public:
-        ExpressionMap(
-            std::vector<DToken>& tokens
-        );
-        std::shared_ptr<DExpression> parse(int position);
-        std::shared_ptr<DExpression> parseWith(std::string tokenType, int position);
+        ExpressionMap();
+        std::shared_ptr<DExpression> parse(std::vector<DToken>& tokens, int position);
+        std::shared_ptr<DExpression> parseWith(std::vector<DToken>& tokens, std::string tokenType, int position);
         std::map<std::string, TExpressions::ExpressionConstructor>& expressionConstructors();
 
     private:
-        TokenSequence _tokenSequence;
         std::map<std::string, TExpressions::ExpressionConstructor> _expressionConstructors;
-        std::vector<DToken>& _tokens;
 };
 
 #endif

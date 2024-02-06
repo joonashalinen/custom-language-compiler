@@ -1,26 +1,24 @@
 #include "UnaryExpression.h"
 
 UnaryExpression::UnaryExpression(
-        std::vector<DToken>& tokens,
         std::string operatorType,
         TExpressions::ExpressionConstructor makeExpression
     ):
-    _tokenSequence(TokenSequence{tokens}), 
-    _tokens(tokens),
     _operatorType(operatorType),
     _makeExpression(makeExpression) {
     
 }
 
-std::shared_ptr<DExpression> UnaryExpression::parse(int position) {
-    this->_tokenSequence.setPosition(position);
-    auto firstToken = this->_tokenSequence.consume();
+std::shared_ptr<DExpression> UnaryExpression::parse(std::vector<DToken>& tokens, int position) {
+    auto tokenSequence = TokenSequence{tokens};
+    tokenSequence.setPosition(position);
+    auto firstToken = tokenSequence.consume();
     
     // If the first token we encounter is the operator.
     if (firstToken.type == this->_operatorType) {
         // Get the expression after the operator.
-        auto followingExpression = this->_makeExpression(this->_tokens);
-        auto followingExpressionValue = followingExpression->parse(this->_tokenSequence.position());
+        auto followingExpression = this->_makeExpression();
+        auto followingExpressionValue = followingExpression->parse(tokens, tokenSequence.position());
 
         auto unaryExpression = new DExpression{
             {{followingExpressionValue}},
