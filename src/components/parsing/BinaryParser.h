@@ -19,7 +19,7 @@ class BinaryParser: public IParseable {
             std::string operatorType,
             MapParser& mapParser
         );
-        std::shared_ptr<DExpression> parse(std::vector<DToken>& tokens, int position);
+        std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
     private:
         std::string _operatorType;
         MapParser& _mapParser;

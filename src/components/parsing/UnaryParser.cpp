@@ -9,7 +9,7 @@ UnaryParser::UnaryParser(
     
 }
 
-std::shared_ptr<DExpression> UnaryParser::parse(std::vector<DToken>& tokens, int position) {
+std::shared_ptr<Expression> UnaryParser::parse(std::vector<DToken>& tokens, int position) {
     auto tokenSequence = TokenSequence{tokens};
     tokenSequence.setPosition(position);
     auto firstToken = tokenSequence.consume();
@@ -17,20 +17,18 @@ std::shared_ptr<DExpression> UnaryParser::parse(std::vector<DToken>& tokens, int
     // If the first token we encounter is the operator.
     if (firstToken.type == this->_operatorType) {
         // Get the expression after the operator.
-        auto followingExpression = this->_makeExpression();
-        auto followingExpressionValue = followingExpression->parse(tokens, tokenSequence.position());
+        auto followingParser = this->_makeExpression();
+        auto followingExpression = followingParser->parse(tokens, tokenSequence.position());
 
-        auto unaryParser = std::shared_ptr<DExpression>(
-            new DExpression{
-                {{followingExpressionValue}},
+        auto unaryExpression = std::shared_ptr<Expression>(
+            new Expression{
                 this->_operatorType,
                 position,
-                followingExpressionValue->endPos
+                followingExpression->endPos()
             }
         );
-        followingExpressionValue->parent = unaryParser;
-
-        return unaryParser;
+        Expression::addChild(unaryExpression, followingExpression);
+        return unaryExpression;
     } else {
         throw std::runtime_error("Expected the operator: " + this->_operatorType);
     }

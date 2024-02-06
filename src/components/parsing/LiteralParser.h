@@ -17,7 +17,7 @@ class LiteralParser: public IParseable {
         LiteralParser(
             std::string type
         );
-        std::shared_ptr<DExpression> parse(std::vector<DToken>& tokens, int position);
+        std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
     private:
         std::string _type;
 };

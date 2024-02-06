@@ -19,8 +19,8 @@ class MapParser: public IParseable {
 
     public:
         MapParser();
-        std::shared_ptr<DExpression> parse(std::vector<DToken>& tokens, int position);
-        std::shared_ptr<DExpression> parseWith(std::vector<DToken>& tokens, std::string tokenType, int position);
+        std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
+        std::shared_ptr<Expression> parseWith(std::vector<DToken>& tokens, std::string tokenType, int position);
         std::map<std::string, TExpressions::ExpressionConstructor>& expressionConstructors();
 
     private:

@@ -7,16 +7,15 @@ LiteralParser::LiteralParser(
     
 }
 
-std::shared_ptr<DExpression> LiteralParser::parse(std::vector<DToken>& tokens, int position)
+std::shared_ptr<Expression> LiteralParser::parse(std::vector<DToken>& tokens, int position)
 {
     auto tokenSequence = TokenSequence{tokens};
     tokenSequence.setPosition(position);
     auto nextToken = tokenSequence.consume();
     
     if (nextToken.type == this->_type) {
-        return std::shared_ptr<DExpression>(
-            new DExpression{
-                {},
+        return std::shared_ptr<Expression>(
+            new Expression{
                 this->_type,
                 position,
                 position + 1

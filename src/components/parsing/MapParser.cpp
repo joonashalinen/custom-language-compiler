@@ -6,7 +6,7 @@ MapParser::MapParser(
     
 }
 
-std::shared_ptr<DExpression> MapParser::parse(std::vector<DToken>& tokens, int position) {
+std::shared_ptr<Expression> MapParser::parse(std::vector<DToken>& tokens, int position) {
     auto tokenSequence = TokenSequence{tokens};
     tokenSequence.setPosition(position);
     auto token = tokenSequence.peek();
@@ -18,7 +18,7 @@ std::shared_ptr<DExpression> MapParser::parse(std::vector<DToken>& tokens, int p
     }
 }
 
-std::shared_ptr<DExpression> MapParser::parseWith(std::vector<DToken>& tokens, std::string tokenType, int position) {
+std::shared_ptr<Expression> MapParser::parseWith(std::vector<DToken>& tokens, std::string tokenType, int position) {
     auto constructor = this->_expressionConstructors.at(tokenType);
     auto expression = constructor();
     return (*expression).parse(tokens, position);

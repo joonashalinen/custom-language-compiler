@@ -61,10 +61,10 @@ TEST_CASE("simple binary expression", "[parse]") {
     auto chain = OperatedChainParser{*mapParser, std::set<std::string>{"AND"}};
     auto parseTree = chain.parse(tokens, 0);
     
-    REQUIRE(parseTree->type == "AND");
-    REQUIRE(parseTree->children.size() == 2);
-    REQUIRE(parseTree->children.at(0)->type == "identifier");
-    REQUIRE(parseTree->children.at(1)->type == "identifier");
+    REQUIRE(parseTree->type() == "AND");
+    REQUIRE(parseTree->children().size() == 2);
+    REQUIRE(parseTree->children().at(0)->type() == "identifier");
+    REQUIRE(parseTree->children().at(1)->type() == "identifier");
 }
 
 TEST_CASE("combination of chained unary operators and binary operators", "[parse]") {
@@ -83,11 +83,11 @@ TEST_CASE("combination of chained unary operators and binary operators", "[parse
     auto chain = OperatedChainParser{*mapParser, std::set<std::string>{"AND"}};
     auto parseTree = chain.parse(tokens, 0);
 
-    REQUIRE(parseTree->type == "AND");
-    REQUIRE(parseTree->children.at(0)->type == "NOT");
-    REQUIRE(parseTree->children.at(1)->type == "NOT");
-    REQUIRE(parseTree->children.at(0)->children.at(0)->type == "NOT");
-    REQUIRE(parseTree->children.at(1)->children.at(0)->type == "NOT");
-    REQUIRE(parseTree->children.at(0)->children.at(0)->children.at(0)->type == "identifier");
-    REQUIRE(parseTree->children.at(1)->children.at(0)->children.at(0)->type == "identifier");
+    REQUIRE(parseTree->type() == "AND");
+    REQUIRE(parseTree->children().at(0)->type() == "NOT");
+    REQUIRE(parseTree->children().at(1)->type() == "NOT");
+    REQUIRE(parseTree->children().at(0)->children().at(0)->type() == "NOT");
+    REQUIRE(parseTree->children().at(1)->children().at(0)->type() == "NOT");
+    REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->type() == "identifier");
+    REQUIRE(parseTree->children().at(1)->children().at(0)->children().at(0)->type() == "identifier");
 }

@@ -17,7 +17,7 @@ class UnaryParser: public IParseable {
             std::string operatorType,
             TExpressions::ExpressionConstructor makeExpression
         );
-        std::shared_ptr<DExpression> parse(std::vector<DToken>& tokens, int position);
+        std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
     private:
         std::string _operatorType;
         TExpressions::ExpressionConstructor _makeExpression;
