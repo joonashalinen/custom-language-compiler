@@ -18,19 +18,19 @@ OBJS =  \
 	components/tokenization/Tokenization.o \
 	my-language/tokenizer/Tokenizer.o \
 	components/text/RegexPattern.o \
-	components/parsing/ExpressionChain.o \
+	components/parsing/OperatedChainParser.o \
 	components/parsing/TokenSequence.o \
-	components/parsing/ExpressionMap.o \
-	components/parsing/UnaryExpression.o \
-	components/parsing/BinaryExpression.o \
-	components/parsing/LiteralExpression.o
+	components/parsing/MapParser.o \
+	components/parsing/UnaryParser.o \
+	components/parsing/BinaryParser.o \
+	components/parsing/LiteralParser.o
 
 TEST_OBJS = \
 	my-language/tokenizer/test/Tokenizer.test.o \
-	components/parsing/test/ExpressionChain.test.o
+	components/parsing/test/OperatedChainParser.test.o
 
 TEST_OBJ = \
-	components/parsing/test/ExpressionChain.test.o
+	components/parsing/test/OperatedChainParser.test.o
 
 # Here is a Make Macro defined by two Macro Expansions.
 # A Macro Expansion may be treated as a textual replacement of the Make Macro.
@@ -43,7 +43,7 @@ REBUILDABLES = $(MAIN_OBJ) $(OBJS) $(LINK_TARGET)
 # and two Commands (indented by tabs on the lines that follow).
 # The space before the colon is not required but added here for clarity.
 clean : 
-	del $(OBJS)
+	rm $(OBJS) $(TEST_OBJS)
 	echo Clean done
 
 # There are two standard Targets your Makefile should probably have:
@@ -69,11 +69,11 @@ test : $(TEST_TARGET)
 # $^ expands to the rule's dependencies, in this case the three files
 # main.o, test1.o, and  test2.o.
 $(LINK_TARGET) : $(MAIN_OBJ) $(OBJS)
-	g++ -g -o $@ $^
+	g++ -Wall -Werror -ansi -pedantic-errors -g -o $@ $^
 
 # Compiles the test target.
 $(TEST_TARGET) : $(OBJS) $(TEST_OBJ)
-	g++ -g -o $@ $^
+	g++ -Wall -Werror -ansi -pedantic-errors -g -o $@ $^
 
 # Here is a Pattern Rule, often used for compile-line.
 # It says how to create a file with a .o suffix, given a file with a .cpp suffix.
@@ -81,7 +81,7 @@ $(TEST_TARGET) : $(OBJS) $(TEST_OBJ)
 # $@ for the pattern-matched target
 # $< for the pattern-matched dependency
 %.o : %.cpp
-	g++ -std=c++20 -g -o $@ -c $<
+	g++ -Wall -Werror -ansi -pedantic-errors -std=c++20 -g -o $@ -c $<
 
 # These are Dependency Rules, which are rules without any command.
 # Dependency Rules indicate that if any file to the right of the colon changes,

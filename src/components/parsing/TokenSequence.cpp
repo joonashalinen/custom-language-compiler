@@ -7,7 +7,7 @@ TokenSequence::TokenSequence(std::vector<DToken>& tokens):
 }
 
 DToken TokenSequence::peek() {
-    if (this->_position < this->_tokens.size()) {
+    if (this->_position < (int) (this->_tokens.size())) {
         return this->_tokens.at(this->_position);
     } else {
         auto endToken = DToken{

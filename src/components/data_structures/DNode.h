@@ -4,9 +4,10 @@
 #include <vector>
 #include <memory>
 
-template <class TChild>
+template <class T>
 struct DNode {
-    std::vector<std::shared_ptr<TChild>> children {};
+    std::vector<std::shared_ptr<T>> children {};
+    std::shared_ptr<T> parent {};
 };
 
 #endif

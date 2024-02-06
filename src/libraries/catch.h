@@ -2200,12 +2200,12 @@ namespace Catch { \
 namespace Catch {
 
     struct ITransientExpression {
-        auto isBinaryExpression() const -> bool { return m_isBinaryExpression; }
+        auto isBinaryParser() const -> bool { return m_isBinaryParser; }
         auto getResult() const -> bool { return m_result; }
         virtual void streamReconstructedExpression( std::ostream &os ) const = 0;
 
-        ITransientExpression( bool isBinaryExpression, bool result )
-        :   m_isBinaryExpression( isBinaryExpression ),
+        ITransientExpression( bool isBinaryParser, bool result )
+        :   m_isBinaryParser( isBinaryParser ),
             m_result( result )
         {}
 
@@ -2213,7 +2213,7 @@ namespace Catch {
         // complain if it's not here :-(
         virtual ~ITransientExpression();
 
-        bool m_isBinaryExpression;
+        bool m_isBinaryParser;
         bool m_result;
 
     };
@@ -8208,7 +8208,7 @@ namespace Catch {
             os << "!";
 
         if( lazyExpr ) {
-            if( lazyExpr.m_isNegated && lazyExpr.m_transientExpression->isBinaryExpression() )
+            if( lazyExpr.m_isNegated && lazyExpr.m_transientExpression->isBinaryParser() )
                 os << "(" << *lazyExpr.m_transientExpression << ")";
             else
                 os << *lazyExpr.m_transientExpression;

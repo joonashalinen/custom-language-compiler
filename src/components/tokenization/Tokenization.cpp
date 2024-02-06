@@ -11,7 +11,7 @@ Tokenization::Tokenizer::Tokenizer():
 
 }
 
-DToken<Tokenization::TToken> Tokenization::Tokenizer::recognizeToken(std::string text) {
+DToken Tokenization::Tokenizer::recognizeToken(std::string text) {
     // Find the first pattern that matches the beginning of the text.
     auto pattern = std::find_if(this->_patterns.begin(), this->_patterns.end(), [&](auto& p) {
         // Find a match in the text for the given token pattern.
@@ -25,7 +25,7 @@ DToken<Tokenization::TToken> Tokenization::Tokenizer::recognizeToken(std::string
         // Get the match.
         auto match = (*pattern)->second->recognize(text);
         // Create a new token object from the match.
-        DToken<TToken> token{
+        DToken token{
             (*pattern)->first, 
             match.second, 
             match.first, 
@@ -37,16 +37,16 @@ DToken<Tokenization::TToken> Tokenization::Tokenizer::recognizeToken(std::string
     }
 }
 
-std::vector<DToken<Tokenization::TToken>> Tokenization::Tokenizer::tokenize(std::string text) {
+std::vector<DToken> Tokenization::Tokenizer::tokenize(std::string text) {
     // List of found tokens in text.
-    auto tokens = std::vector<DToken<TToken>>();
+    auto tokens = std::vector<DToken>();
     // Current position in text.
     int pos = 0;
     while (true) {
         // If we have reached the end of the text.
-        if (pos == text.size()) {
+        if (pos == (int) (text.size())) {
             // Add the end token.
-            DToken<TToken> token {"end", "", pos, pos};
+            DToken token {"end", "", pos, pos};
             tokens.insert(tokens.end(), token);
             // Return from the loop.
             break;

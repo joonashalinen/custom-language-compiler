@@ -15,8 +15,8 @@ namespace Tokenization {
     class Tokenizer {
         public:
             Tokenizer();
-            DToken<TToken> recognizeToken(std::string text);
-            std::vector<DToken<TToken>> tokenize(std::string text);
+            DToken recognizeToken(std::string text);
+            std::vector<DToken> tokenize(std::string text);
             void addRegexPattern(TToken type, std::string regex);
         private:
             std::vector<std::shared_ptr<TokenPattern>> _patterns;
