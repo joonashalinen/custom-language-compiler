@@ -26,6 +26,8 @@ std::shared_ptr<Expression> UnaryParser::parse(std::vector<DToken>& tokens, int 
                 followingExpression->endPos()
             }
         );
+        unaryExpression->tokens().insert(unaryExpression->tokens().end(), firstToken);
+        
         Expression::addChild(unaryExpression, followingExpression);
         return unaryExpression;
     } else {

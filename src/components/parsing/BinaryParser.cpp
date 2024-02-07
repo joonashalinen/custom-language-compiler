@@ -32,6 +32,7 @@ std::shared_ptr<Expression> BinaryParser::parse(std::vector<DToken>& tokens, int
                 secondExpression->endPos()
             }
         );
+        binaryExpression->tokens().insert(binaryExpression->tokens().end(), nextToken);
         Expression::addChild(binaryExpression, firstExpression);
         Expression::addChild(binaryExpression, secondExpression);
         return binaryExpression;

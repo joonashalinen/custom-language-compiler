@@ -14,13 +14,15 @@ std::shared_ptr<Expression> LiteralParser::parse(std::vector<DToken>& tokens, in
     auto nextToken = tokenSequence.consume();
     
     if (nextToken.type == this->_type) {
-        return std::shared_ptr<Expression>(
+        auto expression = std::shared_ptr<Expression>(
             new Expression{
                 this->_type,
                 position,
                 position + 1
             }
         );
+        expression->tokens().insert(expression->tokens().end(), nextToken);
+        return expression;
     } else {
         throw std::runtime_error("Expected the next token to have type " + this->_type);
     }

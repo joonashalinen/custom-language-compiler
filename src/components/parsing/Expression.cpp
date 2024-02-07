@@ -1,9 +1,27 @@
 #include "Expression.h"
 #include <algorithm>
 
-Expression::Expression(std::string type, int startPos, int endPos):
+Expression::Expression(
+	std::string type, 
+	int startPos, 
+	int endPos
+):
     _type(type), _startPos(startPos), _endPos(endPos)
 {
+}
+
+std::vector<DToken>& Expression::tokens()
+{
+	return this->_tokens;
+}
+
+DToken Expression::rootToken()
+{
+	if (this->_tokens.size() > 0) {
+		return this->_tokens.at(0);
+	} else {
+		throw std::runtime_error("The Expression has no root token.");
+	}
 }
 
 std::string Expression::type()

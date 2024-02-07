@@ -4,10 +4,13 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include "../tokenization/DToken.h"
 
 class Expression {
     public:
         Expression(std::string type, int startPos, int endPos);
+        std::vector<DToken>& tokens();
+        DToken rootToken();
         std::string type();
         int startPos();
         int endPos();
@@ -30,6 +33,7 @@ class Expression {
         std::string _type;
         int _startPos;
         int _endPos;
+        std::vector<DToken> _tokens;
 };
 
 #endif

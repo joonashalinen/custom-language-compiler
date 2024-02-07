@@ -62,8 +62,6 @@ std::shared_ptr<Expression> OperatedChainParser::parse(std::vector<DToken>& toke
             );
         }
     }
-
-    return std::shared_ptr<Expression>(new Expression{"None", 0, 0});
 }
 
 int OperatedChainParser::precedenceLevel(std::string expressionType)
