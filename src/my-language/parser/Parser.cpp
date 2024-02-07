@@ -22,9 +22,15 @@ MyLanguage::Parser::Parser() {
     // Set expression precedence levels.
     this->_topLevelParser->setPrecedenceLevels(
         std::map<std::string, int>{
-            {"identifier", 9},
+            {"identifier", 9}, {"if", 9}, {"while", 9}, {"var", 9},
             {"unary-operator", 8},
-            {"binary-operator", 3}
+            {"*", 7}, {"/", 7}, {"%", 7},
+            {"+", 6}, {"-", 6},
+            {"<", 5}, {"<=", 5}, {">", 5}, {">=", 5},
+            {"==", 4}, {"!=", 4},
+            {"and", 3},
+            {"or", 2},
+            {"=", 1}
         }
     );
 }
