@@ -9,13 +9,17 @@ MyLanguage::Parser::Parser() {
     this->_topLevelParser = std::unique_ptr<OperatedChainParser>(
         new OperatedChainParser{*(this->_mapParser), std::set<std::string>{"binary-operator"}}
     );
+    this->_parentheticalParser = std::unique_ptr<Parsing::ParentheticalParser>(
+        new Parsing::ParentheticalParser{"parenthetical", "(", ")", *(this->_topLevelParser)}
+    );
 
     // Set the look-forward parsing rules used when in a general expression parsing context.
     this->_mapParser->setParsers(
         std::map<std::string, IParseable*>{
             {"identifier", this->_literalParser.get()},
             {"binary-operator", this->_binaryParser.get()},
-            {"unary-operator", this->_unaryParser.get()}
+            {"unary-operator", this->_unaryParser.get()},
+            {"(", this->_parentheticalParser.get()}
         }
     );
 
@@ -23,6 +27,7 @@ MyLanguage::Parser::Parser() {
     this->_topLevelParser->setPrecedenceLevels(
         std::map<std::string, int>{
             {"identifier", 9}, {"if", 9}, {"while", 9}, {"var", 9},
+            {"(", 9}, // An expression surrounded by parentheses.
             {"unary-operator", 8},
             {"*", 7}, {"/", 7}, {"%", 7},
             {"+", 6}, {"-", 6},

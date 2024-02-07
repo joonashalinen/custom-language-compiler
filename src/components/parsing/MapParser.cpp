@@ -11,6 +11,8 @@ std::shared_ptr<Expression> MapParser::parse(std::vector<DToken>& tokens, int po
 
     if (this->_parsers.contains(token.type)) {
         return this->parseWith(tokens, token.type, position);
+    } else if (this->_parsers.contains(token.value)) {
+        return this->parseWith(tokens, token.value, position);
     } else {
         throw std::runtime_error("Unexpected token '" + token.type + "' found at position " + std::to_string(position));
     }

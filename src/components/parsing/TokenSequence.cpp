@@ -1,5 +1,6 @@
 #include "TokenSequence.h"
 #include <cassert>
+#include <iostream>
 
 TokenSequence::TokenSequence(std::vector<DToken>& tokens):
     _tokens(tokens), _position(0) {
