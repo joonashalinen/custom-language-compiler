@@ -49,8 +49,14 @@ std::shared_ptr<Expression> OperatedChainParser::parse(std::vector<DToken>& toke
                     this->precedenceLevel(nonUnaryExpression)
                 );
 
-                // Make the non-unary expression take the place of the found left descendant.
-                Expression::replace(nonUnaryExpression, highestLeftChild);
+                // Remove the right-most child of the non-unary expression since 
+                // we will replace it with some possibly other expression from the 
+                // rest of the expression chain.
+                nonUnaryExpression->children().erase(nonUnaryExpression->children().end() - 1);
+
+                // Make the non-unary expression take the place of the found left descendant,
+                // adding the descendant as its child.
+                Expression::replaceAsParent(nonUnaryExpression, highestLeftChild);
 
                 // Return the root node of the parse tree fragment.
                 return Expression::earliestAncestor(nonUnaryExpression);
