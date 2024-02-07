@@ -46,7 +46,7 @@ std::shared_ptr<Expression> OperatedChainParser::parse(std::vector<DToken>& toke
                 // that has a higher precedence level than the non-unary expression.
                 auto highestLeftChild = this->_firstHigherPrecedenceLeftChild(
                     restExpression, 
-                    this->precedenceLevel(nonUnaryExpression->type())
+                    this->precedenceLevel(nonUnaryExpression)
                 );
 
                 // Make the non-unary expression take the place of the found left descendant.
@@ -64,14 +64,17 @@ std::shared_ptr<Expression> OperatedChainParser::parse(std::vector<DToken>& toke
     }
 }
 
-int OperatedChainParser::precedenceLevel(std::string expressionType)
+int OperatedChainParser::precedenceLevel(std::shared_ptr<Expression> expression)
 {
     // Get the precedence level of the expression type.
     // The expression has by default the lowest precedence level 
     // in case no explicit precedence level is set.
     int precedenceLevel = -1;
-    if (this->_precedenceLevels.contains(expressionType)) {
-        precedenceLevel = this->_precedenceLevels.at(expressionType);
+    if (this->_precedenceLevels.contains(expression->type())) {
+        precedenceLevel = this->_precedenceLevels.at(expression->type());
+        
+    } else if (this->_precedenceLevels.contains(expression->rootToken().value)) {
+        precedenceLevel = this->_precedenceLevels.at(expression->rootToken().value);
     }
 
     return precedenceLevel;
@@ -80,7 +83,7 @@ int OperatedChainParser::precedenceLevel(std::string expressionType)
 std::shared_ptr<Expression> OperatedChainParser::_firstHigherPrecedenceLeftChild(std::shared_ptr<Expression> expression, int precedence)
 {
     // If the precedence level is higher than the one we are comparing against.
-    if (this->precedenceLevel(expression->type()) > precedence) {
+    if (this->precedenceLevel(expression) > precedence) {
         // Then we have found the leftmost child that has a higher precedence level.
         return expression;
     } else {
