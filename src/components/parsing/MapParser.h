@@ -16,15 +16,14 @@
  * types depending on what the next token is.
  */
 class MapParser: public IParseable {
-
     public:
         MapParser();
         std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         std::shared_ptr<Expression> parseWith(std::vector<DToken>& tokens, std::string tokenType, int position);
-        std::map<std::string, TExpressions::ExpressionConstructor>& expressionConstructors();
-
+        std::map<std::string, IParseable*>& parsers();
+        void setParsers(std::map<std::string, IParseable*> parsers);
     private:
-        std::map<std::string, TExpressions::ExpressionConstructor> _expressionConstructors;
+        std::map<std::string, IParseable*> _parsers = std::map<std::string, IParseable*>();
 };
 
 #endif

@@ -2,10 +2,10 @@
 
 UnaryParser::UnaryParser(
         std::string operatorType,
-        TExpressions::ExpressionConstructor makeExpression
+        IParseable& expressionParser
     ):
     _operatorType(operatorType),
-    _makeExpression(makeExpression) {
+    _expressionParser(expressionParser){
     
 }
 
@@ -17,8 +17,7 @@ std::shared_ptr<Expression> UnaryParser::parse(std::vector<DToken>& tokens, int 
     // If the first token we encounter is the operator.
     if (firstToken.type == this->_operatorType) {
         // Get the expression after the operator.
-        auto followingParser = this->_makeExpression();
-        auto followingExpression = followingParser->parse(tokens, tokenSequence.position());
+        auto followingExpression = this->_expressionParser.parse(tokens, tokenSequence.position());
 
         auto unaryExpression = std::shared_ptr<Expression>(
             new Expression{

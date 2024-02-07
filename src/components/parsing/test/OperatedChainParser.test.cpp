@@ -9,57 +9,34 @@
 #include <vector>
 #include <memory>
 
-std::shared_ptr<MapParser> createMapParser(std::vector<DToken>& tokens) {
-    auto mapParser = std::shared_ptr<MapParser>(new MapParser{});
+namespace Test {
+    auto mapParser = std::unique_ptr<MapParser>(new MapParser{});
+    auto literalParser = std::unique_ptr<IParseable>(new LiteralParser{"identifier"});
+    auto binaryParser = std::unique_ptr<IParseable>(new BinaryParser{"AND", *mapParser});
+    auto unaryParser = std::unique_ptr<IParseable>(new UnaryParser{"NOT", *mapParser});
+    auto operatedChainParser = std::unique_ptr<IParseable>(new OperatedChainParser{*mapParser, std::set<std::string>{"AND"}});
+};
 
-    mapParser->expressionConstructors().insert(
-        std::pair<std::string, TExpressions::ExpressionConstructor>(
-            "identifier", 
-            []() {
-                return std::shared_ptr<IParseable>(new LiteralParser{"identifier"});
-            }
-        )
+void beforeEach() {
+    Test::mapParser->setParsers(
+        std::map<std::string, IParseable*>{
+            {"identifier", Test::literalParser.get()},
+            {"AND", Test::binaryParser.get()},
+            {"NOT", Test::unaryParser.get()}
+        }
     );
-
-    mapParser->expressionConstructors().insert(
-        std::pair<std::string, TExpressions::ExpressionConstructor>(
-            "AND",
-            [mapParser]() {
-                return std::shared_ptr<IParseable>(new BinaryParser{"AND", *mapParser});
-            }
-        )
-    );
-    
-    mapParser->expressionConstructors().insert(
-        std::pair<std::string, TExpressions::ExpressionConstructor>(
-            "NOT",
-            [mapParser]() {
-                return std::shared_ptr<IParseable>(
-                    new UnaryParser{
-                            "NOT",
-                            [mapParser]() {
-                                return mapParser;
-                            }
-                    }
-                );
-            }
-        )
-    );
-
-    return mapParser;
 }
 
 TEST_CASE("simple binary expression", "[parse]") {
+    beforeEach();
+
     auto tokens = std::vector<DToken>{
         DToken{"identifier", "abc", 0, 3},
         DToken{"AND", "AND", 3, 6},
         DToken{"identifier", "efg", 6, 9},
     };
 
-    auto mapParser = createMapParser(tokens);
-
-    auto chain = OperatedChainParser{*mapParser, std::set<std::string>{"AND"}};
-    auto parseTree = chain.parse(tokens, 0);
+    auto parseTree = Test::operatedChainParser->parse(tokens, 0);
     
     REQUIRE(parseTree->type() == "AND");
     REQUIRE(parseTree->children().size() == 2);
@@ -68,6 +45,8 @@ TEST_CASE("simple binary expression", "[parse]") {
 }
 
 TEST_CASE("combination of chained unary operators and binary operators", "[parse]") {
+    beforeEach();
+
     auto tokens = std::vector<DToken>{
         DToken{"NOT", "NOT", 0, 1},
         DToken{"NOT", "NOT", 1, 2},
@@ -78,10 +57,7 @@ TEST_CASE("combination of chained unary operators and binary operators", "[parse
         DToken{"identifier", "efg", -1, -1},
     };
 
-    auto mapParser = createMapParser(tokens);
-
-    auto chain = OperatedChainParser{*mapParser, std::set<std::string>{"AND"}};
-    auto parseTree = chain.parse(tokens, 0);
+    auto parseTree = Test::operatedChainParser->parse(tokens, 0);
 
     REQUIRE(parseTree->type() == "AND");
     REQUIRE(parseTree->children().at(0)->type() == "NOT");

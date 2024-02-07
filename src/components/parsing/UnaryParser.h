@@ -15,12 +15,12 @@ class UnaryParser: public IParseable {
     public:
         UnaryParser(
             std::string operatorType,
-            TExpressions::ExpressionConstructor makeExpression
+            IParseable& expressionParser
         );
         std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
     private:
         std::string _operatorType;
-        TExpressions::ExpressionConstructor _makeExpression;
+        IParseable& _expressionParser;
 };
 
 #endif

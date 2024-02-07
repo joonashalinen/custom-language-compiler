@@ -3,11 +3,11 @@
 #include <iostream>
 
 OperatedChainParser::OperatedChainParser(
-        MapParser& expressions,
+        MapParser& mapParser,
         std::set<std::string> nonUnaryOperators,
         std::map<std::string, int> precedenceLevels
     ):
-    _expressions(expressions),
+    _mapParser(mapParser),
     _nonUnaryOperators(nonUnaryOperators),
     _precedenceLevels(precedenceLevels) {
     
@@ -18,7 +18,7 @@ std::shared_ptr<Expression> OperatedChainParser::parse(std::vector<DToken>& toke
     tokenSequence.setPosition(position);
 
     // First encountered expression.
-    auto firstExpression = this->_expressions.parse(tokens, position);
+    auto firstExpression = this->_mapParser.parse(tokens, position);
     tokenSequence.setPosition(firstExpression->endPos());
 
     // The next token past the first expression.
@@ -26,30 +26,21 @@ std::shared_ptr<Expression> OperatedChainParser::parse(std::vector<DToken>& toke
     
     // If there is nothing recognizable past the first expression then we simply return 
     // the first expression.
-    if (!(this->_expressions.expressionConstructors().contains(nextToken.type))) {
+    if (!(this->_mapParser.parsers().contains(nextToken.type))) {
         return firstExpression;
     } else {
         // We assume the next token to be an operator but not a unary operator.
         if (this->_nonUnaryOperators.contains(nextToken.type)) {
             // The non-unary expression is parsed starting from before the first expression 
             // because the first expression becomes the non-unary expression's child.
-            auto nonUnaryExpression = this->_expressions.parseWith(tokens, nextToken.type, position);
+            auto nonUnaryExpression = this->_mapParser.parseWith(tokens, nextToken.type, position);
             // If there is nothing recognizable past the non-unary expression then we simply 
             // return the non-unary expression.
-            if (!(this->_expressions.expressionConstructors().contains(nextToken.type))) {
+            if (!(this->_mapParser.parsers().contains(nextToken.type))) {
                 return nonUnaryExpression;
             } else {
-                // We parse the rest of the expression chain 
-                // to the right of the non-unary expression 
-                // (but still including the right-most child of the non-unary expression).
-                auto restChain = OperatedChainParser{
-                    this->_expressions,
-                    this->_nonUnaryOperators,
-                    this->_precedenceLevels
-                };
-
                 auto rightMostChild = (Expression) (*(*(nonUnaryExpression->children().end() - 1)));
-                auto restExpression = restChain.parse(tokens, rightMostChild.startPos());
+                auto restExpression = this->parse(tokens, rightMostChild.startPos());
     
                 // Find the first leftmost descendant of the rest of the expression chain 
                 // that has a higher precedence level than the non-unary expression.

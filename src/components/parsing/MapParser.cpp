@@ -1,8 +1,6 @@
 #include "MapParser.h"
 
-MapParser::MapParser(
-    ): 
-    _expressionConstructors(std::map<std::string, TExpressions::ExpressionConstructor>()) {
+MapParser::MapParser() {
     
 }
 
@@ -11,7 +9,7 @@ std::shared_ptr<Expression> MapParser::parse(std::vector<DToken>& tokens, int po
     tokenSequence.setPosition(position);
     auto token = tokenSequence.peek();
 
-    if (this->_expressionConstructors.contains(token.type)) {
+    if (this->_parsers.contains(token.type)) {
         return this->parseWith(tokens, token.type, position);
     } else {
         throw std::runtime_error("Unexpected token '" + token.type + "' found at position " + std::to_string(position));
@@ -19,11 +17,14 @@ std::shared_ptr<Expression> MapParser::parse(std::vector<DToken>& tokens, int po
 }
 
 std::shared_ptr<Expression> MapParser::parseWith(std::vector<DToken>& tokens, std::string tokenType, int position) {
-    auto constructor = this->_expressionConstructors.at(tokenType);
-    auto expression = constructor();
-    return (*expression).parse(tokens, position);
+    auto parser = this->_parsers.at(tokenType);
+    return parser->parse(tokens, position);
 }
 
-std::map<std::string, TExpressions::ExpressionConstructor>& MapParser::expressionConstructors() {
-    return this->_expressionConstructors;
+std::map<std::string, IParseable*>& MapParser::parsers() {
+    return this->_parsers;
+}
+
+void MapParser::setParsers(std::map<std::string, IParseable*> parsers) {
+    this->_parsers = parsers;
 }
