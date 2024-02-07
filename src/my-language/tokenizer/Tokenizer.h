@@ -8,7 +8,7 @@
  */
 class Tokenizer {
     public:
-        Tokenizer(Tokenization::Tokenizer tokenizer);
+        Tokenizer(Tokenization::Tokenizer tokenizer = Tokenization::Tokenizer{});
         Tokenization::Tokenizer tokenizer;
 };
 

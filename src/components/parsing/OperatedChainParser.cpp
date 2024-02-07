@@ -31,7 +31,7 @@ std::shared_ptr<Expression> OperatedChainParser::parse(std::vector<DToken>& toke
     } else {
         // We assume the next token to be an operator but not a unary operator.
         if (this->_nonUnaryOperators.contains(nextToken.type)) {
-            // The non-unary expression is parsed starting from before the first expression 
+            // The non-unary expression is parsed starting from the start of the first expression 
             // because the first expression becomes the non-unary expression's child.
             auto nonUnaryExpression = this->_mapParser.parseWith(tokens, nextToken.type, position);
             // If there is nothing recognizable past the non-unary expression then we simply 
@@ -44,14 +44,16 @@ std::shared_ptr<Expression> OperatedChainParser::parse(std::vector<DToken>& toke
     
                 // Find the first leftmost descendant of the rest of the expression chain 
                 // that has a higher precedence level than the non-unary expression.
-                /* auto highestLeftChild = this->_firstHigherPrecedenceLeftChild(
+                auto highestLeftChild = this->_firstHigherPrecedenceLeftChild(
                     restExpression, 
-                    this->precedenceLevel(nonUnaryExpression->type)
-                ); */
+                    this->precedenceLevel(nonUnaryExpression->type())
+                );
 
-                // Make the found higher precedence expression the right-most child of the non-unary expression.
-                *(nonUnaryExpression->children().end() - 1) = restExpression;
-                return nonUnaryExpression;
+                // Make the non-unary expression take the place of the found left descendant.
+                Expression::replace(nonUnaryExpression, highestLeftChild);
+
+                // Return the root node of the parse tree fragment.
+                return Expression::earliestAncestor(nonUnaryExpression);
             }
         } else {
             throw std::runtime_error(
@@ -85,12 +87,19 @@ std::shared_ptr<Expression> OperatedChainParser::_firstHigherPrecedenceLeftChild
         return expression;
     } else {
         // Else, the precedence level is lower than or equal.
-        // We assume the expression then has a left child we can recurse over.
+        // If the expression has a left child then we recurse over that.
         if (expression->children().size() > 0) {
             return this->_firstHigherPrecedenceLeftChild(expression->children().at(0), precedence);
         } else {
-            throw std::runtime_error("Could not find higher precedence left child even though one should exist.");
+            // Otherwise, we have reached the left-most child, which must be a literal expression 
+            // since it has no children. Since it is a literal expression we assume it to have 
+            // the highest possible precedence. Thus, we return it.
+            return expression;
         }
     }
 }
 
+void OperatedChainParser::setPrecedenceLevels(std::map<std::string, int> precedenceLevels)
+{
+    this->_precedenceLevels = precedenceLevels;
+}

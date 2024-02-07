@@ -25,6 +25,7 @@ class OperatedChainParser: public IParseable {
         );
         std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         int precedenceLevel(std::string expressionType);
+        void setPrecedenceLevels(std::map<std::string, int> precedenceLevels);
     private:
         MapParser& _mapParser;
         std::set<std::string> _nonUnaryOperators;

@@ -17,6 +17,7 @@ MAIN_OBJ = main.o
 OBJS =  \
 	components/tokenization/Tokenization.o \
 	my-language/tokenizer/Tokenizer.o \
+	my-language/parser/Parser.o \
 	components/text/RegexPattern.o \
 	components/parsing/OperatedChainParser.o \
 	components/parsing/TokenSequence.o \
@@ -28,10 +29,11 @@ OBJS =  \
 
 TEST_OBJS = \
 	my-language/tokenizer/test/Tokenizer.test.o \
-	components/parsing/test/OperatedChainParser.test.o
+	my-language/parser/test/Parser.test.o \
+	components/parsing/test/OperatedChainParser.test.o \
 
 TEST_OBJ = \
-	components/parsing/test/OperatedChainParser.test.o
+	my-language/parser/test/Parser.test.o
 
 # Here is a Make Macro defined by two Macro Expansions.
 # A Macro Expansion may be treated as a textual replacement of the Make Macro.

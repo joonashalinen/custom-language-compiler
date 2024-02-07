@@ -14,7 +14,16 @@ class Expression {
         std::vector<std::shared_ptr<Expression>>& children();
         std::shared_ptr<Expression> parent();
         void setParent(std::shared_ptr<Expression> parent);
+        static std::shared_ptr<Expression> earliestAncestor(std::shared_ptr<Expression> expression);
         static void addChild(std::shared_ptr<Expression> expression, std::shared_ptr<Expression> child);
+        static void removeChild(std::shared_ptr<Expression> expression, std::shared_ptr<Expression> child);
+        static void replaceChild(
+            std::shared_ptr<Expression> expression, 
+            std::shared_ptr<Expression> replacer, 
+            std::shared_ptr<Expression> replacee
+        );
+        static void replaceAsParent(std::shared_ptr<Expression> replacer, std::shared_ptr<Expression> replacee);
+        static void replace(std::shared_ptr<Expression> replacer, std::shared_ptr<Expression> replacee);
     private:
         std::vector<std::shared_ptr<Expression>> _children;
         std::shared_ptr<Expression> _parent;
