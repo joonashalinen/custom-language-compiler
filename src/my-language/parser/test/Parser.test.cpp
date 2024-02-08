@@ -42,7 +42,7 @@ TEST_CASE("Boolean expression with parentheses") {
 }
 
 TEST_CASE("Nested block statement") {
-    auto input = "{{a; b} c}";
+    auto input = "{{a; b;} c}";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
 
     auto parseTree = Test::parser.parse(tokens, 0);
