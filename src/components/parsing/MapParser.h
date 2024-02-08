@@ -19,12 +19,14 @@ class MapParser: public IParseable {
     public:
         MapParser();
         std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
-        std::shared_ptr<Expression> parseWith(std::vector<DToken>& tokens, std::string tokenType, int position);
+        std::shared_ptr<Expression> parseWith(std::vector<DToken>& tokens, std::string rule, int position);
         bool canParseAt(std::vector<DToken>& tokens, int position);
         std::map<std::string, IParseable*>& parsers();
         void setParsers(std::map<std::string, IParseable*> parsers);
+        void setWildCardParser(MapParser* wildCardParser);
     private:
         std::map<std::string, IParseable*> _parsers = std::map<std::string, IParseable*>();
+        MapParser* _wildCardParser = nullptr;
 };
 
 #endif

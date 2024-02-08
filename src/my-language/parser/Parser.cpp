@@ -8,7 +8,7 @@ MyLanguage::Parser::Parser() {
     this->_binaryParser = std::unique_ptr<BinaryParser>(new BinaryParser{"binary-operator", *(this->_mapParser)});
     this->_unaryParser = std::unique_ptr<UnaryParser>(new UnaryParser{"unary-operator", *(this->_mapParser)});
     this->_chainParser = std::unique_ptr<MyLanguage::ChainParser>(
-        new MyLanguage::ChainParser{*(this->_mapParser)}
+        new MyLanguage::ChainParser{this->_mapParser.get()}
     );
     this->_blockParser = std::unique_ptr<Parsing::ParentheticalParser>(
         new Parsing::ParentheticalParser{"block", "{", "}", *(this->_chainParser)}

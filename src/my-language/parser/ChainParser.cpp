@@ -1,12 +1,19 @@
 #include "ChainParser.h"
 
-MyLanguage::ChainParser::ChainParser(MapParser& mapParser)
+MyLanguage::ChainParser::ChainParser(MapParser* mapParser)
 {
+
+    this->_mapParser = std::unique_ptr<MapParser>(new MapParser{});
+    this->_mapParser->setWildCardParser(mapParser);
+    /* this->_mapParser->setParsers(std::map<std::string, IParseable*>{
+        
+    }); */
+
     this->_chainParser = std::unique_ptr<Parsing::ChainParser>(
         new Parsing::ChainParser{
             "chain", 
             ";", 
-            mapParser,
+            *(this->_mapParser),
             [](std::vector<DToken>& tokens, int position) {
                 if (position > 0 && position < (int) (tokens.size())) {
                     return (

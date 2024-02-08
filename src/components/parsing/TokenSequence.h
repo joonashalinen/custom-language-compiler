@@ -15,6 +15,7 @@ class TokenSequence {
         DToken consume();
         void setPosition(int position);
         int position();
+        std::vector<DToken>& tokens();
     private:
         std::vector<DToken>& _tokens;
         int _position;

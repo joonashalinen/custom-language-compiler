@@ -33,9 +33,15 @@ std::shared_ptr<Expression> Parsing::ParentheticalParser::parse(std::vector<DTok
             result->children().insert(result->children().end(), expression);
             return result;
         } else {
-            throw std::runtime_error("Expected a '" + this->_endCharacter + "' but instead encountered '" + endToken.value + "'");
+            throw std::runtime_error(
+                "Expected a '" + this->_endCharacter + "' but instead encountered '" + 
+                endToken.value + "' at position " + std::to_string(sequence.position() - 1)
+            );
         }
     } else {
-        throw std::runtime_error("Expected a '" + this->_beginCharacter + "' but instead encountered '" + beginToken.value + "'");
+        throw std::runtime_error(
+            "Expected a '" + this->_beginCharacter + "' but instead encountered '" + 
+            beginToken.value + "' at position " + std::to_string(sequence.position() - 1)
+        );
     }
 }

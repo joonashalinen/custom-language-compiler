@@ -34,3 +34,8 @@ void TokenSequence::setPosition(int position) {
 int TokenSequence::position() {
     return this->_position;
 }
+
+std::vector<DToken>& TokenSequence::tokens()
+{
+    return this->_tokens;
+}
