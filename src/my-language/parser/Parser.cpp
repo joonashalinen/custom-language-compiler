@@ -7,26 +7,8 @@ MyLanguage::Parser::Parser() {
     this->_literalParser = std::unique_ptr<LiteralParser>(new LiteralParser{"identifier"});
     this->_binaryParser = std::unique_ptr<BinaryParser>(new BinaryParser{"binary-operator", *(this->_mapParser)});
     this->_unaryParser = std::unique_ptr<UnaryParser>(new UnaryParser{"unary-operator", *(this->_mapParser)});
-    this->_chainParser = std::unique_ptr<Parsing::ChainParser>(
-        new Parsing::ChainParser{
-            "chain", 
-            ";", 
-            *(this->_mapParser), 
-            [](std::vector<DToken>& tokens, int position) {
-                if (position > 0 && position < (int) (tokens.size())) {
-                    return (
-                        tokens.at(position).value == "}" || 
-                        tokens.at(position - 1).value == "}"
-                    );
-                } else if (position < (int) (tokens.size())) {
-                    return tokens.at(position).value == "}";
-                } else if (position > 0) {
-                    return tokens.at(position - 1).value == "}";
-                } else {
-                    return false;
-                }
-            }
-        }
+    this->_chainParser = std::unique_ptr<MyLanguage::ChainParser>(
+        new MyLanguage::ChainParser{*(this->_mapParser)}
     );
     this->_blockParser = std::unique_ptr<Parsing::ParentheticalParser>(
         new Parsing::ParentheticalParser{"block", "{", "}", *(this->_chainParser)}

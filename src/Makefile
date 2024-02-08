@@ -15,9 +15,10 @@ TEST_TARGET = test.exe
 MAIN_OBJ = main.o
 
 OBJS =  \
-	components/tokenization/Tokenization.o \
 	my-language/tokenizer/Tokenizer.o \
 	my-language/parser/Parser.o \
+	my-language/parser/ChainParser.o \
+	components/tokenization/Tokenization.o \
 	components/text/RegexPattern.o \
 	components/parsing/OperatedChainParser.o \
 	components/parsing/TokenSequence.o \
