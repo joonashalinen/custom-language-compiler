@@ -1,4 +1,5 @@
 #include "SkeletonParser.h"
+#include <iostream>
 
 Parsing::SkeletonParser::SkeletonParser(
     std::string type,
@@ -21,15 +22,29 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
         [&sequence, this, &expressions](std::pair<std::string, std::string> element) {
             auto elementType = element.first;
             auto elementValue = element.second;
+            
             if (
                 (elementType == "token-value" && sequence.peek().value == elementValue) || 
                 (elementType == "token-type" && sequence.peek().type == elementValue)) 
             {
-                sequence.consume();
+                auto token = sequence.consume();
+                if (elementType == "token-type") {
+                    auto expression = std::shared_ptr<Expression>(
+                        new Expression{
+                            elementValue,
+                            sequence.position() - 1,
+                            sequence.position()
+                        }
+                    );
+                    expression->tokens().insert(expression->tokens().end(), token);
+                    expressions.insert(expressions.end(), expression);
+                }
+
             } else if (elementType == "expression" && this->_parsers.contains(elementValue)) {
                 auto parser = this->_parsers.at(elementValue);
                 auto expression = parser->parse(sequence.tokens(), sequence.position());
                 expressions.insert(expressions.end(), expression);
+                sequence.setPosition(expression->endPos());
             }
         }
     );

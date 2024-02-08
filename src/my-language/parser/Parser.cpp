@@ -7,17 +7,17 @@ MyLanguage::Parser::Parser() {
     this->_literalParser = std::unique_ptr<LiteralParser>(new LiteralParser{"identifier"});
     this->_binaryParser = std::unique_ptr<BinaryParser>(new BinaryParser{"binary-operator", *(this->_mapParser)});
     this->_unaryParser = std::unique_ptr<UnaryParser>(new UnaryParser{"unary-operator", *(this->_mapParser)});
-    this->_chainParser = std::unique_ptr<MyLanguage::ChainParser>(
-        new MyLanguage::ChainParser{this->_mapParser.get()}
-    );
-    this->_blockParser = std::unique_ptr<Parsing::ParentheticalParser>(
-        new Parsing::ParentheticalParser{"block", "{", "}", *(this->_chainParser)}
-    );
     this->_operatedChainParser = std::unique_ptr<OperatedChainParser>(
         new OperatedChainParser{*(this->_mapParser), std::set<std::string>{"binary-operator"}}
     );
     this->_parentheticalParser = std::unique_ptr<Parsing::ParentheticalParser>(
         new Parsing::ParentheticalParser{"parenthetical", "(", ")", *(this->_operatedChainParser)}
+    );
+    this->_chainParser = std::unique_ptr<MyLanguage::ChainParser>(
+        new MyLanguage::ChainParser{this->_mapParser.get(), this->_operatedChainParser.get()}
+    );
+    this->_blockParser = std::unique_ptr<Parsing::ParentheticalParser>(
+        new Parsing::ParentheticalParser{"block", "{", "}", *(this->_chainParser)}
     );
 
     // Set the look-forward parsing rules used when in a general expression parsing context.
