@@ -8,6 +8,7 @@
 #include "../../components/parsing/UnaryParser.h"
 #include "../../components/parsing/ParentheticalParser.h"
 #include "../../components/parsing/OperatedChainParser.h"
+#include "../../components/parsing/ChainParser.h"
 
 namespace MyLanguage {
     /**
@@ -21,9 +22,11 @@ namespace MyLanguage {
             std::unique_ptr<MapParser> _mapParser;
             std::unique_ptr<LiteralParser> _literalParser;
             std::unique_ptr<Parsing::ParentheticalParser> _parentheticalParser;
+            std::unique_ptr<Parsing::ParentheticalParser> _blockParser;
+            std::unique_ptr<Parsing::ChainParser> _chainParser;
             std::unique_ptr<BinaryParser> _binaryParser;
             std::unique_ptr<UnaryParser> _unaryParser;
-            std::unique_ptr<OperatedChainParser> _topLevelParser;
+            std::unique_ptr<OperatedChainParser> _operatedChainParser;
     };
 };
 

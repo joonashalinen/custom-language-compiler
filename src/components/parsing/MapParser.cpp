@@ -23,6 +23,14 @@ std::shared_ptr<Expression> MapParser::parseWith(std::vector<DToken>& tokens, st
     return parser->parse(tokens, position);
 }
 
+bool MapParser::canParseAt(std::vector<DToken>& tokens, int position)
+{
+    auto sequence = TokenSequence{tokens};
+    sequence.setPosition(position);
+    auto token = sequence.peek();
+    return (this->_parsers.contains(token.type) || this->_parsers.contains(token.value));
+}
+
 std::map<std::string, IParseable*>& MapParser::parsers() {
     return this->_parsers;
 }

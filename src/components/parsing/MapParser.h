@@ -20,6 +20,7 @@ class MapParser: public IParseable {
         MapParser();
         std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         std::shared_ptr<Expression> parseWith(std::vector<DToken>& tokens, std::string tokenType, int position);
+        bool canParseAt(std::vector<DToken>& tokens, int position);
         std::map<std::string, IParseable*>& parsers();
         void setParsers(std::map<std::string, IParseable*> parsers);
     private:

@@ -15,6 +15,7 @@ class Expression {
         int startPos();
         int endPos();
         std::vector<std::shared_ptr<Expression>>& children();
+        void setChildren(std::vector<std::shared_ptr<Expression>> children);
         std::shared_ptr<Expression> parent();
         void setParent(std::shared_ptr<Expression> parent);
         static std::shared_ptr<Expression> earliestAncestor(std::shared_ptr<Expression> expression);

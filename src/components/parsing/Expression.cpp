@@ -44,6 +44,11 @@ std::vector<std::shared_ptr<Expression>>& Expression::children()
 	return this->_children;
 }
 
+void Expression::setChildren(std::vector<std::shared_ptr<Expression>> children)
+{
+	this->_children = children;
+}
+
 std::shared_ptr<Expression> Expression::parent()
 {
 	return this->_parent;

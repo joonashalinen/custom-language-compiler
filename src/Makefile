@@ -27,6 +27,7 @@ OBJS =  \
 	components/parsing/LiteralParser.o \
 	components/parsing/Expression.o \
 	components/parsing/ParentheticalParser.o \
+	components/parsing/ChainParser.o \
 
 TEST_OBJS = \
 	my-language/tokenizer/test/Tokenizer.test.o \
