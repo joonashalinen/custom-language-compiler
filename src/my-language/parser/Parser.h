@@ -27,6 +27,7 @@ namespace MyLanguage {
             std::unique_ptr<BinaryParser> _binaryParser;
             std::unique_ptr<UnaryParser> _unaryParser;
             std::unique_ptr<OperatedChainParser> _operatedChainParser;
+            std::unique_ptr<Parsing::SkeletonParser> _ifParser;
     };
 };
 

@@ -15,6 +15,7 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
 	sequence.setPosition(position);
 
     auto expressions = std::vector<std::shared_ptr<Expression>>{};
+    auto expressionTokens = std::vector<DToken>{};
 
     for (int i = 0; i < ((int) this->_pattern.size()); i++) {
         auto element = this->_pattern.at(i);
@@ -30,10 +31,7 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
             // If the next token is expected to match a token type instead of a literal token value.
             if (elementType == "token-type") {
                 // Then we create a literal expression from the token and add it to the 
-                // pattern expressions values. Conversely, a token that is matched by 
-                // literal value is not added to the pattern expression's children, since 
-                // it is interpreted to give no semantic extra information (because every expression matching 
-                // the pattern will always have the same literal tokens).
+                // pattern expressions values.
                 auto expression = std::shared_ptr<Expression>(
                     new Expression{
                         elementValue,
@@ -43,6 +41,13 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
                 );
                 expression->tokens().insert(expression->tokens().end(), token);
                 expressions.insert(expressions.end(), expression);
+            } else {
+                // Conversely, a token that is matched by 
+                // literal value is not added to the pattern expression's children, since 
+                // it is interpreted to give no semantic extra information (because every expression matching 
+                // the pattern will always have the same literal tokens). Instead, 
+                // the literal token is added to the skeleton expression's list of its own tokens.
+                expressionTokens.insert(expressionTokens.end(), token);
             }
 
         } else if (elementType == "expression" && this->_parsers.contains(elementValue)) {
@@ -75,6 +80,7 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
         }
     );
     result->setChildren(expressions);
+    result->setTokens(expressionTokens);
 
     return result;
 }

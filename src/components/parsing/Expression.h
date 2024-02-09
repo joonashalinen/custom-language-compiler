@@ -10,14 +10,17 @@ class Expression {
     public:
         Expression(std::string type, int startPos, int endPos);
         std::vector<DToken>& tokens();
+        void setTokens(std::vector<DToken> tokens);
         DToken rootToken();
         std::string type();
         int startPos();
         int endPos();
+        void setEndPos(int endPos);
         std::vector<std::shared_ptr<Expression>>& children();
         void setChildren(std::vector<std::shared_ptr<Expression>> children);
         std::shared_ptr<Expression> parent();
         void setParent(std::shared_ptr<Expression> parent);
+        bool isLastChild();
         static std::shared_ptr<Expression> earliestAncestor(std::shared_ptr<Expression> expression);
         static void addChild(std::shared_ptr<Expression> expression, std::shared_ptr<Expression> child);
         static void removeChild(std::shared_ptr<Expression> expression, std::shared_ptr<Expression> child);

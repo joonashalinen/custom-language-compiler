@@ -15,6 +15,11 @@ std::vector<DToken>& Expression::tokens()
 	return this->_tokens;
 }
 
+void Expression::setTokens(std::vector<DToken> tokens)
+{
+	this->_tokens = tokens;
+}
+
 DToken Expression::rootToken()
 {
 	if (this->_tokens.size() > 0) {
@@ -37,6 +42,14 @@ int Expression::startPos()
 int Expression::endPos()
 {
 	return this->_endPos;
+}
+
+void Expression::setEndPos(int endPos)
+{
+	this->_endPos = endPos;
+	if (this->_parent && this->isLastChild()) {
+		this->_parent->setEndPos(this->_endPos);
+	}
 }
 
 std::vector<std::shared_ptr<Expression>>& Expression::children()
@@ -77,6 +90,7 @@ std::shared_ptr<Expression> Expression::earliestAncestor(std::shared_ptr<Express
 void Expression::addChild(std::shared_ptr<Expression> expression, std::shared_ptr<Expression> child)
 {
     expression->children().insert(expression->children().end(), child);
+	expression->setEndPos(child->endPos());
     child->setParent(expression);
 }
 
@@ -110,5 +124,21 @@ void Expression::replace(std::shared_ptr<Expression> replacer, std::shared_ptr<E
 	auto parent = replacee->parent();
 	if (parent) {
 		Expression::replaceChild(parent, replacer, replacee);
+	}
+}
+
+bool Expression::isLastChild()
+{
+	if (this->_parent && this->_parent->children().size() > 0) {
+		auto selfInParent = std::find_if(
+			this->_parent->children().begin(), 
+			this->_parent->children().end(), 
+			[this](std::shared_ptr<Expression> child) {
+				return child.get() == this;
+			}
+		);
+		return (selfInParent == this->_parent->children().end() - 1);
+	} else {
+		return false;
 	}
 }

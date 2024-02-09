@@ -20,28 +20,28 @@ std::shared_ptr<Expression> OperatedChainParser::parse(std::vector<DToken>& toke
     // First encountered expression.
     auto firstExpression = this->_mapParser.parse(tokens, position);
     tokenSequence.setPosition(firstExpression->endPos());
-
-    // The next token past the first expression.
-    auto nextToken = tokenSequence.consume();
     
     // If there is nothing recognizable past the first expression then we simply return 
     // the first expression.
-    if (!(this->_mapParser.parsers().contains(nextToken.type))) {
+    if (!(this->_mapParser.canParseAt(tokens, tokenSequence.position()))) {
         return firstExpression;
     } else {
+        // The next token past the first expression.
+        auto nextToken = tokenSequence.consume();
         // We assume the next token to be an operator but not a unary operator.
         if (this->_nonUnaryOperators.contains(nextToken.type)) {
             // The non-unary expression is parsed starting from the start of the first expression 
             // because the first expression becomes the non-unary expression's child.
             auto nonUnaryExpression = this->_mapParser.parseWith(tokens, nextToken.type, position);
+            tokenSequence.setPosition(nonUnaryExpression->endPos());
             // If there is nothing recognizable past the non-unary expression then we simply 
             // return the non-unary expression.
-            if (!(this->_mapParser.parsers().contains(nextToken.type))) {
+            if (!(this->_mapParser.canParseAt(tokens, tokenSequence.position()))) {
                 return nonUnaryExpression;
             } else {
                 auto rightMostChild = (Expression) (*(*(nonUnaryExpression->children().end() - 1)));
                 auto restExpression = this->parse(tokens, rightMostChild.startPos());
-    
+
                 // Find the first leftmost descendant of the rest of the expression chain 
                 // that has a higher precedence level than the non-unary expression.
                 auto highestLeftChild = this->_firstHigherPrecedenceLeftChild(
