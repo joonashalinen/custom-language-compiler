@@ -20,6 +20,7 @@ OBJS =  \
 	my-language/parser/ChainParser.o \
 	my-language/parser/IfParser.o \
 	my-language/parser/WhileParser.o \
+	my-language/parser/FunctionCallParser.o \
 	components/tokenization/Tokenization.o \
 	components/text/RegexPattern.o \
 	components/parsing/OperatedChainParser.o \
@@ -32,6 +33,8 @@ OBJS =  \
 	components/parsing/ParentheticalParser.o \
 	components/parsing/ChainParser.o \
 	components/parsing/SkeletonParser.o \
+	components/parsing/ConflictParser.o \
+	components/parsing/ListParser.o \
 
 TEST_OBJS = \
 	my-language/tokenizer/test/Tokenizer.test.o \

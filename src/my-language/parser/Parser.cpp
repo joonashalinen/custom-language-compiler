@@ -5,9 +5,22 @@ MyLanguage::Parser::Parser() {
     // First, we create the parsers.
 
     this->_mapParser = std::unique_ptr<MapParser>(new MapParser{});
-    this->_literalParser = std::unique_ptr<LiteralParser>(new LiteralParser{"identifier"});
+    this->_identifierLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"identifier"});
     this->_binaryParser = std::unique_ptr<BinaryParser>(new BinaryParser{"binary-operator", *(this->_mapParser)});
     this->_unaryParser = std::unique_ptr<UnaryParser>(new UnaryParser{"unary-operator", *(this->_mapParser)});
+    
+    this->_functionCallParser = std::unique_ptr<MyLanguage::FunctionCallParser>(
+        new MyLanguage::FunctionCallParser{
+            this->_identifierLiteralParser.get(),
+            *(this->_mapParser)
+        }
+    );
+
+    this->_identifierParser = std::unique_ptr<Parsing::ConflictParser>(
+        new Parsing::ConflictParser{
+            {this->_identifierLiteralParser.get(), this->_functionCallParser.get()}
+        }
+    );
 
     this->_operatedChainParser = std::unique_ptr<OperatedChainParser>(
         new OperatedChainParser{*(this->_mapParser), std::set<std::string>{"binary-operator"}}
@@ -41,7 +54,7 @@ MyLanguage::Parser::Parser() {
 
     this->_mapParser->setParsers(
         std::map<std::string, IParseable*>{
-            {"identifier", this->_literalParser.get()},
+            {"identifier", this->_identifierParser.get()},
             {"binary-operator", this->_binaryParser.get()},
             {"unary-operator", this->_unaryParser.get()},
             {"(", this->_parentheticalParser.get()},
@@ -55,7 +68,7 @@ MyLanguage::Parser::Parser() {
     
     this->_operatedChainParser->setPrecedenceLevels(
         std::map<std::string, int>{
-            {"identifier", 9}, {"if", 9}, {"while", 9}, {"var", 9},
+            {"identifier", 9}, {"if", 9}, {"while", 9}, {"var", 9}, {"function-call", 9},
             {"(", 9}, // An expression surrounded by parentheses.
             {"{", 9}, // A block expression.
             {"unary-operator", 8},

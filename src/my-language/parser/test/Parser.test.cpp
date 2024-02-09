@@ -140,3 +140,22 @@ TEST_CASE("While do") {
     REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(1)->rootToken().value == "b");
     REQUIRE(parseTree->children().at(0)->children().at(1)->rootToken().value == "c");
 }
+
+TEST_CASE("Function call") {
+    auto input = "(f(a, b));";
+    auto tokens = Test::tokenizer.tokenizer.tokenize(input);
+
+    auto parseTree = Test::parser.parse(tokens, 0);
+
+    REQUIRE(parseTree->type() == "chain");
+    parseTree = parseTree->children().at(0);
+
+    REQUIRE(parseTree->type() == "parenthetical");
+    parseTree = parseTree->children().at(0);
+
+    REQUIRE(parseTree->type() == "function-call");
+    REQUIRE(parseTree->children().at(0)->rootToken().value == "f");
+    REQUIRE(parseTree->children().at(1)->type() == "parameter-list");
+    REQUIRE(parseTree->children().at(1)->children().at(0)->rootToken().value == "a");
+    REQUIRE(parseTree->children().at(1)->children().at(1)->rootToken().value == "b");
+}

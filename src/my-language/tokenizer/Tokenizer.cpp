@@ -16,5 +16,6 @@ Tokenizer::Tokenizer(Tokenization::Tokenizer tokenizer):
     this->tokenizer.addRegexPattern("unary-operator", "not");
     this->tokenizer.addRegexPattern("parentheses", "[(){}]");
     this->tokenizer.addRegexPattern("statement-separator", ";");
+    this->tokenizer.addRegexPattern("statement-separator", ",");
     this->tokenizer.addRegexPattern("identifier", "[A-Za-z_][A-Za-z0-9_-]*");
 }
