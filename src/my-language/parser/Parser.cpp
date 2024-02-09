@@ -25,21 +25,9 @@ MyLanguage::Parser::Parser() {
         new Parsing::ParentheticalParser{"block", "{", "}", *(this->_chainParser)}
     );
 
-    this->_ifParser = std::unique_ptr<Parsing::SkeletonParser>(
-        new Parsing::SkeletonParser{
-            "if", 
-            {
-                {"token-value", "if"},
-                {"expression", "E"},
-                {"token-value", "then"},
-                {"expression", "E"},
-                {"trail", ""},
-                {"token-value", "else"},
-                {"expression", "E"}
-            },
-            std::map<std::string, IParseable*>{
-                {"E", this->_operatedChainParser.get()}
-            }
+    this->_ifParser = std::unique_ptr<MyLanguage::IfParser>(
+        new MyLanguage::IfParser{
+            this->_operatedChainParser.get()
         }
     );
 
