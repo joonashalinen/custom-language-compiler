@@ -31,6 +31,12 @@ MyLanguage::Parser::Parser() {
         }
     );
 
+    this->_whileParser = std::unique_ptr<MyLanguage::WhileParser>(
+        new MyLanguage::WhileParser{
+            this->_operatedChainParser.get()
+        }
+    );
+
     // Next, we set the look-forward parsing rules used when in a general expression parsing context.
 
     this->_mapParser->setParsers(
@@ -40,7 +46,8 @@ MyLanguage::Parser::Parser() {
             {"unary-operator", this->_unaryParser.get()},
             {"(", this->_parentheticalParser.get()},
             {"{", this->_blockParser.get()},
-            {"if", this->_ifParser.get()}
+            {"if", this->_ifParser.get()},
+            {"while", this->_whileParser.get()}
         }
     );
 

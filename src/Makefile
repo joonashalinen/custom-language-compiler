@@ -19,6 +19,7 @@ OBJS =  \
 	my-language/parser/Parser.o \
 	my-language/parser/ChainParser.o \
 	my-language/parser/IfParser.o \
+	my-language/parser/WhileParser.o \
 	components/tokenization/Tokenization.o \
 	components/text/RegexPattern.o \
 	components/parsing/OperatedChainParser.o \
