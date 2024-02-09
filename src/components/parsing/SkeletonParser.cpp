@@ -61,14 +61,21 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
         } else if (elementType == "trail") {
             // If the pattern has an optional trailing portion but the next part of the pattern 
             // does not match it, we end parsing.
-            if (!(this->_nextPatternElementMatches(element, sequence.peek()))) {
-                break;                
+            // If the trail element is the last pattern element we also wish to end parsing.
+            if (
+                (i == ((int) this->_pattern.size() - 1))  || 
+                !(this->_nextPatternElementMatches(this->_pattern.at(i + 1), sequence.peek()))
+            ) {
+                break;
             } else {
                 // Else, we advance to the next pattern element to continue parsing from there.
-                sequence.consume();
+                continue;
             }
         } else {
-            throw std::runtime_error("Skeleton pattern could not match the next character.");
+            throw std::runtime_error(
+                "Skeleton pattern could not match the next pattern element '" + elementValue + "'" +
+                " with the next token '" + sequence.peek().value + "'."
+            );
         }
     }
 
