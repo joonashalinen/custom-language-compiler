@@ -19,6 +19,7 @@ namespace Parsing {
             std::string _type;
             std::vector<std::pair<std::string, std::string>> _pattern;
             std::map<std::string, IParseable*> _parsers;
+            bool _nextPatternElementMatches(std::pair<std::string, std::string> element, DToken token);
     };
 };
 
