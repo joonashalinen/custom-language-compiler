@@ -106,3 +106,20 @@ TEST_CASE("If then else") {
     REQUIRE(parseTree->children().at(0)->children().at(1)->rootToken().value == "c");
     REQUIRE(parseTree->children().at(0)->children().at(2)->rootToken().value == "d");
 }
+
+TEST_CASE("If then") {
+    auto input = "(if a and b then c);";
+    auto tokens = Test::tokenizer.tokenizer.tokenize(input);
+
+    auto parseTree = Test::parser.parse(tokens, 0);
+
+    REQUIRE(parseTree->type() == "chain");
+    parseTree = parseTree->children().at(0);
+
+    REQUIRE(parseTree->type() == "parenthetical");
+    REQUIRE(parseTree->children().at(0)->type() == "if");
+    REQUIRE(parseTree->children().at(0)->children().at(0)->rootToken().value == "and");
+    REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "a");
+    REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(1)->rootToken().value == "b");
+    REQUIRE(parseTree->children().at(0)->children().at(1)->rootToken().value == "c");
+}
