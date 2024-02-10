@@ -16,5 +16,5 @@ while n > 1 do {
 }
 ```
 
-# Project Structure
-The project consists of two parts. Firstly, most of the functional code of the project exists in a library of reusable classes. These classes exist in the folder src/components. Secondly, the configuration code that uses these reusable classes to produce the compiler of our custom language lives within the folder src/my-language.
+# Project Folder Structure
+The folder structure of the project's source code consists of three parts. Firstly, most of the functional code of the project exists in a library of reusable classes. These classes exist in the folder src/components. Secondly, the configuration code that uses these reusable classes to produce the compiler of our custom language lives within the folder src/my-language. Finally, third party libraries live in the folder src/libraries. The only third party libraries used in this project are the testing frameworks doctest and catch2.
