@@ -4,7 +4,7 @@
 Parsing::ChainParser::ChainParser(
     std::string type,
     std::string separator,
-    MapParser& parser,
+    IParseable& parser,
     std::function<bool(std::vector<DToken>& tokens, int position)> separatorOptionalityRule
 ):
     _type(type), _separator(separator), _parser(parser), _separatorOptionalityRule(separatorOptionalityRule)

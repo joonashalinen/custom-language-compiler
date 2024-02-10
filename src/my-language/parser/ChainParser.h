@@ -9,7 +9,7 @@
 namespace MyLanguage {
     class ChainParser: public IParseable {
         public:
-            ChainParser(MapParser* mapParser, OperatedChainParser* operatedChainParser);
+            ChainParser(OperatedChainParser* operatedChainParser);
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         private:
             OperatedChainParser* _operatedChainParser;

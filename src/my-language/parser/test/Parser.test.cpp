@@ -9,15 +9,12 @@ namespace Test {
 }
 
 TEST_CASE("Boolean expression without inner parentheses") {
-    auto input = "(a and b or c and not d);";
+    auto input = "a and b or c and not d;";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
     REQUIRE(parseTree->type() == "chain");
-    parseTree = parseTree->children().at(0);
-
-    REQUIRE(parseTree->type() == "parenthetical");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->rootToken().value == "or");
@@ -31,15 +28,12 @@ TEST_CASE("Boolean expression without inner parentheses") {
 }
 
 TEST_CASE("Boolean expression with inner parentheses") {
-    auto input = "(a and (b or c) and not d);";
+    auto input = "a and (b or c) and not d;";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
     REQUIRE(parseTree->type() == "chain");
-    parseTree = parseTree->children().at(0);
-
-    REQUIRE(parseTree->type() == "parenthetical");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->rootToken().value == "and");
@@ -90,15 +84,12 @@ TEST_CASE("Variable declaration in block") {
 }
 
 TEST_CASE("If then else") {
-    auto input = "(if a and b then c else d);";
+    auto input = "if a and b then c else d;";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
     REQUIRE(parseTree->type() == "chain");
-    parseTree = parseTree->children().at(0);
-
-    REQUIRE(parseTree->type() == "parenthetical");
     REQUIRE(parseTree->children().at(0)->type() == "if");
     REQUIRE(parseTree->children().at(0)->children().at(0)->rootToken().value == "and");
     REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "a");
@@ -108,15 +99,12 @@ TEST_CASE("If then else") {
 }
 
 TEST_CASE("If then") {
-    auto input = "(if a and b then c);";
+    auto input = "if a and b then c;";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
     REQUIRE(parseTree->type() == "chain");
-    parseTree = parseTree->children().at(0);
-
-    REQUIRE(parseTree->type() == "parenthetical");
     REQUIRE(parseTree->children().at(0)->type() == "if");
     REQUIRE(parseTree->children().at(0)->children().at(0)->rootToken().value == "and");
     REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "a");
@@ -125,15 +113,12 @@ TEST_CASE("If then") {
 }
 
 TEST_CASE("While do") {
-    auto input = "(while a and b do c);";
+    auto input = "while a and b do c;";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
     REQUIRE(parseTree->type() == "chain");
-    parseTree = parseTree->children().at(0);
-
-    REQUIRE(parseTree->type() == "parenthetical");
     REQUIRE(parseTree->children().at(0)->type() == "while");
     REQUIRE(parseTree->children().at(0)->children().at(0)->rootToken().value == "and");
     REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "a");
@@ -142,15 +127,12 @@ TEST_CASE("While do") {
 }
 
 TEST_CASE("Function call") {
-    auto input = "(f(a, b));";
+    auto input = "f(a, b);";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
     REQUIRE(parseTree->type() == "chain");
-    parseTree = parseTree->children().at(0);
-
-    REQUIRE(parseTree->type() == "parenthetical");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->type() == "function-call");

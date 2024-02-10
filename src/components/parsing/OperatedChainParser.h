@@ -19,16 +19,16 @@
 class OperatedChainParser: public IParseable {
     public:
         OperatedChainParser(
-            MapParser& mapParser,
-            std::set<std::string> nonUnaryOperators,
+            IParseable& parser,
+            std::map<std::string, IParseable*> nonUnaryParsers,
             std::map<std::string, int> precedenceLevels = std::map<std::string, int>()
         );
         std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         int precedenceLevel(std::shared_ptr<Expression> expression);
         void setPrecedenceLevels(std::map<std::string, int> precedenceLevels);
     private:
-        MapParser& _mapParser;
-        std::set<std::string> _nonUnaryOperators;
+        IParseable& _parser;
+        std::map<std::string, IParseable*> _nonUnaryParsers;
         std::map<std::string, int> _precedenceLevels;
         std::shared_ptr<Expression> _firstHigherPrecedenceLeftChild(std::shared_ptr<Expression> expression, int precedence);
 };

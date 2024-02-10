@@ -1,6 +1,6 @@
 #include "ChainParser.h"
 
-MyLanguage::ChainParser::ChainParser(MapParser* mapParser, OperatedChainParser* operatedChainParser)
+MyLanguage::ChainParser::ChainParser(OperatedChainParser* operatedChainParser)
 {
     // First, we construct the sub-parsers.
 
@@ -25,7 +25,7 @@ MyLanguage::ChainParser::ChainParser(MapParser* mapParser, OperatedChainParser* 
     this->_mapParser->setParsers(std::map<std::string, IParseable*>{
         {"var", this->_variableDeclarationParser.get()}
     });
-    this->_mapParser->setWildCardParser(mapParser);
+    this->_mapParser->setWildCardParser(operatedChainParser);
 
     // Finally, we construct the final chain parser.
 

@@ -13,14 +13,14 @@ namespace Parsing {
             ChainParser(
                 std::string type,
                 std::string separator, 
-                MapParser& parser,
+                IParseable& parser,
                 std::function<bool(std::vector<DToken>& tokens, int position)> separatorOptionalityRule
             );
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         private:
             std::string _type;
             std::string _separator;
-            MapParser& _parser;
+            IParseable& _parser;
             std::function<bool(std::vector<DToken>& tokens, int position)> _separatorOptionalityRule;
     };
 };

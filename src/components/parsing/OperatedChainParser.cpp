@@ -3,12 +3,12 @@
 #include <iostream>
 
 OperatedChainParser::OperatedChainParser(
-        MapParser& mapParser,
-        std::set<std::string> nonUnaryOperators,
+        IParseable& parser,
+        std::map<std::string, IParseable*> nonUnaryParsers,
         std::map<std::string, int> precedenceLevels
     ):
-    _mapParser(mapParser),
-    _nonUnaryOperators(nonUnaryOperators),
+    _parser(parser),
+    _nonUnaryParsers(nonUnaryParsers),
     _precedenceLevels(precedenceLevels) {
     
 }
@@ -18,55 +18,49 @@ std::shared_ptr<Expression> OperatedChainParser::parse(std::vector<DToken>& toke
     tokenSequence.setPosition(position);
 
     // First encountered expression.
-    auto firstExpression = this->_mapParser.parse(tokens, position);
+    auto firstExpression = this->_parser.parse(tokens, position);
     tokenSequence.setPosition(firstExpression->endPos());
     
-    // If there is nothing recognizable past the first expression then we simply return 
-    // the first expression.
-    if (!(this->_mapParser.canParseAt(tokens, tokenSequence.position()))) {
-        return firstExpression;
-    } else {
-        // The next token past the first expression.
-        auto nextToken = tokenSequence.consume();
-        // We assume the next token to be an operator but not a unary operator.
-        if (this->_nonUnaryOperators.contains(nextToken.type)) {
-            // The non-unary expression is parsed starting from the start of the first expression 
-            // because the first expression becomes the non-unary expression's child.
-            auto nonUnaryExpression = this->_mapParser.parseWith(tokens, nextToken.type, position);
-            tokenSequence.setPosition(nonUnaryExpression->endPos());
-            // If there is nothing recognizable past the non-unary expression then we simply 
-            // return the non-unary expression.
-            if (!(this->_mapParser.canParseAt(tokens, tokenSequence.position()))) {
-                return nonUnaryExpression;
-            } else {
-                auto rightMostChild = (Expression) (*(*(nonUnaryExpression->children().end() - 1)));
-                auto restExpression = this->parse(tokens, rightMostChild.startPos());
+    // The next token past the first expression.
+    auto nextToken = tokenSequence.consume();
 
-                // Find the first leftmost descendant of the rest of the expression chain 
-                // that has a higher precedence level than the non-unary expression.
-                auto highestLeftChild = this->_firstHigherPrecedenceLeftChild(
-                    restExpression, 
-                    this->precedenceLevel(nonUnaryExpression)
-                );
+    // If the next token is a recognized non-unary operator.
+    if (this->_nonUnaryParsers.contains(nextToken.type)) {
+        // The non-unary expression is parsed starting from the start of the first expression 
+        // because the first expression becomes the non-unary expression's child.
+        auto nonUnaryExpression = this->_nonUnaryParsers.at(nextToken.type)->parse(tokens, position);
+        tokenSequence.setPosition(nonUnaryExpression->endPos());
 
-                // Remove the right-most child of the non-unary expression since 
-                // we will replace it with some possibly other expression from the 
-                // rest of the expression chain.
-                nonUnaryExpression->children().erase(nonUnaryExpression->children().end() - 1);
+        // If a further non-unary operator is encountered.
+        if (this->_nonUnaryParsers.contains(tokenSequence.peek().type)) {
+            auto rightMostChild = (Expression) (*(*(nonUnaryExpression->children().end() - 1)));
+            auto restExpression = this->parse(tokens, rightMostChild.startPos());
 
-                // Make the non-unary expression take the place of the found left descendant,
-                // adding the descendant as its child.
-                Expression::replaceAsParent(nonUnaryExpression, highestLeftChild);
-
-                // Return the root node of the parse tree fragment.
-                return Expression::earliestAncestor(nonUnaryExpression);
-            }
-        } else {
-            throw std::runtime_error(
-                "The token at position " + std::to_string(nextToken.startPos) + 
-                " was expected to be a binary operator."
+            // Find the first leftmost descendant of the rest of the expression chain 
+            // that has a higher precedence level than the non-unary expression.
+            auto highestLeftChild = this->_firstHigherPrecedenceLeftChild(
+                restExpression, 
+                this->precedenceLevel(nonUnaryExpression)
             );
+
+            // Remove the right-most child of the non-unary expression since 
+            // we will replace it with some possibly other expression from the 
+            // rest of the expression chain.
+            nonUnaryExpression->children().erase(nonUnaryExpression->children().end() - 1);
+
+            // Make the non-unary expression take the place of the found left descendant,
+            // adding the descendant as its child.
+            Expression::replaceAsParent(nonUnaryExpression, highestLeftChild);
+
+            // Return the root node of the parse tree fragment.
+            return Expression::earliestAncestor(nonUnaryExpression);
+        } else {
+            // We return the single non-unary expression encountered.
+            return nonUnaryExpression;
         }
+    } else {
+        // We return the first expression.
+        return firstExpression;
     }
 }
 

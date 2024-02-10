@@ -23,7 +23,12 @@ MyLanguage::Parser::Parser() {
     );
 
     this->_operatedChainParser = std::unique_ptr<OperatedChainParser>(
-        new OperatedChainParser{*(this->_mapParser), std::set<std::string>{"binary-operator"}}
+        new OperatedChainParser{
+            *(this->_mapParser), 
+            std::map<std::string, IParseable*>{
+                {"binary-operator", this->_binaryParser.get()}
+            }
+        }
     );
 
     this->_parentheticalParser = std::unique_ptr<Parsing::ParentheticalParser>(
@@ -31,7 +36,7 @@ MyLanguage::Parser::Parser() {
     );
 
     this->_chainParser = std::unique_ptr<MyLanguage::ChainParser>(
-        new MyLanguage::ChainParser{this->_mapParser.get(), this->_operatedChainParser.get()}
+        new MyLanguage::ChainParser{this->_operatedChainParser.get()}
     );
 
     this->_blockParser = std::unique_ptr<Parsing::ParentheticalParser>(
@@ -55,7 +60,6 @@ MyLanguage::Parser::Parser() {
     this->_mapParser->setParsers(
         std::map<std::string, IParseable*>{
             {"identifier", this->_identifierParser.get()},
-            {"binary-operator", this->_binaryParser.get()},
             {"unary-operator", this->_unaryParser.get()},
             {"(", this->_parentheticalParser.get()},
             {"{", this->_blockParser.get()},

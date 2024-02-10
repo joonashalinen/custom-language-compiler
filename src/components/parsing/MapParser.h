@@ -23,10 +23,10 @@ class MapParser: public IParseable {
         bool canParseAt(std::vector<DToken>& tokens, int position);
         std::map<std::string, IParseable*>& parsers();
         void setParsers(std::map<std::string, IParseable*> parsers);
-        void setWildCardParser(MapParser* wildCardParser);
+        void setWildCardParser(IParseable* wildCardParser);
     private:
         std::map<std::string, IParseable*> _parsers = std::map<std::string, IParseable*>();
-        MapParser* _wildCardParser = nullptr;
+        IParseable* _wildCardParser = nullptr;
 };
 
 #endif

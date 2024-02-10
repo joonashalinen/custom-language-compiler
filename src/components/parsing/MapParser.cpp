@@ -50,7 +50,7 @@ void MapParser::setParsers(std::map<std::string, IParseable*> parsers) {
     this->_parsers = parsers;
 }
 
-void MapParser::setWildCardParser(MapParser* wildCardParser)
+void MapParser::setWildCardParser(IParseable* wildCardParser)
 {
     this->_wildCardParser = wildCardParser;
 }
