@@ -10,12 +10,12 @@ Expression::Expression(
 {
 }
 
-std::vector<std::string> Expression::subTypes()
+std::map<std::string, std::string>& Expression::subTypes()
 {
 	return this->_subTypes;
 }
 
-void Expression::setSubTypes(std::vector<std::string> subTypes)
+void Expression::setSubTypes(std::map<std::string, std::string> subTypes)
 {
 	this->_subTypes = subTypes;
 }

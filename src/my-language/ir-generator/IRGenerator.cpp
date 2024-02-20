@@ -58,6 +58,7 @@ namespace MyLanguage {
         std::vector<IRGenerator::TGeneratorResult> childResults
     ) {
         assert(childResults.size() == 2);
+        assert(expression->subTypes().contains("operator"));
 
         auto leftVariable = childResults.at(0).first;
         auto rightVariable = childResults.at(1).first;
@@ -65,7 +66,7 @@ namespace MyLanguage {
         auto joinedIRCommands = this->generateChain(expression, childResults).second;
         auto resultVariable = this->_commandFactory.nextVariable();
         auto command = this->_commandFactory.createCall(
-            "+", 
+            expression->subTypes().at("operator"), 
             std::vector<TIRVariable>{leftVariable, rightVariable}, 
             resultVariable
         );

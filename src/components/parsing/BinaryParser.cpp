@@ -1,5 +1,6 @@
 #include "BinaryParser.h"
 #include <iostream>
+#include <cassert>
 
 BinaryParser::BinaryParser(
         std::string operatorType,
@@ -33,6 +34,7 @@ std::shared_ptr<Expression> BinaryParser::parse(std::vector<DToken>& tokens, int
             }
         );
         binaryExpression->tokens().insert(binaryExpression->tokens().end(), nextToken);
+        binaryExpression->subTypes().insert({"operator", nextToken.value});
         Expression::addChild(binaryExpression, firstExpression);
         Expression::addChild(binaryExpression, secondExpression);
         return binaryExpression;
