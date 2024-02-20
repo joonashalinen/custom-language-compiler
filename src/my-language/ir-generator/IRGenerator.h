@@ -16,6 +16,8 @@ namespace MyLanguage {
      * a list of commands in the Intermediate Representation (IR) language.
      */
     class IRGenerator {
+        using TExpression = std::shared_ptr<Expression>;
+
         /**
          * The result returned upon generating the IR code for an expression. The result 
          * contains firstly a variable name, which may be a variable that contains 
@@ -23,6 +25,7 @@ namespace MyLanguage {
          * IR commands generated.
          */
         using TGeneratorResult = std::pair<TIRVariable, std::vector<IRCommand>>;
+        using TGeneratorResults = std::vector<TGeneratorResult>;
 
         /**
          * Type of a function that is used for generating the IR for a specific expression type. 
@@ -44,28 +47,19 @@ namespace MyLanguage {
             /**
              * Generate the resulting IR commands from the given abstract syntax tree.
              */
-            std::vector<IRCommand> generate(std::shared_ptr<Expression> root);
+            std::vector<IRCommand> generate(TExpression root);
             /**
              * Generates the IR commands for a literal expression.
              */
-            TGeneratorResult generateNumber(
-                std::shared_ptr<Expression> expression, 
-                std::vector<TGeneratorResult> childResults
-            );
+            TGeneratorResult generateNumber(TExpression expression, TGeneratorResults childResults);
             /**
              * Generates the IR commands for a chain expression.
              */
-            TGeneratorResult generateChain(
-                std::shared_ptr<Expression> expression, 
-                std::vector<TGeneratorResult> childResults
-            );
+            TGeneratorResult generateChain(TExpression expression, TGeneratorResults childResults);
             /**
              * Generates the IR commands for a binary operator expression.
              */
-            TGeneratorResult generateBinaryOperation(
-                std::shared_ptr<Expression> expression, 
-                std::vector<TGeneratorResult> childResults
-            );
+            TGeneratorResult generateBinaryOperation(TExpression expression, TGeneratorResults childResults);
         private:
             IRCommandFactory _commandFactory;
             std::map<std::string, TExpressionIRGenerator> _irGenerators;
