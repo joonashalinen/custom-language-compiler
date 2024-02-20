@@ -10,6 +10,16 @@ Expression::Expression(
 {
 }
 
+std::vector<std::string> Expression::subTypes()
+{
+	return this->_subTypes;
+}
+
+void Expression::setSubTypes(std::vector<std::string> subTypes)
+{
+	this->_subTypes = subTypes;
+}
+
 std::vector<DToken>& Expression::tokens()
 {
 	return this->_tokens;

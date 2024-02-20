@@ -16,11 +16,26 @@ namespace MyLanguage {
      * a list of commands in the Intermediate Representation (IR) language.
      */
     class IRGenerator {
-        using ExpressionIRGenerator = std::function<
-            std::vector<IRCommand>(
+        /**
+         * The result returned upon generating the IR code for an expression. The result 
+         * contains firstly a variable name, which may be a variable that contains 
+         * the result of the expression's calculations. The second value is the list of 
+         * IR commands generated.
+         */
+        using TGeneratorResult = std::pair<TIRVariable, std::vector<IRCommand>>;
+
+        /**
+         * Type of a function that is used for generating the IR for a specific expression type. 
+         * The function takes as its first input the this pointer pointing to the IRGenerator class. 
+         * The second variable is the Expression that the IR code is being generated for. 
+         * The third variable is a list of the results returned by the expression's children upon 
+         * having their IR code generated.
+         */
+        using TExpressionIRGenerator = std::function<
+            TGeneratorResult(
                 IRGenerator*,
                 std::shared_ptr<Expression>, 
-                std::vector<std::vector<IRCommand>>
+                std::vector<TGeneratorResult>
             )
         >;
 
@@ -33,20 +48,20 @@ namespace MyLanguage {
             /**
              * Generates the IR commands for a literal expression.
              */
-            std::vector<IRCommand> generateNumber(
+            TGeneratorResult generateNumber(
                 std::shared_ptr<Expression> expression, 
-                std::vector<std::vector<IRCommand>> accs
+                std::vector<TGeneratorResult> childResults
             );
             /**
              * Generates the IR commands for a chain expression.
              */
-            std::vector<IRCommand> generateChain(
+            TGeneratorResult generateChain(
                 std::shared_ptr<Expression> expression, 
-                std::vector<std::vector<IRCommand>> accs
+                std::vector<TGeneratorResult> childResults
             );
         private:
             IRCommandFactory _commandFactory;
-            std::map<std::string, ExpressionIRGenerator> _irGenerators;
+            std::map<std::string, TExpressionIRGenerator> _irGenerators;
     };
 };
 

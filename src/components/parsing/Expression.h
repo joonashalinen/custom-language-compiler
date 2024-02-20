@@ -12,6 +12,8 @@
 class Expression {
     public:
         Expression(std::string type, int startPos, int endPos);
+        std::vector<std::string> subTypes();
+        void setSubTypes(std::vector<std::string> subTypes);
         std::vector<DToken>& tokens();
         void setTokens(std::vector<DToken> tokens);
         DToken rootToken();
@@ -35,6 +37,7 @@ class Expression {
         static void replaceAsParent(std::shared_ptr<Expression> replacer, std::shared_ptr<Expression> replacee);
         static void replace(std::shared_ptr<Expression> replacer, std::shared_ptr<Expression> replacee);
     private:
+        std::vector<std::string> _subTypes;
         std::vector<std::shared_ptr<Expression>> _children;
         std::shared_ptr<Expression> _parent;
         std::string _type;

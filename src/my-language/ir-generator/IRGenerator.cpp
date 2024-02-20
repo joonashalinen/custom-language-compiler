@@ -6,45 +6,47 @@ namespace MyLanguage {
     {
         this->_irGenerators.insert({"number", IRGenerator::generateNumber});
         this->_irGenerators.insert({"chain", IRGenerator::generateChain});
+        /* this->_irGenerators.insert({"binary-operator", IRGenerator::generateBinaryOperator}); */
     }
 
     std::vector<IRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)
     {
-        auto foldable = DataStructures::FoldableNode<std::vector<IRCommand>, Expression>{root};
-        
+        auto foldable = DataStructures::FoldableNode<IRGenerator::TGeneratorResult, Expression>{root};
+
         return foldable.fold(
-            [this](std::shared_ptr<Expression> node, std::vector<std::vector<IRCommand>> accs) {
+            [this](std::shared_ptr<Expression> node, std::vector<IRGenerator::TGeneratorResult> childResults) {
                 if (this->_irGenerators.contains(node->type())) {
                     // Choose the corresponding IR generator function.
                     auto generate = this->_irGenerators.at(node->type());
-                    return std::vector<std::vector<IRCommand>>{generate(this, node, accs)};
+                    return std::vector<IRGenerator::TGeneratorResult>{generate(this, node, childResults)};
                 } else {
                     throw std::runtime_error("No generator found for type: '" + node->type() + "'.");
                 }
             },
-            std::vector<IRCommand>{}
-        );
+            IRGenerator::TGeneratorResult{"None", std::vector<IRCommand>{}}
+        ).second;
     }
 
-    std::vector<IRCommand> IRGenerator::generateNumber(
+    IRGenerator::TGeneratorResult IRGenerator::generateNumber(
         std::shared_ptr<Expression> expression, 
-        std::vector<std::vector<IRCommand>> accs
+        std::vector<IRGenerator::TGeneratorResult> childResults
     ) {
         auto number = expression->rootToken().value;
-        auto command = this->_commandFactory.createLoadIntConst(number);
-        return std::vector<IRCommand>{command};
+        auto variable = this->_commandFactory.nextVariable();
+        auto command = this->_commandFactory.createLoadIntConst(number, variable);
+        return IRGenerator::TGeneratorResult{variable, std::vector<IRCommand>{command}};
     }
 
-    std::vector<IRCommand> IRGenerator::generateChain(
+    IRGenerator::TGeneratorResult IRGenerator::generateChain(
         std::shared_ptr<Expression> expression, 
-        std::vector<std::vector<IRCommand>> accs
+        std::vector<IRGenerator::TGeneratorResult> childResults
     ) {
-        auto result = std::vector<IRCommand>{};
+        auto result = IRGenerator::TGeneratorResult{"None", std::vector<IRCommand>{}};
         std::for_each(
-            accs.begin(), 
-            accs.end(),
-            [&result](std::vector<IRCommand> acc) {
-                result.insert(result.end(), acc.begin(), acc.end());
+            childResults.begin(), 
+            childResults.end(),
+            [&result](IRGenerator::TGeneratorResult childResult) {
+                result.second.insert(result.second.end(), childResult.second.begin(), childResult.second.end());
             }
         );
         return result;
