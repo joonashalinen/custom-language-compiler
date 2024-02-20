@@ -6,6 +6,7 @@ MyLanguage::Parser::Parser() {
 
     this->_mapParser = std::unique_ptr<MapParser>(new MapParser{});
     this->_identifierLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"identifier"});
+    this->_numberLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"number"});
     this->_binaryParser = std::unique_ptr<BinaryParser>(new BinaryParser{"binary-operator", *(this->_mapParser)});
     this->_unaryParser = std::unique_ptr<UnaryParser>(new UnaryParser{"unary-operator", *(this->_mapParser)});
     
@@ -60,6 +61,7 @@ MyLanguage::Parser::Parser() {
     this->_mapParser->setParsers(
         std::map<std::string, IParseable*>{
             {"identifier", this->_identifierParser.get()},
+            {"number", this->_numberLiteralParser.get()},
             {"unary-operator", this->_unaryParser.get()},
             {"(", this->_parentheticalParser.get()},
             {"{", this->_blockParser.get()},
@@ -72,7 +74,7 @@ MyLanguage::Parser::Parser() {
     
     this->_operatedChainParser->setPrecedenceLevels(
         std::map<std::string, int>{
-            {"identifier", 9}, {"if", 9}, {"while", 9}, {"var", 9}, {"function-call", 9},
+            {"identifier", 9}, {"number", 9}, {"if", 9}, {"while", 9}, {"var", 9}, {"function-call", 9},
             {"(", 9}, // An expression surrounded by parentheses.
             {"{", 9}, // A block expression.
             {"unary-operator", 8},

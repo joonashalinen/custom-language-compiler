@@ -6,6 +6,9 @@
 #include <memory>
 #include "../tokenization/DToken.h"
 
+/**
+ * A node in the Abstract Syntax Tree of a language being parsed.
+ */
 class Expression {
     public:
         Expression(std::string type, int startPos, int endPos);
