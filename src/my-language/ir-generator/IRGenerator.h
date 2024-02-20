@@ -59,6 +59,13 @@ namespace MyLanguage {
                 std::shared_ptr<Expression> expression, 
                 std::vector<TGeneratorResult> childResults
             );
+            /**
+             * Generates the IR commands for a binary operator expression.
+             */
+            TGeneratorResult generateBinaryOperation(
+                std::shared_ptr<Expression> expression, 
+                std::vector<TGeneratorResult> childResults
+            );
         private:
             IRCommandFactory _commandFactory;
             std::map<std::string, TExpressionIRGenerator> _irGenerators;

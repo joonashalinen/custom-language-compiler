@@ -56,10 +56,8 @@ namespace DataStructures {
         // If the node has no children then we can simply perform the function  
         // on the node.
         if (this->_node->children().size() == 0) {
-            std::cout << "node has no children" << std::endl;
             return f(this->_node, acc);
         } else {
-            std::cout << "node has children" << std::endl;
             auto results = std::vector<TAccumulator>(this->_node->children().size());
             // Gather all the fold results from the node's children.
             std::transform(

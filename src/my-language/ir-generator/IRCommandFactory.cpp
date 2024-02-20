@@ -13,16 +13,16 @@ namespace MyLanguage {
         };
     }
 
-    /* IRCommand IRCommandFactory::createCall(
+    IRCommand IRCommandFactory::createCall(
         std::string operation, 
         std::vector<std::string> argumentVars, 
         std::string outputVar
     ) {
         return IRCommand{
-            "LoadIntConst",
-            TParams{{3}, {this->nextVariable()}}
+            "Call",
+            TParams{{operation}, {argumentVars}, {outputVar}}
         };
-    } */
+    }
 
     std::string IRCommandFactory::nextVariable()
     {

@@ -1,12 +1,13 @@
 #include "IRGenerator.h"
 #include <iostream>
+#include <cassert>
 
 namespace MyLanguage {
     IRGenerator::IRGenerator()
     {
         this->_irGenerators.insert({"number", IRGenerator::generateNumber});
         this->_irGenerators.insert({"chain", IRGenerator::generateChain});
-        /* this->_irGenerators.insert({"binary-operator", IRGenerator::generateBinaryOperator}); */
+        this->_irGenerators.insert({"binary-operator", IRGenerator::generateBinaryOperation});
     }
 
     std::vector<IRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)
@@ -50,5 +51,26 @@ namespace MyLanguage {
             }
         );
         return result;
+    }
+
+    IRGenerator::TGeneratorResult IRGenerator::generateBinaryOperation(
+        std::shared_ptr<Expression> expression, 
+        std::vector<IRGenerator::TGeneratorResult> childResults
+    ) {
+        assert(childResults.size() == 2);
+
+        auto leftVariable = childResults.at(0).first;
+        auto rightVariable = childResults.at(1).first;
+
+        auto joinedIRCommands = this->generateChain(expression, childResults).second;
+        auto resultVariable = this->_commandFactory.nextVariable();
+        auto command = this->_commandFactory.createCall(
+            "+", 
+            std::vector<TIRVariable>{leftVariable, rightVariable}, 
+            resultVariable
+        );
+        joinedIRCommands.insert(joinedIRCommands.end(), command);
+
+        return IRGenerator::TGeneratorResult{resultVariable, joinedIRCommands};
     }
 }
