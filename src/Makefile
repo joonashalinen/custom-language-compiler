@@ -24,6 +24,7 @@ OBJS =  \
 	my-language/ir-generator/IRGenerator.o \
 	my-language/ir-generator/IRCommand.o \
 	my-language/ir-generator/IRCommandFactory.o \
+	my-language/assembly-generator/AssemblyGenerator.o \
 	components/tokenization/Tokenization.o \
 	components/text/RegexPattern.o \
 	components/parsing/OperatedChainParser.o \
@@ -43,10 +44,11 @@ TEST_OBJS = \
 	my-language/tokenizer/test/Tokenizer.test.o \
 	my-language/parser/test/Parser.test.o \
 	my-language/ir-generator/test/IRGenerator.test.o \
+	my-language/assembly-generator/test/AssemblyGenerator.test.o \
 	components/parsing/test/OperatedChainParser.test.o \
 
 TEST_OBJ = \
-	my-language/ir-generator/test/IRGenerator.test.o
+	my-language/assembly-generator/test/AssemblyGenerator.test.o
 
 # Here is a Make Macro defined by two Macro Expansions.
 # A Macro Expansion may be treated as a textual replacement of the Make Macro.
