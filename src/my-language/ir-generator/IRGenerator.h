@@ -1,15 +1,13 @@
 #ifndef MY_LANGUAGE_IR_GENERATOR_HH
 #define MY_LANGUAGE_IR_GENERATOR_HH
 
-#include "../../components/parsing/Expression.h"
+#include "TIRCommand.h"
 #include "../../components/data_structures/FoldableNode.h"
-#include "IRCommand.h"
 #include "IRCommandFactory.h"
 #include <map>
 
 namespace MyLanguage {
     class IRGenerator;
-
     /**
      * The IR generator of our custom programming language. 
      * Can be used to transform a given abstract syntax tree into 
@@ -17,14 +15,13 @@ namespace MyLanguage {
      */
     class IRGenerator {
         using TExpression = std::shared_ptr<Expression>;
-
         /**
          * The result returned upon generating the IR code for an expression. The result 
          * contains firstly a variable name, which may be a variable that contains 
          * the result of the expression's calculations. The second value is the list of 
          * IR commands generated.
          */
-        using TGeneratorResult = std::pair<TIRVariable, std::vector<IRCommand>>;
+        using TGeneratorResult = std::pair<TIRVariable, std::vector<TIRCommand>>;
         using TGeneratorResults = std::vector<TGeneratorResult>;
 
         /**
@@ -47,7 +44,7 @@ namespace MyLanguage {
             /**
              * Generate the resulting IR commands from the given abstract syntax tree.
              */
-            std::vector<IRCommand> generate(TExpression root);
+            std::vector<TIRCommand> generate(TExpression root);
             /**
              * Generates the IR commands for a literal expression.
              */

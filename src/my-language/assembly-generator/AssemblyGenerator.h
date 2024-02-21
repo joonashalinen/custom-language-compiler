@@ -1,7 +1,7 @@
 #ifndef MY_LANGUAGE_ASSEMBLY_GENERATOR_HH
 #define MY_LANGUAGE_ASSEMBLY_GENERATOR_HH
 
-#include "../ir-generator/IRCommand.h"
+#include "../ir-generator/TIRCommand.h"
 #include <functional>
 #include <map>
 #include <numeric>
@@ -14,15 +14,15 @@ namespace MyLanguage {
      */
     class AssemblyGenerator {
         /**
-         * Type of a function that generates assembly code from a given IRCommand.
+         * Type of a function that generates assembly code from a given IR command..
          */
-        using TGenerator = std::function<std::string(IRCommand)>;
+        using TGenerator = std::function<std::string(TIRCommand)>;
         public:
             AssemblyGenerator();
             /**
-             * Generates assembly code from the given list of IRCommands.
+             * Generates assembly code from the given list of IR commands.
              */
-            std::string generate(std::vector<IRCommand> irCommands);
+            std::string generate(std::vector<TIRCommand> irCommands);
             std::string prelude();
             std::string indent();
             std::map<std::string, TGenerator>& generators();

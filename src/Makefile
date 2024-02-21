@@ -22,7 +22,7 @@ OBJS =  \
 	my-language/parser/WhileParser.o \
 	my-language/parser/FunctionCallParser.o \
 	my-language/ir-generator/IRGenerator.o \
-	my-language/ir-generator/IRCommand.o \
+	my-language/ir-generator/TIRCommand.o \
 	my-language/ir-generator/IRCommandFactory.o \
 	my-language/assembly-generator/AssemblyGenerator.o \
 	my-language/assembly-generator/X86AssemblyGenerator.o \
@@ -40,6 +40,7 @@ OBJS =  \
 	components/parsing/SkeletonParser.o \
 	components/parsing/ConflictParser.o \
 	components/parsing/ListParser.o \
+	components/structured-language/VariableStack.o \
 
 TEST_OBJS = \
 	my-language/tokenizer/test/Tokenizer.test.o \

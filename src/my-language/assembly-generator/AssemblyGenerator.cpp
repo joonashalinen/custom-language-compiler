@@ -6,18 +6,19 @@ namespace MyLanguage {
         
     }
 
-    std::string AssemblyGenerator::generate(std::vector<IRCommand> irCommands)
+    std::string AssemblyGenerator::generate(std::vector<TIRCommand> irCommands)
     {
         return this->_prelude + std::accumulate(
             irCommands.begin(), 
             irCommands.end(), 
             std::string(""), 
-            [this](std::string assembly, IRCommand command) {
-                if (this->_generators.contains(command.type())) {
-                    auto generator = this->_generators.at(command.type());
+            [this](std::string assembly, TIRCommand command) {
+                auto commandType = command->subTypes().at("command");
+                if (this->_generators.contains(commandType)) {
+                    auto generator = this->_generators.at(commandType);
                     return assembly + generator(command);
                 } else {
-                    throw std::runtime_error("No assembly generator found command with type: '" + command.type() + "'.");
+                    throw std::runtime_error("No assembly generator found command with type: '" + commandType + "'.");
                 }
             }
         );

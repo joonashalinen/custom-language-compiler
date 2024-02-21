@@ -2,6 +2,7 @@
 #define MY_LANGUAGE_X86_ASSEMBLY_GENERATOR_HH
 
 #include "AssemblyGenerator.h"
+#include "../ir-generator/TIRCommand.h"
 #include <iostream>
 
 namespace MyLanguage {
@@ -11,11 +12,11 @@ namespace MyLanguage {
     class X86AssemblyGenerator {
         public:
             X86AssemblyGenerator();
-            std::string generate(std::vector<IRCommand> irCommands);
+            std::string generate(std::vector<TIRCommand> irCommands);
             /**
              * Generates the assembly code for a LoadIntConst IR command.
              */
-            std::string generateLoadIntConst(IRCommand command);
+            std::string generateLoadIntConst(TIRCommand command);
         private:
             AssemblyGenerator _assemblyGenerator;
     };

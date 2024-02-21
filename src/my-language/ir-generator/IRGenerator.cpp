@@ -10,7 +10,7 @@ namespace MyLanguage {
         this->_irGenerators.insert({"binary-operator", IRGenerator::generateBinaryOperation});
     }
 
-    std::vector<IRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)
+    std::vector<TIRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)
     {
         auto foldable = DataStructures::FoldableNode<IRGenerator::TGeneratorResult, Expression>{root};
 
@@ -24,7 +24,7 @@ namespace MyLanguage {
                     throw std::runtime_error("No generator found for type: '" + node->type() + "'.");
                 }
             },
-            IRGenerator::TGeneratorResult{"None", std::vector<IRCommand>{}}
+            IRGenerator::TGeneratorResult{"None", std::vector<TIRCommand>{}}
         ).second;
     }
 
@@ -35,14 +35,14 @@ namespace MyLanguage {
         auto number = expression->rootToken().value;
         auto variable = this->_commandFactory.nextVariable();
         auto command = this->_commandFactory.createLoadIntConst(number, variable);
-        return IRGenerator::TGeneratorResult{variable, std::vector<IRCommand>{command}};
+        return IRGenerator::TGeneratorResult{variable, std::vector<TIRCommand>{command}};
     }
 
     IRGenerator::TGeneratorResult IRGenerator::generateChain(
         std::shared_ptr<Expression> expression, 
         std::vector<IRGenerator::TGeneratorResult> childResults
     ) {
-        auto result = IRGenerator::TGeneratorResult{"None", std::vector<IRCommand>{}};
+        auto result = IRGenerator::TGeneratorResult{"None", std::vector<TIRCommand>{}};
         std::for_each(
             childResults.begin(), 
             childResults.end(),

@@ -5,7 +5,7 @@ namespace MyLanguage {
      * Assembly generating functions for each IR command type.
      */
     namespace X86AssemblyGenerators {
-        std::string generateLoadIntConst(IRCommand command)
+        std::string generateLoadIntConst(TIRCommand command)
         {
             return (
                 std::string("movq A, %rax") + "\n" +
@@ -34,7 +34,7 @@ namespace MyLanguage {
         this->_assemblyGenerator.generators().insert({"LoadIntConst", X86AssemblyGenerators::generateLoadIntConst});
     }
 
-    std::string X86AssemblyGenerator::generate(std::vector<IRCommand> irCommands)
+    std::string X86AssemblyGenerator::generate(std::vector<TIRCommand> irCommands)
     {
         return this->_assemblyGenerator.generate(irCommands);
     }
