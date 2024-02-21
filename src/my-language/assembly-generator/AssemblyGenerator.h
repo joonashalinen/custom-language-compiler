@@ -2,21 +2,29 @@
 #define MY_LANGUAGE_ASSEMBLY_GENERATOR_HH
 
 #include "../ir-generator/TIRCommand.h"
+#include "../../components/structured-language/VariableStack.h"
+#include "../../components/parsing/Expression.h"
 #include <functional>
 #include <map>
 #include <numeric>
 #include <algorithm>
 #include <stdexcept>
+#include <set>
 
 namespace MyLanguage {
     /**
      * Class that can be used to generate assembly code.
      */
     class AssemblyGenerator {
+        using TExpression = std::shared_ptr<Expression>;
         /**
          * Type of a function that generates assembly code from a given IR command..
          */
-        using TGenerator = std::function<std::string(TIRCommand)>;
+        using TGenerator = std::function<std::string(
+            StructuredLanguage::VariableStack&,
+            std::string indent,
+            TIRCommand
+        )>;
         public:
             AssemblyGenerator();
             /**
@@ -41,6 +49,10 @@ namespace MyLanguage {
              * The indent string we use for a single indentation level.
              */
             std::string _indent;
+            /**
+             * Data structure for managing the memory locations of variables.
+             */
+            StructuredLanguage::VariableStack _variableStack;
     };
 };
 

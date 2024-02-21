@@ -1,9 +1,13 @@
 #include "VariableStack.h"
 
 namespace StructuredLanguage {
-	VariableStack::VariableStack(std::vector<std::string> variables)
+	VariableStack::VariableStack()
 	{
-        std::for_each(variables.begin(), variables.end(), [this](std::string variable) {
+        
+	}
+
+	void VariableStack::push(std::vector<std::string> variables) {
+		std::for_each(variables.begin(), variables.end(), [this](std::string variable) {
             this->_locations.insert({variable, this->nextLocation()});
         });
 	}
@@ -22,5 +26,10 @@ namespace StructuredLanguage {
 		auto nextLocation = this->_currentLocation;
         this->_currentLocation = this->_currentLocation + 8;
         return nextLocation;
+	}
+
+	int VariableStack::size()
+	{
+		return this->_locations.size() * 8;
 	}
 }

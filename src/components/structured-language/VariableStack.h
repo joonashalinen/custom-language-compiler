@@ -13,7 +13,11 @@ namespace StructuredLanguage {
      */
     class VariableStack {
         public:
-            VariableStack(std::vector<std::string> variables);
+            VariableStack();
+            /**
+             * Push multiple variables to the stack.
+             */
+            void push(std::vector<std::string> variables);
             /**
              * The starting memory location of the variable with the given name.
              */
@@ -22,6 +26,10 @@ namespace StructuredLanguage {
              * The starting address of the next memory location reserved for the next variable.
              */
             int nextLocation();
+            /**
+             * Amount of bytes that the variable stack uses in total.
+             */
+            int size();
         private:
             std::map<std::string, int> _locations;
             int _currentLocation = 0;
