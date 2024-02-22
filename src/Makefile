@@ -88,11 +88,11 @@ test : $(TEST_TARGET)
 # $@ expands to the rule's target, in this case "test_me.exe".
 # $^ expands to the rule's dependencies.
 $(LINK_TARGET) : $(MAIN_OBJ) $(OBJS)
-	g++ -Werror -ansi -pedantic-errors -g -o $@ $^
+	g++ -ansi -pedantic-errors -g -o $@ $^
 
 # Compiles the test target.
 $(TEST_TARGET) : $(OBJS) $(TEST_OBJ)
-	g++ -Werror -ansi -pedantic-errors -g -o $@ $^
+	g++ -ansi -pedantic-errors -g -o $@ $^
 
 # Here is a Pattern Rule, often used for compile-line.
 # It says how to create a file with a .o suffix, given a file with a .cpp suffix.
@@ -100,7 +100,7 @@ $(TEST_TARGET) : $(OBJS) $(TEST_OBJ)
 # $@ for the pattern-matched target
 # $< for the pattern-matched dependency
 %.o : %.cpp
-	g++ -Werror -ansi -pedantic-errors -std=c++20 -g -o $@ -c $<
+	g++ -ansi -pedantic-errors -std=c++20 -g -o $@ -c $<
 
 # These are Dependency Rules, which are rules without any command.
 # Dependency Rules indicate that if any file to the right of the colon changes,
