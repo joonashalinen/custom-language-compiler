@@ -29,7 +29,6 @@ namespace MyLanguage {
             indent + ".extern print_bool" + "\n" +
             indent + ".extern read_int" + "\n" +
             indent + ".global main" + "\n" +
-            indent + ".type main, @function" + "\n" +
             indent + "\n" +
             indent + ".section .text" + "\n" +
             indent + "\n" + 

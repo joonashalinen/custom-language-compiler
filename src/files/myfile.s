@@ -2,7 +2,6 @@
     .extern print_bool
     .extern read_int
     .global main
-    .type main, @function
     
     .section .text
     

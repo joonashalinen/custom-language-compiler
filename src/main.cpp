@@ -44,4 +44,9 @@ int main(int argc, char* argv[]) {
     std::ofstream outputFile;
     outputFile.open(argv[2]);
     outputFile << assemblyCode;
+    outputFile.flush();
+
+    // Run the assembler that will produce the final executable from the assembly code.
+    auto runAssemblerCommand = std::string{"py run_assembler.py "} + argv[2] + " myprogram.exe";
+    system(runAssemblerCommand.c_str());
 }

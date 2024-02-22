@@ -3,15 +3,16 @@ import tempfile
 from contextlib import nullcontext
 from os import path
 from typing import ContextManager
-
+from typing import Optional
+from typing import List
 
 def assemble(
     assembly_code: str,
     output_file: str,
-    workdir: str | None = None,
+    workdir: Optional[str] = None,
     tempfile_basename: str = 'program',
     # Give ['c'] to link the C standard library
-    extra_libraries: list[str] = [],
+    extra_libraries: List[str] = [],
 ) -> None:
     """Invokes 'as' and 'ld' to generate an executable from Assembly code."""
     cm: ContextManager[str] = nullcontext(
@@ -25,13 +26,13 @@ def assemble(
             f.write(stdlib_asm_code)
         with open(program_asm, 'w') as f:
             f.write(assembly_code)
-        subprocess.run(['as', '-g', '-o' +
+        subprocess.run(['as', '-g', '-o',
                         stdlib_obj, stdlib_asm], check=True)
-        subprocess.run(['as', '-g', '-o' +
+        subprocess.run(['as', '-g', '-o',
                         program_obj, program_asm], check=True)
         linker_flags = ['-static', *[f'-l{lib}' for lib in extra_libraries]]
         subprocess.run(
-            ['ld', '-o' + output_file, *linker_flags, stdlib_obj, program_obj], check=True)
+            ['ld', '-o', output_file, *linker_flags, stdlib_obj, program_obj], check=True)
 
 
 stdlib_asm_code: str = """
