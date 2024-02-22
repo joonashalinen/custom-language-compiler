@@ -21,6 +21,11 @@ namespace StructuredLanguage {
         }
 	}
 
+	int VariableStack::negativeEndLocation(std::string variable)
+	{
+		return (-1) * (this->location(variable) + 8);
+	}
+
 	int VariableStack::nextLocation()
 	{
 		auto nextLocation = this->_currentLocation;

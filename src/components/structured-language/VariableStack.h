@@ -23,6 +23,10 @@ namespace StructuredLanguage {
              */
             int location(std::string variable);
             /**
+             * The negation of a variable's ending memory location. 
+             */
+            int negativeEndLocation(std::string variable);
+            /**
              * The starting address of the next memory location reserved for the next variable.
              */
             int nextLocation();

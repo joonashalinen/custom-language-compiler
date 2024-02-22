@@ -12,10 +12,52 @@ namespace MyLanguage {
         ) {
             auto value = command->children().at(0)->subTypes().at("value");
             auto variable = command->children().at(1)->subTypes().at("name");
-            auto variableLocation = variableStack.location(variable) + 8;
+            auto variableLocation = variableStack.negativeEndLocation(variable);
             return (
-                indent + "movl " + "$" + value + ", " + "-" + std::to_string(variableLocation) + "(%rbp)" + "\n"
+                indent + "movq " + "$" + value + ", " + std::to_string(variableLocation) + "(%rbp)" + "\n"
             );
+        }
+
+        std::string generateAdd(
+            StructuredLanguage::VariableStack& variableStack, 
+            std::string indent,
+            std::pair<std::string, std::string> summands,
+            std::string outputVar
+        ) {
+            auto firstSummandLocation = variableStack.negativeEndLocation(summands.first);
+            auto secondSummandLocation = variableStack.negativeEndLocation(summands.second);
+            auto outputVarLocation = variableStack.negativeEndLocation(outputVar);
+            return (
+                indent + "movq " + std::to_string(firstSummandLocation) + "(%rbp)" + ", %rax" + "\n" +
+                indent + "addq " + std::to_string(secondSummandLocation) + "(%rbp)" + ", %rax" + "\n" +
+                indent + "movq " + "%rax, " + std::to_string(outputVarLocation) + "(%rbp)" + "\n"
+            );
+        }
+
+       std::string generateCall(
+            StructuredLanguage::VariableStack& variableStack, 
+            std::string indent,
+            TIRCommand command
+        ) {
+            auto functionName = command->children().at(0)->subTypes().at("name");
+            auto outputVarName = command->children().at(2)->subTypes().at("name");
+            
+            auto argumentExpressions = command->children().at(1)->children();
+            auto argumentVars = std::vector<std::string>(argumentExpressions.size());
+            std::transform(
+                argumentExpressions.begin(), 
+                argumentExpressions.end(), 
+                argumentVars.begin(),
+                [](std::shared_ptr<Expression> argumentExpression) {
+                    return argumentExpression->subTypes().at("name");
+                } 
+            );
+
+            if (functionName == "+") {
+                return generateAdd(variableStack, indent, {argumentVars.at(0), argumentVars.at(1)}, outputVarName);
+            } else {
+                throw std::runtime_error("Not implemented.");
+            }
         }
     }
 
@@ -39,6 +81,7 @@ namespace MyLanguage {
 
         // Configure assembly generating functions for each IR command type.
         this->_assemblyGenerator.generators().insert({"LoadIntConst", X86AssemblyGenerators::generateLoadIntConst});
+        this->_assemblyGenerator.generators().insert({"Call", X86AssemblyGenerators::generateCall});
     }
 
     std::string X86AssemblyGenerator::generate(std::vector<TIRCommand> irCommands)

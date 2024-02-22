@@ -1,4 +1,5 @@
 #include "AssemblyGenerator.h"
+#include <iostream>
 
 namespace MyLanguage {
     AssemblyGenerator::AssemblyGenerator()
@@ -12,7 +13,7 @@ namespace MyLanguage {
         auto variableNames = std::set<std::string>{};
         std::for_each(irCommands.begin(), irCommands.end(), [&variableNames](TIRCommand command) {
             std::for_each(command->children().begin(), command->children().end(), [&variableNames](TExpression child) {
-                if (child->type() == "identifier") {
+                if (child->type() == "variable") {
                     variableNames.insert(child->subTypes().at("name"));
                 }
             });
