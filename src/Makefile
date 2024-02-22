@@ -86,14 +86,13 @@ test : $(TEST_TARGET)
 
 # Here is a Rule that uses some built-in Make Macros in its command:
 # $@ expands to the rule's target, in this case "test_me.exe".
-# $^ expands to the rule's dependencies, in this case the three files
-# main.o, test1.o, and  test2.o.
+# $^ expands to the rule's dependencies.
 $(LINK_TARGET) : $(MAIN_OBJ) $(OBJS)
-	g++ -Wall -Werror -ansi -pedantic-errors -g -o $@ $^
+	g++ -Werror -ansi -pedantic-errors -g -o $@ $^
 
 # Compiles the test target.
 $(TEST_TARGET) : $(OBJS) $(TEST_OBJ)
-	g++ -Wall -Werror -ansi -pedantic-errors -g -o $@ $^
+	g++ -Werror -ansi -pedantic-errors -g -o $@ $^
 
 # Here is a Pattern Rule, often used for compile-line.
 # It says how to create a file with a .o suffix, given a file with a .cpp suffix.
@@ -101,7 +100,7 @@ $(TEST_TARGET) : $(OBJS) $(TEST_OBJ)
 # $@ for the pattern-matched target
 # $< for the pattern-matched dependency
 %.o : %.cpp
-	g++ -Wall -Werror -ansi -pedantic-errors -std=c++20 -g -o $@ -c $<
+	g++ -Werror -ansi -pedantic-errors -std=c++20 -g -o $@ -c $<
 
 # These are Dependency Rules, which are rules without any command.
 # Dependency Rules indicate that if any file to the right of the colon changes,
