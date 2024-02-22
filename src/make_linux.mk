@@ -7,10 +7,10 @@
 # Comments start with a # and go to the end of the line.
 
 # Here is a simple Make Macro.
-LINK_TARGET = main.exe
+LINK_TARGET = main.out
 
 #Test target.
-TEST_TARGET = test.exe
+TEST_TARGET = test.out
 
 MAIN_OBJ = main.o
 
