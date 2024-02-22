@@ -46,7 +46,16 @@ int main(int argc, char* argv[]) {
     outputFile << assemblyCode;
     outputFile.flush();
 
-    // Run the assembler that will produce the final executable from the assembly code.
-    auto runAssemblerCommand = std::string{"py run_assembler.py "} + argv[2] + " myprogram.exe";
-    system(runAssemblerCommand.c_str());
+    // Generate object file from program assembly code.
+    auto assembleProgramCommand = std::string{"as -g -o files/_program.o "} + argv[2];
+    system(assembleProgramCommand.c_str());
+    // Generate object file from the standard library we want to link to.
+    system("as -g -o files/_stdlib.o files/_stdlib.s");
+
+    // Link the object files to produce the final executable.
+    #if _WIN32
+        system("ld -o program.exe -static files/_program.o files/_stdlib.o");
+    #else
+        system("ld -o program.out -static files/_program.o files/_stdlib.o");
+    #endif
 }

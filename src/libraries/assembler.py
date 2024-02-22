@@ -31,6 +31,7 @@ def assemble(
         subprocess.run(['as', '-g', '-o',
                         program_obj, program_asm], check=True)
         linker_flags = ['-static', *[f'-l{lib}' for lib in extra_libraries]]
+        print(['ld', '-o', output_file, *linker_flags, stdlib_obj, program_obj])
         subprocess.run(
             ['ld', '-o', output_file, *linker_flags, stdlib_obj, program_obj], check=True)
 
