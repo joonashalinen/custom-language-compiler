@@ -5,7 +5,7 @@ Parsing::ListParser::ListParser(
     std::string beginCharacter, 
     std::string endCharacter, 
     std::string separator,
-    MapParser& elementParser
+    IParseable& elementParser
 ): _elementParser(elementParser) {
     
     this->_chainParser = std::unique_ptr<Parsing::ChainParser>(

@@ -23,11 +23,11 @@ namespace Parsing {
                 std::string beginCharacter, 
                 std::string endCharacter,
                 std::string separator, 
-                MapParser& elementParser
+                IParseable& elementParser
             );
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         private:
-            MapParser& _elementParser;
+            IParseable& _elementParser;
             std::unique_ptr<Parsing::ParentheticalParser> _parentheticalParser;
             std::unique_ptr<Parsing::ChainParser> _chainParser;
     };

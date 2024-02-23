@@ -1,6 +1,6 @@
 #include "FunctionCallParser.h"
 
-MyLanguage::FunctionCallParser::FunctionCallParser(IParseable* identifierParser, MapParser& parameterParser):
+MyLanguage::FunctionCallParser::FunctionCallParser(IParseable* identifierParser, IParseable& parameterParser):
     _identifierParser(identifierParser), _parameterParser(parameterParser)
 {
     this->_parameterListParser = std::unique_ptr<Parsing::ListParser>(

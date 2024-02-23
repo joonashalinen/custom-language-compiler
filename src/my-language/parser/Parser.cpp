@@ -9,19 +9,6 @@ MyLanguage::Parser::Parser() {
     this->_numberLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"number"});
     this->_binaryParser = std::unique_ptr<BinaryParser>(new BinaryParser{"binary-operator", *(this->_mapParser)});
     this->_unaryParser = std::unique_ptr<UnaryParser>(new UnaryParser{"unary-operator", *(this->_mapParser)});
-    
-    this->_functionCallParser = std::unique_ptr<MyLanguage::FunctionCallParser>(
-        new MyLanguage::FunctionCallParser{
-            this->_identifierLiteralParser.get(),
-            *(this->_mapParser)
-        }
-    );
-
-    this->_identifierParser = std::unique_ptr<Parsing::ConflictParser>(
-        new Parsing::ConflictParser{
-            {this->_identifierLiteralParser.get(), this->_functionCallParser.get()}
-        }
-    );
 
     this->_operatedChainParser = std::unique_ptr<OperatedChainParser>(
         new OperatedChainParser{
@@ -29,6 +16,19 @@ MyLanguage::Parser::Parser() {
             std::map<std::string, IParseable*>{
                 {"binary-operator", this->_binaryParser.get()}
             }
+        }
+    );
+
+    this->_functionCallParser = std::unique_ptr<MyLanguage::FunctionCallParser>(
+        new MyLanguage::FunctionCallParser{
+            this->_identifierLiteralParser.get(),
+            *(this->_operatedChainParser)
+        }
+    );
+
+    this->_identifierParser = std::unique_ptr<Parsing::ConflictParser>(
+        new Parsing::ConflictParser{
+            {this->_identifierLiteralParser.get(), this->_functionCallParser.get()}
         }
     );
 
