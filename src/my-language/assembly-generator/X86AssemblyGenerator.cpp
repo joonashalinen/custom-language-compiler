@@ -34,6 +34,23 @@ namespace MyLanguage {
             );
         }
 
+        std::string generateFunctionCall(
+            StructuredLanguage::VariableStack& variableStack, 
+            std::string indent,
+            std::string functionName,
+            std::vector<std::string> argumentVars,
+            std::string outputVar
+        ) {
+            // Currently we only support function calls that take a single argument.
+            auto argLocation = variableStack.negativeEndLocation(argumentVars.at(0));
+            auto outputLocation = variableStack.negativeEndLocation(outputVar);
+            return (
+                indent + "movq " + std::to_string(argLocation) + "(%rbp)" + ", %rdi" + "\n" +
+                indent + "call " + functionName + "\n" +
+                indent + "movq " + "%rax, " + std::to_string(outputLocation) + "(%rbp)" + "\n"
+            );
+        }
+
        std::string generateCall(
             StructuredLanguage::VariableStack& variableStack, 
             std::string indent,
@@ -56,7 +73,7 @@ namespace MyLanguage {
             if (functionName == "+") {
                 return generateAdd(variableStack, indent, {argumentVars.at(0), argumentVars.at(1)}, outputVarName);
             } else {
-                throw std::runtime_error("Not implemented.");
+                return generateFunctionCall(variableStack, indent, functionName, argumentVars, outputVarName);
             }
         }
     }

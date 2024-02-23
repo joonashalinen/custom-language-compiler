@@ -43,26 +43,38 @@ namespace MyLanguage {
         }
 
         /**
-         * Generates the IR commands for a binary operator expression.
+         * Generates the IR commands for a function call expression. 
+         * Unary and binary operations are also interpreted as function calls.
          */
-        IRGenerator::TGeneratorResult generateBinaryOperation(
+        IRGenerator::TGeneratorResult generateFunctionCall(
             IRCommandFactory& commandFactory,
             std::shared_ptr<Expression> expression, 
             std::vector<IRGenerator::TGeneratorResult> childResults
         ) {
-            assert(childResults.size() == 2);
-            assert(expression->subTypes().contains("operator"));
+            assert(expression->subTypes().contains("name"));
 
-            auto leftVariable = childResults.at(0).first;
-            auto rightVariable = childResults.at(1).first;
+            // Gather the variable names storing the child results.
+            auto argumentVars = std::vector<TIRVariable>(childResults.size());
+            std::transform(
+                childResults.begin(), 
+                childResults.end(), 
+                argumentVars.begin(), 
+                [](IRGenerator::TGeneratorResult& childResult) {
+                    return childResult.first;
+                }
+            );
 
+            // Generate IR commands for the arguments first.
             auto joinedIRCommands = generateChain(commandFactory, expression, childResults).second;
+            // Reserve the next variable we want to store the function call's result in.
             auto resultVariable = commandFactory.nextVariable();
+            // Create the IR command for the function call itself.
             auto command = commandFactory.createCall(
-                expression->subTypes().at("operator"), 
-                std::vector<TIRVariable>{leftVariable, rightVariable}, 
+                expression->subTypes().at("name"), 
+                argumentVars,
                 resultVariable
             );
+            // Add the function call IR command to the total list of IR commands.
             joinedIRCommands.insert(joinedIRCommands.end(), command);
 
             return IRGenerator::TGeneratorResult{resultVariable, joinedIRCommands};
@@ -73,7 +85,8 @@ namespace MyLanguage {
     {
         this->_irGenerators.insert({"number", IRGenerators::generateNumber});
         this->_irGenerators.insert({"chain", IRGenerators::generateChain});
-        this->_irGenerators.insert({"binary-operator", IRGenerators::generateBinaryOperation});
+        this->_irGenerators.insert({"binary-operator", IRGenerators::generateFunctionCall});
+        this->_irGenerators.insert({"function-call", IRGenerators::generateFunctionCall});
     }
 
     std::vector<TIRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)

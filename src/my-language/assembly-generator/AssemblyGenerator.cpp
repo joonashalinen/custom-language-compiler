@@ -31,8 +31,9 @@ namespace MyLanguage {
         );
 
         auto endPortion = (
-            this->_indent + "movq   %rbp, %rsp" + "\n" + 
-            this->_indent + "popq   %rbp" + "\n" + 
+            this->_indent + "movq $0, %rax" + "\n" + 
+            this->_indent + "movq %rbp, %rsp" + "\n" + 
+            this->_indent + "popq %rbp" + "\n" + 
             this->_indent + "ret" + "\n"
         );
 
