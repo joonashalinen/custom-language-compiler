@@ -1,0 +1,5 @@
+var a = {var b = 1 + 2; b}
+var b = 4;
+print_int({a + b});
+!expect!
+7

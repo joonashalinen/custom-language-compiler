@@ -19,6 +19,7 @@ std::shared_ptr<Expression> Parsing::ChainParser::parse(std::vector<DToken>& tok
     // First, we parse the expressions of the chain.
 
     auto expressions = std::vector<std::shared_ptr<Expression>>{};
+    auto subTypes = std::map<std::string, std::string>{};
     std::shared_ptr<Expression> expression;
     // While there is a parsing rule for the next token.
     while (this->_parser.canParseAt(tokens, sequence.position())) {
@@ -37,6 +38,12 @@ std::shared_ptr<Expression> Parsing::ChainParser::parse(std::vector<DToken>& tok
                 sequence.peek().value + "' was encountered instead at position " + std::to_string(sequence.position()) 
             );
         } else {
+            // Determine whether the chain has a closing separator or not.
+            if (sequence.peek().value == this->_separator) {
+                subTypes.insert({"openness", "closed"});
+            } else {
+                subTypes.insert({"openness", "open"});
+            }
             // Skip over potential (optional) following separators.
             while (sequence.peek().value == this->_separator) {
                 sequence.consume();
@@ -54,5 +61,6 @@ std::shared_ptr<Expression> Parsing::ChainParser::parse(std::vector<DToken>& tok
         }
     );
     result->setChildren(expressions);
+    result->setSubTypes(subTypes);
     return result;
 }

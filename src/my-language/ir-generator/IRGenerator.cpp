@@ -10,6 +10,17 @@ namespace MyLanguage {
     namespace IRGenerators {
     
         /**
+         * Generator that does nothing. Useful for passing over abstract syntax tree nodes that 
+         * have no meaning for IR generation.
+         */
+        IRGenerator::DGeneratorContext* nullGenerator(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            return context;
+        }
+
+        /**
          * Generates the IR commands for a number literal expression.
          */
         IRGenerator::DGeneratorContext* generateNumber(
@@ -38,8 +49,9 @@ namespace MyLanguage {
             auto rightVariable = (context->variableStack.pop(1)).at(0);
             // Create the IR variable for the newly created variable.
             auto irVariable = context->commandFactory->nextVariable();
-            // Insert the newly created variable to the symbol table.
+            // Insert the newly created variable to the symbol table and the variable stack.
             context->symbolTable.insert(variableName, irVariable);
+            context->variableStack.push({irVariable});
             // Assign the value on the right side to the newly created variable.
             auto command = context->commandFactory->createCopy(rightVariable, irVariable);
             context->irCommands.insert(context->irCommands.end(), command);
@@ -66,7 +78,11 @@ namespace MyLanguage {
             IRGenerator::DGeneratorContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            // We currently do nothing.
+            if (expression->children().size() > 0) {
+                auto irVariables = context->variableStack.pop(expression->children().size());
+                std::string lastIRVariable = irVariables.back();
+                context->variableStack.push({lastIRVariable});
+            }
             return context;
         }
 
@@ -116,6 +132,9 @@ namespace MyLanguage {
             // Assign the value on the right side to the newly created variable.
             auto command = context->commandFactory->createCopy(rightIRVariable, leftIRVariable);
             context->irCommands.insert(context->irCommands.end(), command);
+            // Push Unit to the variable stack. Assignment operations 
+            // always return Unit instead of an actual value.
+            context->variableStack.push({"Unit"});
             return context;
         }
 
@@ -159,6 +178,8 @@ namespace MyLanguage {
         this->_irGenerators.insert({"function-call", IRGenerators::generateFunctionCall});
         this->_irGenerators.insert({"variable-declaration", IRGenerators::generateVariableDeclaration});
         this->_irGenerators.insert({"identifier", IRGenerators::generateIdentifier});
+        this->_irGenerators.insert({"block", IRGenerators::nullGenerator});
+        this->_irGenerators.insert({"parenthetical", IRGenerators::nullGenerator});
     }
 
     std::vector<TIRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)
