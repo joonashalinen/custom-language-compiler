@@ -48,7 +48,7 @@ namespace MyLanguage {
                     auto generator = this->_generators.at(commandType);
                     return assembly + generator(this->_variableStack, this->_indent, command);
                 } else {
-                    throw std::runtime_error("No assembly generator found command with type: '" + commandType + "'.");
+                    throw std::runtime_error("No assembly generator found for command with type: '" + commandType + "'.");
                 }
             }
         ) + endPortion;

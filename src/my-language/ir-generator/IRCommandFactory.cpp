@@ -51,6 +51,20 @@ namespace MyLanguage {
         return command;
     }
 
+    TIRCommand IRCommandFactory::createCopy(
+        std::string fromVar, 
+        std::string toVar
+    ) {
+        auto command = this->createExpression("irCommand", "command", "Copy");
+        auto fromVarExpression = this->createExpression("variable", "name", fromVar);
+        auto toVarExpression = this->createExpression("variable", "name", toVar);
+        
+        Expression::addChild(command, fromVarExpression);
+        Expression::addChild(command, toVarExpression);
+
+        return command;
+    }
+
     std::string IRCommandFactory::nextVariable()
     {
         auto nextVariable = "x" + std::to_string(this->_variableId);

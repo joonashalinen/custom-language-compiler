@@ -5,6 +5,7 @@
 #include "../../components/parsing/ChainParser.h"
 #include "../../components/parsing/SkeletonParser.h"
 #include "../../components/parsing/OperatedChainParser.h"
+#include "VariableDeclarationParser.h"
 
 namespace MyLanguage {
     class ChainParser: public IParseable {
@@ -15,7 +16,7 @@ namespace MyLanguage {
             OperatedChainParser* _operatedChainParser;
             std::unique_ptr<Parsing::ChainParser> _chainParser;
             std::unique_ptr<MapParser> _mapParser;
-            std::unique_ptr<Parsing::SkeletonParser> _variableDeclarationParser;
+            std::unique_ptr<VariableDeclarationParser> _variableDeclarationParser;
     };
 };
 

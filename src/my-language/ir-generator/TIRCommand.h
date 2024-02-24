@@ -17,7 +17,7 @@ namespace MyLanguage {
      */
     class IRCommand {
         public:
-            IRCommand(std::string type, TParams params);
+            IRCommand(TIRCommand expression);
             std::string type();
             TParams params();
             /**
@@ -27,6 +27,7 @@ namespace MyLanguage {
         private:
             std::string _type;
             TParams _params;
+            TIRCommand _expression;
     };
 };
 

@@ -10,7 +10,7 @@ namespace MyLanguage {
     namespace IRGenerators {
     
         /**
-         * Generates the IR commands for a literal expression.
+         * Generates the IR commands for a number literal expression.
          */
         IRGenerator::DGeneratorContext* generateNumber(
             IRGenerator::DGeneratorContext* context,
@@ -20,6 +20,28 @@ namespace MyLanguage {
             auto variable = context->commandFactory->nextVariable();
             auto command = context->commandFactory->createLoadIntConst(number, variable);
             context->variableStack.push({variable});
+            context->irCommands.insert(context->irCommands.end(), command);
+            return context;
+        }
+
+        /**
+         * IR generation function for a variable declaration expression.
+         */
+        IRGenerator::DGeneratorContext* generateVariableDeclaration(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            assert(expression->subTypes().contains("name"));
+            auto variableName = expression->subTypes().at("name");
+            // The value on the right side of the variable is given by the IR variable
+            // at the top of the variable stack.
+            auto rightVariable = (context->variableStack.pop(1)).at(0);
+            // Create the IR variable for the newly created variable.
+            auto irVariable = context->commandFactory->nextVariable();
+            // Insert the newly created variable to the symbol table.
+            context->symbolTable.insert(variableName, irVariable);
+            // Assign the value on the right side to the newly created variable.
+            auto command = context->commandFactory->createCopy(irVariable, rightVariable);
             context->irCommands.insert(context->irCommands.end(), command);
             return context;
         }
@@ -74,6 +96,7 @@ namespace MyLanguage {
                 auto generate = context->irGenerators->at(expression->type());
                 return generate(context, expression);
             } else {
+                std::cout << expression->rootToken().value << std::endl;
                 throw std::runtime_error("No generator found for type: '" + expression->type() + "'.");
             }
         }
@@ -85,6 +108,7 @@ namespace MyLanguage {
         this->_irGenerators.insert({"chain", IRGenerators::generateChain});
         this->_irGenerators.insert({"binary-operator", IRGenerators::generateFunctionCall});
         this->_irGenerators.insert({"function-call", IRGenerators::generateFunctionCall});
+        this->_irGenerators.insert({"variable-declaration", IRGenerators::generateVariableDeclaration});
     }
 
     std::vector<TIRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)

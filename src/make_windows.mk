@@ -21,6 +21,7 @@ OBJS =  \
 	my-language/parser/IfParser.o \
 	my-language/parser/WhileParser.o \
 	my-language/parser/FunctionCallParser.o \
+	my-language/parser/VariableDeclarationParser.o \
 	my-language/ir-generator/IRGenerator.o \
 	my-language/ir-generator/TIRCommand.o \
 	my-language/ir-generator/IRCommandFactory.o \
@@ -50,7 +51,7 @@ TEST_OBJS = \
 	components/parsing/test/OperatedChainParser.test.o \
 
 TEST_OBJ = \
-	my-language/parser/test/Parser.test.o
+	my-language/assembly-generator/test/X86AssemblyGenerator.test.o
 
 # Here is a Make Macro defined by two Macro Expansions.
 # A Macro Expansion may be treated as a textual replacement of the Make Macro.

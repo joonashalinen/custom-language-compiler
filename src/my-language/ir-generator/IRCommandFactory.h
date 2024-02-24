@@ -13,6 +13,7 @@ namespace MyLanguage {
             std::shared_ptr<Expression> createVariableList(std::vector<std::string> variables);
             TIRCommand createLoadIntConst(std::string value, std::string variable);
             TIRCommand createCall(std::string functionName, std::vector<std::string> argumentVars, std::string outputVar);
+            TIRCommand createCopy(std::string fromVar, std::string toVar);
             std::string nextVariable();
         private:
             int _variableId = 1;

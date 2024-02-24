@@ -82,6 +82,22 @@ void Expression::setParent(std::shared_ptr<Expression> parent)
     this->_parent = parent;
 }
 
+std::vector<std::string> Expression::extractChildSubTypeValues(std::string type, std::string subType)
+{
+	auto result = std::vector<std::string>{};
+	std::for_each(
+		this->children().begin(), 
+		this->children().end(), 
+		[&result, &type, &subType](std::shared_ptr<Expression> child) {
+			if (type != "*" && child->type() == type) {
+				auto value = child->subTypes().at(subType);
+				result.insert(result.end(), value);
+			}
+		} 
+	);
+	return result;
+}
+
 std::shared_ptr<Expression> Expression::earliestAncestor(std::shared_ptr<Expression> expression)
 {
 	if (expression->parent()) {

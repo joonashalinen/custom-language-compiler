@@ -4,6 +4,7 @@
 #include "AssemblyGenerator.h"
 #include "../ir-generator/TIRCommand.h"
 #include <iostream>
+#include <cassert>
 
 namespace MyLanguage {
     /**

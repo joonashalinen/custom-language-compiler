@@ -34,6 +34,21 @@ namespace MyLanguage {
             );
         }
 
+        std::string generateCopy(
+            StructuredLanguage::VariableStack& variableStack, 
+            std::string indent,
+            TIRCommand command
+        ) {
+            auto variables = command->extractChildSubTypeValues("variable", "name");
+            assert(variables.size() == 2);
+            auto fromVarLocation = variableStack.negativeEndLocation(variables.at(0));
+            auto toVarLocation = variableStack.negativeEndLocation(variables.at(1));
+            return (
+                indent + "movq " + std::to_string(fromVarLocation) + "(%rbp)" + ", %rax" + "\n" +
+                indent + "movq " + "%rax, " + std::to_string(toVarLocation) + "(%rbp)" + "\n"
+            );
+        }
+
         std::string generateFunctionCall(
             StructuredLanguage::VariableStack& variableStack, 
             std::string indent,
@@ -57,18 +72,8 @@ namespace MyLanguage {
             TIRCommand command
         ) {
             auto functionName = command->children().at(0)->subTypes().at("name");
+            auto argumentVars = command->children().at(1)->extractChildSubTypeValues("variable", "name");
             auto outputVarName = command->children().at(2)->subTypes().at("name");
-            
-            auto argumentExpressions = command->children().at(1)->children();
-            auto argumentVars = std::vector<std::string>(argumentExpressions.size());
-            std::transform(
-                argumentExpressions.begin(), 
-                argumentExpressions.end(), 
-                argumentVars.begin(),
-                [](std::shared_ptr<Expression> argumentExpression) {
-                    return argumentExpression->subTypes().at("name");
-                } 
-            );
 
             if (functionName == "+") {
                 return generateAdd(variableStack, indent, {argumentVars.at(0), argumentVars.at(1)}, outputVarName);
@@ -99,6 +104,7 @@ namespace MyLanguage {
         // Configure assembly generating functions for each IR command type.
         this->_assemblyGenerator.generators().insert({"LoadIntConst", X86AssemblyGenerators::generateLoadIntConst});
         this->_assemblyGenerator.generators().insert({"Call", X86AssemblyGenerators::generateCall});
+        this->_assemblyGenerator.generators().insert({"Copy", X86AssemblyGenerators::generateCopy});
     }
 
     std::string X86AssemblyGenerator::generate(std::vector<TIRCommand> irCommands)

@@ -27,6 +27,11 @@ class Expression {
         std::shared_ptr<Expression> parent();
         void setParent(std::shared_ptr<Expression> parent);
         bool isLastChild();
+        /**
+         * Get the sub-type values of the expression's children. If the given type parameter is not 
+         * '*', will only return sub-type values for children who have the given type.
+         */
+        std::vector<std::string> extractChildSubTypeValues(std::string type, std::string subType);
         static std::shared_ptr<Expression> earliestAncestor(std::shared_ptr<Expression> expression);
         static void addChild(std::shared_ptr<Expression> expression, std::shared_ptr<Expression> child);
         static void removeChild(std::shared_ptr<Expression> expression, std::shared_ptr<Expression> child);

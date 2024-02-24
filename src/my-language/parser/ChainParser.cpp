@@ -5,19 +5,8 @@ MyLanguage::ChainParser::ChainParser(OperatedChainParser* operatedChainParser)
     // First, we construct the sub-parsers.
 
     this->_mapParser = std::unique_ptr<MapParser>(new MapParser{});
-    this->_variableDeclarationParser = std::unique_ptr<Parsing::SkeletonParser>(
-        new Parsing::SkeletonParser{
-            "variable-declaration",
-            std::vector<std::pair<std::string, std::string>>{
-                {"token-value", "var"},
-                {"token-type", "identifier"},
-                {"token-value", "="},
-                {"expression", "E"}
-            },
-            std::map<std::string, IParseable*>{
-                {"E", operatedChainParser}
-            }
-        }
+    this->_variableDeclarationParser = std::unique_ptr<VariableDeclarationParser>(
+        new VariableDeclarationParser{operatedChainParser}
     );
 
     // Next, we set the parsing rules.
