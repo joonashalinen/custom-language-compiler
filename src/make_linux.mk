@@ -64,7 +64,7 @@ REBUILDABLES = $(MAIN_OBJ) $(OBJS) $(LINK_TARGET)
 # and two Commands (indented by tabs on the lines that follow).
 # The space before the colon is not required but added here for clarity.
 clean : 
-	rm $(OBJS) $(TEST_OBJS)
+	rm $(OBJS) $(TEST_OBJS) $(MAIN_OBJ)
 	echo Clean done
 
 # There are two standard Targets your Makefile should probably have:

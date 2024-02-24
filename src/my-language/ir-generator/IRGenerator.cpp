@@ -41,8 +41,21 @@ namespace MyLanguage {
             // Insert the newly created variable to the symbol table.
             context->symbolTable.insert(variableName, irVariable);
             // Assign the value on the right side to the newly created variable.
-            auto command = context->commandFactory->createCopy(irVariable, rightVariable);
+            auto command = context->commandFactory->createCopy(rightVariable, irVariable);
             context->irCommands.insert(context->irCommands.end(), command);
+            return context;
+        }
+
+        /**
+         * IR generation function for an identifier expression.
+         */
+        IRGenerator::DGeneratorContext* generateIdentifier(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            auto name = expression->subTypes().at("literal-value");
+            auto irVariable = context->symbolTable.at(name);
+            context->variableStack.push({irVariable});
             return context;
         }
 
@@ -109,6 +122,7 @@ namespace MyLanguage {
         this->_irGenerators.insert({"binary-operator", IRGenerators::generateFunctionCall});
         this->_irGenerators.insert({"function-call", IRGenerators::generateFunctionCall});
         this->_irGenerators.insert({"variable-declaration", IRGenerators::generateVariableDeclaration});
+        this->_irGenerators.insert({"identifier", IRGenerators::generateIdentifier});
     }
 
     std::vector<TIRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)

@@ -24,10 +24,18 @@ namespace MyLanguage {
         std::copy(variableNames.begin(), variableNames.end(), variableNamesList.begin());
         this->_variableStack.push(variableNamesList);
 
+        // Make sure we reserve an amount of memory divisible by 16 to 
+        // ensure the stack is initially aligned to 16 bytes.
+        auto reserveMemoryAmount = (
+            this->_variableStack.size() % 16 == 0 ? 
+                this->_variableStack.size() : 
+                this->_variableStack.size() + 8
+        );
+
         // Reserve the required amount of memory on the stack to store all variables.
         auto beginPortion = (
             this->_prelude + 
-            this->_indent + "subq $" + std::to_string(this->_variableStack.size()) + ", %rsp" + "\n"
+            this->_indent + "subq $" + std::to_string(reserveMemoryAmount) + ", %rsp" + "\n"
         );
 
         auto endPortion = (

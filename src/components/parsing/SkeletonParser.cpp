@@ -40,6 +40,7 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
                     }
                 );
                 expression->tokens().insert(expression->tokens().end(), token);
+                expressionTokens.insert(expressionTokens.end(), token);
                 expressions.insert(expressions.end(), expression);
             } else {
                 // Conversely, a token that is matched by 

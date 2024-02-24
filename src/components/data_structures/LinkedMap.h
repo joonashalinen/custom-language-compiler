@@ -14,7 +14,7 @@ namespace DataStructures {
     template <class T>
     class LinkedMap {
         public:
-            using TMap = std::unique_ptr<std::map<std::string, T>>;
+            using TMap = std::shared_ptr<std::map<std::string, T>>;
             LinkedMap();
             /**
              * Get the value at the given key.
@@ -36,7 +36,7 @@ namespace DataStructures {
              */
             void popFront();
         private:
-            std::forward_list<TMap> _linkedList;
+            std::vector<TMap> _maps;
             int _size = 0;
     };
 
@@ -49,11 +49,11 @@ namespace DataStructures {
     template<class T>
     inline T& LinkedMap<T>::at(std::string key)
     {
-        auto mapIt = std::find(this->_linkedList.begin(), this->_linkedList.end(), [key](LinkedMap::TMap map) {
+        auto mapIt = std::find_if(this->_maps.begin(), this->_maps.end(), [key](LinkedMap::TMap map) {
             return map->contains(key);
         });
-        if (mapIt != this->_linkedList.end()) {
-            return mapIt.at(key);
+        if (mapIt != this->_maps.end()) {
+            return (*mapIt)->at(key);
         } else {
             throw std::runtime_error("No value at key " + key + " in LinkedMap.");
         }
@@ -62,13 +62,13 @@ namespace DataStructures {
     template<class T>
     inline void LinkedMap<T>::insert(std::string key, T value)
     {
-        this->_linkedList.front()->insert({key, value});
+        this->_maps.front()->insert({key, value});
     }
 
     template<class T>
     inline void LinkedMap<T>::pushFront()
     {
-        this->_linkedList.push_front(LinkedMap::TMap{new std::map<std::string, T>});
+        this->_maps.insert(this->_maps.end(), LinkedMap::TMap{new std::map<std::string, T>});
         this->_size = this->_size + 1;
     }
 
@@ -76,7 +76,7 @@ namespace DataStructures {
     inline void LinkedMap<T>::popFront()
     {
         if (this->_size > 1) {
-            this->_linkedList.pop_front();
+            this->_maps.pop_back();
             this->_size = this->_size - 1;
         }
     }

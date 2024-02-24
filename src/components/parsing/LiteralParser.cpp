@@ -22,6 +22,7 @@ std::shared_ptr<Expression> LiteralParser::parse(std::vector<DToken>& tokens, in
             }
         );
         expression->tokens().insert(expression->tokens().end(), nextToken);
+        expression->subTypes().insert({"literal-value", nextToken.value});
         return expression;
     } else {
         throw std::runtime_error("Expected the next token to have type " + this->_type);
