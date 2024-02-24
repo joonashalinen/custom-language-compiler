@@ -15,14 +15,11 @@ namespace DataStructures {
      * the fold operation, see the comment for FoldableNode::fold.
      */
     template <class TAccumulator, class TNode>
-    class FoldableNode: public Functional::IFoldable<std::vector<TAccumulator>, std::shared_ptr<TNode>> {        
-        using FoldFunction = std::function<std::vector<TAccumulator>(
-            std::shared_ptr<TNode>,
-            std::vector<TAccumulator>
-        )>;
+    class FoldableNode: public Functional::IFoldable<TAccumulator, TNode> {        
+        using FoldFunction = std::function<TAccumulator(TAccumulator, TNode)>;
 
         public:
-            FoldableNode(std::shared_ptr<TNode> node);
+            FoldableNode(TNode node);
             /**
              * Performs the folding function on the whole tree starting from the node. 
              * If the node has no children, the folding function is simply performed on the 
@@ -30,54 +27,39 @@ namespace DataStructures {
              * TAccumulator::fold() is called recursively for its children. The resulting accumulators 
              * are then given to the folding function when it is called for the node itself.
              */
-            std::vector<TAccumulator> fold(FoldFunction f, std::vector<TAccumulator> acc);
-            /**
-             * Convenience method that gets rid of the need for wrapping the given accumulator 
-             * and the resulting one in vectors. The reason they need to be wrapped in the other fold 
-             * function is in order to implement the IFoldable interface.
-             */
             TAccumulator fold(FoldFunction f, TAccumulator acc);
         private:
-            std::shared_ptr<TNode> _node;
+            TNode _node;
 
     };
 
     template <class TAccumulator, class TNode>
     inline FoldableNode<TAccumulator, TNode>::FoldableNode(
-        std::shared_ptr<TNode> node
+        TNode node
         ): _node(node) {
     }
 
     template <class TAccumulator, class TNode>
-    inline std::vector<TAccumulator> FoldableNode<TAccumulator, TNode>::fold(
+    inline TAccumulator FoldableNode<TAccumulator, TNode>::fold(
         FoldableNode::FoldFunction f, 
-        std::vector<TAccumulator> acc
+        TAccumulator acc
     ) {
         // If the node has no children then we can simply perform the function  
         // on the node.
         if (this->_node->children().size() == 0) {
-            return f(this->_node, acc);
+            return f(acc, this->_node);
         } else {
-            auto results = std::vector<TAccumulator>(this->_node->children().size());
-            // Gather all the fold results from the node's children.
-            std::transform(
+            // Fold over the node's children.
+            std::for_each(
                 this->_node->children().begin(), 
-                this->_node->children().end(), 
-                results.begin(),
-                [f, acc, this](std::shared_ptr<TNode> node) {
-                    auto result = (FoldableNode<TAccumulator, TNode>{node}).fold(f, acc);
-                    return result.at(0);
+                this->_node->children().end(),
+                [&acc, &f, this](TNode node) {
+                    acc = (FoldableNode<TAccumulator, TNode>{node}).fold(f, acc);
                 }
             );
-            // Perform the folding function for the current node with the results from its child nodes.
-            return f(this->_node, results);
+            // Perform the folding function for the current node with the latest accumulator value.
+            return f(acc, this->_node);
         }
-    }
-
-    template<class TAccumulator, class TNode>
-    inline TAccumulator FoldableNode<TAccumulator, TNode>::fold(FoldFunction f, TAccumulator acc)
-    {
-        return (this->fold(f, std::vector<TAccumulator>{acc})).at(0);
     }
 };
 

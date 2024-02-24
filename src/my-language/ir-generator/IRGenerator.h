@@ -3,8 +3,11 @@
 
 #include "TIRCommand.h"
 #include "../../components/data_structures/FoldableNode.h"
+#include "../../components/data_structures/LinkedMap.h"
+#include "../../components/data_structures/BatchStack.h"
 #include "IRCommandFactory.h"
 #include <map>
+#include <stack>
 
 namespace MyLanguage {
     class IRGenerator;
@@ -16,14 +19,7 @@ namespace MyLanguage {
     class IRGenerator {
         public:
             using TExpression = std::shared_ptr<Expression>;
-            /**
-             * The result returned upon generating the IR code for an expression. The result 
-             * contains firstly a variable name, which may be a variable that contains 
-             * the result of the expression's calculations. The second value is the list of 
-             * IR commands generated.
-             */
-            using TGeneratorResult = std::pair<TIRVariable, std::vector<TIRCommand>>;
-            using TGeneratorResults = std::vector<TGeneratorResult>;
+            struct DGeneratorContext;
 
             /**
              * Type of a function that is used for generating the IR for a specific expression type. 
@@ -32,22 +28,37 @@ namespace MyLanguage {
              * The third variable is a list of the results returned by the expression's children upon 
              * having their IR code generated.
              */
-            using TExpressionIRGenerator = std::function<
-                TGeneratorResult(
-                    IRCommandFactory&,
-                    std::shared_ptr<Expression>, 
-                    std::vector<TGeneratorResult>
+            using TIRGenerator = std::function<
+                DGeneratorContext*(
+                    DGeneratorContext*,
+                    TExpression
                 )
             >;
+
+            /**
+             * Type of the context object being passed around when generating 
+             * IR commands from the abstract syntax tree by folding over it.
+             */
+            struct DGeneratorContext {
+                std::map<std::string, TIRGenerator>* irGenerators {nullptr};
+                IRCommandFactory* commandFactory {nullptr};
+                DataStructures::BatchStack<std::string> variableStack {};
+                DataStructures::LinkedMap<std::string> symbolTable {};
+                std::vector<TIRCommand> irCommands {};
+            };
 
             IRGenerator();
             /**
              * Generate the resulting IR commands from the given abstract syntax tree.
              */
             std::vector<TIRCommand> generate(TExpression root);
+            /**
+             * Map of the IR generating functions for each parse tree expression type.
+             */
+            std::map<std::string, TIRGenerator>& irGenerators();
         private:
             IRCommandFactory _commandFactory;
-            std::map<std::string, TExpressionIRGenerator> _irGenerators;
+            std::map<std::string, TIRGenerator> _irGenerators;
     };
 };
 

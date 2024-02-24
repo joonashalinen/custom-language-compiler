@@ -9,7 +9,7 @@ namespace Functional {
     class IFoldable {
         public:
             virtual TAccumulator fold(
-                std::function<TAccumulator(TValue, TAccumulator)> f, 
+                std::function<TAccumulator(TAccumulator, TValue)> f, 
                 TAccumulator acc
             ) = 0;
         private:
