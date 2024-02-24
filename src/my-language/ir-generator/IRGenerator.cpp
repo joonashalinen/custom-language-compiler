@@ -72,7 +72,7 @@ namespace MyLanguage {
 
         /**
          * Generates the IR commands for a function call expression. 
-         * Unary and binary operations are also interpreted as function calls.
+         * Unary and binary operations other than '=' are also interpreted as function calls.
          */
         IRGenerator::DGeneratorContext* generateFunctionCall(
             IRGenerator::DGeneratorContext* context,
@@ -98,6 +98,42 @@ namespace MyLanguage {
         }
 
         /**
+         * Generates the IR commands for the '=' binary operation.
+         */
+        IRGenerator::DGeneratorContext* generateAssignment(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            assert(expression->children().size() == 2);
+            assert(expression->children().at(0)->type() == "identifier");
+            // Name of the variable being assigned to.
+            auto variableName = expression->children().at(0)->subTypes().at("literal-value");
+            // Name of the corresponding IR variable.
+            auto leftIRVariable = context->symbolTable.at(variableName);
+            // The value on the right side of the variable is given by the IR variable
+            // at the top of the variable stack.
+            auto rightIRVariable = (context->variableStack.pop(1)).at(0);
+            // Assign the value on the right side to the newly created variable.
+            auto command = context->commandFactory->createCopy(rightIRVariable, leftIRVariable);
+            context->irCommands.insert(context->irCommands.end(), command);
+            return context;
+        }
+
+        /**
+         * Generates IR commands for binary operators.
+         */
+        IRGenerator::DGeneratorContext* generateBinaryOperator(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            if (expression->subTypes().at("name") == "=") {
+                return generateAssignment(context, expression);
+            } else {
+                return generateFunctionCall(context, expression);
+            }
+        }
+
+        /**
          * Top-level generator for generating IR commands for any given expression.
          */
         IRGenerator::DGeneratorContext* generateAny(
@@ -119,7 +155,7 @@ namespace MyLanguage {
     {
         this->_irGenerators.insert({"number", IRGenerators::generateNumber});
         this->_irGenerators.insert({"chain", IRGenerators::generateChain});
-        this->_irGenerators.insert({"binary-operator", IRGenerators::generateFunctionCall});
+        this->_irGenerators.insert({"binary-operator", IRGenerators::generateBinaryOperator});
         this->_irGenerators.insert({"function-call", IRGenerators::generateFunctionCall});
         this->_irGenerators.insert({"variable-declaration", IRGenerators::generateVariableDeclaration});
         this->_irGenerators.insert({"identifier", IRGenerators::generateIdentifier});
