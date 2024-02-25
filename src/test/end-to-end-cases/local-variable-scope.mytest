@@ -1,0 +1,6 @@
+var a = 1;
+var b = {var a = 2; a}
+var c = a;
+print_int(c);
+!expect!
+1

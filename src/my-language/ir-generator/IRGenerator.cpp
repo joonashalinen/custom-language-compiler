@@ -72,6 +72,18 @@ namespace MyLanguage {
         }
 
         /**
+         * IR generation function for a block expression.
+         */
+        IRGenerator::DGeneratorContext* generateBlock(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            // Leave the block's local variable scope.
+            context->symbolTable.popFront();
+            return context;
+        }
+
+        /**
          * Generates the IR commands for a chain expression.
          */
         IRGenerator::DGeneratorContext* generateChain(
@@ -168,6 +180,21 @@ namespace MyLanguage {
                 throw std::runtime_error("No generator found for type: '" + expression->type() + "'.");
             }
         }
+
+        /**
+         * Does any needed modifications to the accumulated context value when 
+         * encountering a node in a pre-order traversal.
+         */
+        IRGenerator::DGeneratorContext* preHandle(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            // Create new local variable scope when encountering a block expression.
+            if (expression->type() == "block") {
+                context->symbolTable.pushFront();
+            }
+            return context;
+        }
     }
 
     IRGenerator::IRGenerator()
@@ -185,7 +212,10 @@ namespace MyLanguage {
     std::vector<TIRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)
     {
         auto context = IRGenerator::DGeneratorContext{&this->_irGenerators, &this->_commandFactory};
-        auto foldable = DataStructures::FoldableNode<IRGenerator::DGeneratorContext*, IRGenerator::TExpression>{root};
+        auto foldable = DataStructures::FoldableNode<
+            IRGenerator::DGeneratorContext*, 
+            IRGenerator::TExpression
+        >{root, IRGenerators::preHandle};
 
         return foldable.fold(IRGenerators::generateAny, &context)->irCommands;
     }

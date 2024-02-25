@@ -19,24 +19,25 @@ namespace DataStructures {
         using FoldFunction = std::function<TAccumulator(TAccumulator, TNode)>;
 
         public:
-            FoldableNode(TNode node);
+            FoldableNode(TNode node, FoldFunction preFolder = [](TAccumulator acc, TNode x){return acc;});
             /**
-             * Performs the folding function on the whole tree starting from the node. 
-             * If the node has no children, the folding function is simply performed on the 
-             * node itself with the given accumulator value. If the node has children, then 
-             * TAccumulator::fold() is called recursively for its children. The resulting accumulators 
-             * are then given to the folding function when it is called for the node itself.
+             * Performs a fold over the tree data structure. The given folding function is 
+             * applied in post-order, i.e. first for a parent node's children.
              */
             TAccumulator fold(FoldFunction f, TAccumulator acc);
         private:
             TNode _node;
-
+            /**
+             * A folding function that is performed for a parent node before it is for its children.
+             */
+            FoldFunction _preFolder;
     };
 
     template <class TAccumulator, class TNode>
     inline FoldableNode<TAccumulator, TNode>::FoldableNode(
-        TNode node
-        ): _node(node) {
+        TNode node,
+        FoldableNode::FoldFunction preFolder
+        ): _node(node), _preFolder(preFolder) {
     }
 
     template <class TAccumulator, class TNode>
@@ -44,6 +45,8 @@ namespace DataStructures {
         FoldableNode::FoldFunction f, 
         TAccumulator acc
     ) {
+        // First, we perform the pre-order folding function on the node.
+        acc = this->_preFolder(acc, this->_node);
         // If the node has no children then we can simply perform the function  
         // on the node.
         if (this->_node->children().size() == 0) {
