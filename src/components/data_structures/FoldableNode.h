@@ -17,27 +17,34 @@ namespace DataStructures {
     template <class TAccumulator, class TNode>
     class FoldableNode: public Functional::IFoldable<TAccumulator, TNode> {        
         using FoldFunction = std::function<TAccumulator(TAccumulator, TNode)>;
+        using InFoldFunction = std::function<TAccumulator(TAccumulator, TNode, int)>;
 
         public:
-            FoldableNode(TNode node, FoldFunction preFolder = [](TAccumulator acc, TNode x){return acc;});
+            FoldableNode(TNode node);
             /**
              * Performs a fold over the tree data structure. The given folding function is 
              * applied in post-order, i.e. first for a parent node's children.
              */
             TAccumulator fold(FoldFunction f, TAccumulator acc);
+            void setPreFolder(FoldFunction f);
+            void setInFolder(InFoldFunction f);
         private:
             TNode _node;
             /**
              * A folding function that is performed for a parent node before it is for its children.
              */
-            FoldFunction _preFolder;
+            FoldFunction _preFolder = [](TAccumulator acc, TNode x){return acc;};
+            /**
+             * A folding function that is performed for a parent node in-between every 
+             * fold on its children.
+             */
+            InFoldFunction _inFolder = [](TAccumulator acc, TNode x, int child){return acc;};
     };
 
     template <class TAccumulator, class TNode>
     inline FoldableNode<TAccumulator, TNode>::FoldableNode(
-        TNode node,
-        FoldableNode::FoldFunction preFolder
-        ): _node(node), _preFolder(preFolder) {
+        TNode node
+        ): _node(node) {
     }
 
     template <class TAccumulator, class TNode>
@@ -53,16 +60,34 @@ namespace DataStructures {
             return f(acc, this->_node);
         } else {
             // Fold over the node's children.
+            int i = 0;
             std::for_each(
                 this->_node->children().begin(), 
                 this->_node->children().end(),
-                [&acc, &f, this](TNode node) {
-                    acc = (FoldableNode<TAccumulator, TNode>{node}).fold(f, acc);
+                [&acc, &f, this, &i](TNode node) {
+                    auto foldableChild = FoldableNode<TAccumulator, TNode>{node};
+                    foldableChild.setPreFolder(this->_preFolder);
+                    foldableChild.setInFolder(this->_inFolder);
+                    acc = foldableChild.fold(f, acc);
+                    // Perform the in-order folding function for the parent node.
+                    acc = this->_inFolder(acc, this->_node, i);
+                    i = i + 1;
                 }
             );
             // Perform the folding function for the current node with the latest accumulator value.
             return f(acc, this->_node);
         }
+    }
+    template<class TAccumulator, class TNode>
+    inline void FoldableNode<TAccumulator, TNode>::setPreFolder(FoldFunction f)
+    {
+        this->_preFolder = f;
+    }
+
+    template<class TAccumulator, class TNode>
+    inline void FoldableNode<TAccumulator, TNode>::setInFolder(InFoldFunction f)
+    {
+        this->_inFolder = f;
     }
 };
 

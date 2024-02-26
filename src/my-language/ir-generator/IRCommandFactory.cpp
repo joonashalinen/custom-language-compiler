@@ -34,6 +34,18 @@ namespace MyLanguage {
         return command;
     }
 
+    TIRCommand IRCommandFactory::createLoadBoolConst(std::string value, std::string variable)
+    {
+        TIRCommand command = this->createExpression("irCommand", "command", "LoadBoolConst");
+        auto valueExpression = this->createExpression("boolean", "value", value);
+        auto variableExpression = this->createExpression("variable", "name", variable);
+        
+        Expression::addChild(command, valueExpression);
+        Expression::addChild(command, variableExpression);
+        
+        return command;
+    }
+
     TIRCommand IRCommandFactory::createCall(
         std::string functionName, 
         std::vector<std::string> argumentVars, 
@@ -65,10 +77,52 @@ namespace MyLanguage {
         return command;
     }
 
+    TIRCommand IRCommandFactory::createLabel(std::string label) {
+        auto command = this->createExpression("irCommand", "command", "Label");
+        auto labelExpression = this->createExpression("label", "name", label);
+        
+        Expression::addChild(command, labelExpression);
+
+        return command;
+    }
+
+    TIRCommand IRCommandFactory::createCondJump(
+        std::string conditionVar, 
+        std::string onTrueLabel,
+        std::string onFalseLabel
+    ) {
+        auto command = this->createExpression("irCommand", "command", "CondJump");
+        auto conditionVarExpression = this->createExpression("variable", "name", conditionVar);
+        auto onTrueLabelExpression = this->createExpression("label", "name", onTrueLabel);
+        auto onFalseLabelExpression = this->createExpression("label", "name", onFalseLabel);
+        
+        Expression::addChild(command, conditionVarExpression);
+        Expression::addChild(command, onTrueLabelExpression);
+        Expression::addChild(command, onFalseLabelExpression);
+
+        return command;
+    }
+
+    TIRCommand IRCommandFactory::createJump(std::string label) {
+        auto command = this->createExpression("irCommand", "command", "Jump");
+        auto labelExpression = this->createExpression("label", "name", label);
+        
+        Expression::addChild(command, labelExpression);
+
+        return command;
+    }
+
     std::string IRCommandFactory::nextVariable()
     {
         auto nextVariable = "x" + std::to_string(this->_variableId);
         this->_variableId = this->_variableId + 1;
         return nextVariable;
+    }
+
+    std::string IRCommandFactory::nextLabel()
+    {
+        auto nextLabel = "L" + std::to_string(this->_labelId);
+        this->_labelId = this->_labelId + 1;
+        return nextLabel;
     }
 }

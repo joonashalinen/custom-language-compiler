@@ -43,6 +43,7 @@ namespace MyLanguage {
                 std::map<std::string, TIRGenerator>* irGenerators {nullptr};
                 IRCommandFactory* commandFactory {nullptr};
                 DataStructures::BatchStack<std::string> variableStack {};
+                DataStructures::BatchStack<std::string> labelStack {};
                 DataStructures::LinkedMap<std::string> symbolTable {};
                 std::vector<TIRCommand> irCommands {};
             };

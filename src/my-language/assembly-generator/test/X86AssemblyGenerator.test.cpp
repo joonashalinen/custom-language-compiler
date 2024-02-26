@@ -15,7 +15,7 @@ namespace Test {
 }
 
 TEST_CASE("generate") {
-    auto input = "var a = {var b = 1 + (2 + 3); b}; a = 2;";
+    auto input = "if true then print_int(1) else print_int(2);";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
     auto root = Test::parser.parse(tokens, 0);
     auto irCommands = Test::irGenerator.generate(root);

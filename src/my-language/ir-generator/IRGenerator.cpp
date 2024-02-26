@@ -36,6 +36,21 @@ namespace MyLanguage {
         }
 
         /**
+         * Generates the IR commands for a boolean literal expression.
+         */
+        IRGenerator::DGeneratorContext* generateBoolean(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            auto booleanValue = expression->rootToken().value;
+            auto variable = context->commandFactory->nextVariable();
+            auto command = context->commandFactory->createLoadBoolConst(booleanValue, variable);
+            context->variableStack.push({variable});
+            context->irCommands.insert(context->irCommands.end(), command);
+            return context;
+        }
+
+        /**
          * IR generation function for a variable declaration expression.
          */
         IRGenerator::DGeneratorContext* generateVariableDeclaration(
@@ -165,6 +180,78 @@ namespace MyLanguage {
         }
 
         /**
+         * Does post-order IR generation logic for if-statements and if-else-statements.
+         */
+        IRGenerator::DGeneratorContext* generateIf(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            // Get the label ending the entire if-block.
+            auto endLabel = context->labelStack.pop();
+            // Create the corresponding IR command.
+            auto endIRLabel = context->commandFactory->createLabel(endLabel);
+            context->irCommands.insert(context->irCommands.end(), endIRLabel);
+            return context;
+        }
+
+        /**
+         * Generates the IR commands for a in if or an if-else expression during 
+         * an in-order traversal of the abstract syntax tree.
+         */
+        IRGenerator::DGeneratorContext* inGenerateIf(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression,
+            int childIndex
+        ) {
+            // If we have just generated the IR commands for the condition expression.
+            if (childIndex == 0) {
+                // Get the IR variable storing the result of the condition expression.
+                auto conditionIRVariable = context->variableStack.pop();
+                // Create the labels to traverse to in case the condition of false / true.
+                auto onTrueLabel = context->commandFactory->nextLabel();
+                auto onFalseLabel = context->commandFactory->nextLabel();
+                // Create the IR command for checking which label to jump to.
+                auto condJump = context->commandFactory->createCondJump(
+                    conditionIRVariable, 
+                    onTrueLabel,
+                    onFalseLabel
+                );
+                // Create the IR command for the label starting the then-statement.
+                auto onTrueIRLabel = context->commandFactory->createLabel(onTrueLabel);
+                // Add the IR commands to the total list of generated IR commands.
+                context->irCommands.insert(context->irCommands.end(), condJump);
+                context->irCommands.insert(context->irCommands.end(), onTrueIRLabel);
+                // If the if-statement includes an else-statement.
+                if (expression->children().size() == 3) {
+                    // Create a new label for the end of the entire if-statement.
+                    context->labelStack.push({context->commandFactory->nextLabel()});
+                }
+                // Add the label traversed to in case the condition is false to the stack. 
+                // This label is either the beginning of the else statement or the end of the 
+                // entire if block, depending on whether the statement includes an else-statement.
+                context->labelStack.push({onFalseLabel});
+
+            } else if (childIndex == 1 && expression->children().size() == 3) {
+                 // If we have just generated the IR commands for the then-statement 
+                // and there is a further else-statement present (in which case the if-statement has 3 children).
+
+                // Generate the IR label for the label beginning the else-statement.
+                auto elseLabel = context->labelStack.pop();
+                auto irLabel = context->commandFactory->createLabel(elseLabel);
+
+                // Generate the jump statement for skipping past the else-statement 
+                // at the end of the then-statement.
+                auto skipElseCommand = context->commandFactory->createJump(context->labelStack.stack().top());
+                
+                context->irCommands.insert(context->irCommands.end(), skipElseCommand);
+                context->irCommands.insert(context->irCommands.end(), irLabel);
+
+            }
+
+            return context;
+        }
+
+        /**
          * Top-level generator for generating IR commands for any given expression.
          */
         IRGenerator::DGeneratorContext* generateAny(
@@ -176,16 +263,15 @@ namespace MyLanguage {
                 auto generate = context->irGenerators->at(expression->type());
                 return generate(context, expression);
             } else {
-                std::cout << expression->rootToken().value << std::endl;
                 throw std::runtime_error("No generator found for type: '" + expression->type() + "'.");
             }
         }
 
         /**
-         * Does any needed modifications to the accumulated context value when 
-         * encountering a node in a pre-order traversal.
+         * Does any IR generation logic needed when traversing the abstract syntax tree 
+         * in pre-order.
          */
-        IRGenerator::DGeneratorContext* preHandle(
+        IRGenerator::DGeneratorContext* preGenerateAny(
             IRGenerator::DGeneratorContext* context,
             std::shared_ptr<Expression> expression
         ) {
@@ -195,27 +281,45 @@ namespace MyLanguage {
             }
             return context;
         }
+
+        /**
+         * Does any IR generation logic needed when traversing the abstract syntax tree 
+         * in in-order.
+         */
+        IRGenerator::DGeneratorContext* inGenerateAny(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression,
+            int childIndex
+        ) {
+            // Create new local variable scope when encountering a block expression.
+            if (expression->type() == "if") {
+                return inGenerateIf(context, expression, childIndex);
+            } else {
+                return context;
+            }
+        }
     }
 
     IRGenerator::IRGenerator()
     {
         this->_irGenerators.insert({"number", IRGenerators::generateNumber});
+        this->_irGenerators.insert({"boolean", IRGenerators::generateBoolean});
         this->_irGenerators.insert({"chain", IRGenerators::generateChain});
         this->_irGenerators.insert({"binary-operator", IRGenerators::generateBinaryOperator});
         this->_irGenerators.insert({"function-call", IRGenerators::generateFunctionCall});
         this->_irGenerators.insert({"variable-declaration", IRGenerators::generateVariableDeclaration});
         this->_irGenerators.insert({"identifier", IRGenerators::generateIdentifier});
-        this->_irGenerators.insert({"block", IRGenerators::nullGenerator});
+        this->_irGenerators.insert({"block", IRGenerators::generateBlock});
         this->_irGenerators.insert({"parenthetical", IRGenerators::nullGenerator});
+        this->_irGenerators.insert({"if", IRGenerators::generateIf});
     }
 
     std::vector<TIRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)
     {
         auto context = IRGenerator::DGeneratorContext{&this->_irGenerators, &this->_commandFactory};
-        auto foldable = DataStructures::FoldableNode<
-            IRGenerator::DGeneratorContext*, 
-            IRGenerator::TExpression
-        >{root, IRGenerators::preHandle};
+        auto foldable = DataStructures::FoldableNode<IRGenerator::DGeneratorContext*, IRGenerator::TExpression>{root};
+        foldable.setPreFolder(IRGenerators::preGenerateAny);
+        foldable.setInFolder(IRGenerators::inGenerateAny);
 
         return foldable.fold(IRGenerators::generateAny, &context)->irCommands;
     }

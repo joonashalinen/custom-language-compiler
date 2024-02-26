@@ -14,9 +14,12 @@ namespace DataStructures {
             BatchStack();
             void push(std::vector<T> values);
             std::vector<T> pop(int amount);
+            T pop();
+            std::stack<T>& stack();
         private:
             std::stack<T> _stack;
     };
+    
     template<class T>
     inline BatchStack<T>::BatchStack()
     {
@@ -39,6 +42,20 @@ namespace DataStructures {
             this->_stack.pop();
         }
         return result;
+    }
+
+    template<class T>
+    inline T BatchStack<T>::pop()
+    {
+        auto result = this->_stack.top();
+        this->_stack.pop();
+        return result;
+    }
+
+    template<class T>
+    inline std::stack<T>& BatchStack<T>::stack()
+    {
+        return this->_stack;
     }
 };
 
