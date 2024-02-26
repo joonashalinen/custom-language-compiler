@@ -1,0 +1,5 @@
+if true then print_int(1) else print_int(2);
+if false then print_int(3) else print_int(4);
+!expect!
+1
+4
