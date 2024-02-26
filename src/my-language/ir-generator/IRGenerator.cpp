@@ -207,7 +207,7 @@ namespace MyLanguage {
             if (childIndex == 0) {
                 // Get the IR variable storing the result of the condition expression.
                 auto conditionIRVariable = context->variableStack.pop();
-                // Create the labels to traverse to in case the condition of false / true.
+                // Create the labels to traverse to in case the condition is false / true.
                 auto onTrueLabel = context->commandFactory->nextLabel();
                 auto onFalseLabel = context->commandFactory->nextLabel();
                 // Create the IR command for checking which label to jump to.
@@ -252,6 +252,71 @@ namespace MyLanguage {
         }
 
         /**
+         * Does pre-order IR generation logic for while-do statements.
+         */
+        IRGenerator::DGeneratorContext* preGenerateWhile(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            // Generate the IR label beginning the condition portion of the while-do block.
+            auto conditionLabel = context->commandFactory->nextLabel();
+            auto conditionIRLabel = context->commandFactory->createLabel(conditionLabel);
+            context->irCommands.insert(context->irCommands.end(), conditionIRLabel);
+            context->labelStack.stack().push(conditionLabel);
+            return context;
+        }
+
+        /**
+         * Generates the IR commands for a while-do expression during 
+         * an in-order traversal of the abstract syntax tree.
+         */
+        IRGenerator::DGeneratorContext* inGenerateWhile(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression,
+            int childIndex
+        ) {
+            // If we have just generated the IR commands for the condition expression.
+            if (childIndex == 0) {
+                // Get the IR variable storing the result of the condition expression.
+                auto conditionIRVariable = context->variableStack.pop();
+                // Create the labels to traverse to in case the condition is false / true.
+                auto doLabel = context->commandFactory->nextLabel();
+                auto endLabel = context->commandFactory->nextLabel();
+                // Create the IR command for checking which label to jump to.
+                auto condJump = context->commandFactory->createCondJump(
+                    conditionIRVariable, 
+                    doLabel,
+                    endLabel
+                );
+                // Create the IR command for the label starting the do-portion.
+                auto doIRLabel = context->commandFactory->createLabel(doLabel);
+                // Add the IR commands to the total list of generated IR commands.
+                context->irCommands.insert(context->irCommands.end(), condJump);
+                context->irCommands.insert(context->irCommands.end(), doIRLabel);
+                // Add the label skipping the entire while-do block to the stack so it can be used later.
+                context->labelStack.push({endLabel});
+
+            } else if (childIndex == 1) {
+                 // If we have just generated the IR commands for the do-portion.
+
+                // Get the label skipping the whole while-block.
+                auto endLabel = context->labelStack.pop();
+                // Get the label beginning the condition.
+                auto conditionLabel = context->labelStack.pop();
+
+                // Create the IR command for jumping back to the condition portion.
+                auto jumpToCondition = context->commandFactory->createJump(conditionLabel);
+                // Create the IR label that skips the whole while-block.
+                auto endIRLabel = context->commandFactory->createLabel(endLabel);
+                
+                context->irCommands.insert(context->irCommands.end(), jumpToCondition);
+                context->irCommands.insert(context->irCommands.end(), endIRLabel);
+            }
+
+            return context;
+        }
+
+        /**
          * Top-level generator for generating IR commands for any given expression.
          */
         IRGenerator::DGeneratorContext* generateAny(
@@ -278,8 +343,12 @@ namespace MyLanguage {
             // Create new local variable scope when encountering a block expression.
             if (expression->type() == "block") {
                 context->symbolTable.pushFront();
+                return context;
+            } else if (expression->type() == "while") {
+                return preGenerateWhile(context, expression);
+            } else {
+                return context;
             }
-            return context;
         }
 
         /**
@@ -294,6 +363,8 @@ namespace MyLanguage {
             // Create new local variable scope when encountering a block expression.
             if (expression->type() == "if") {
                 return inGenerateIf(context, expression, childIndex);
+            } else if (expression->type() == "while") {
+                return inGenerateWhile(context, expression, childIndex);
             } else {
                 return context;
             }
@@ -312,6 +383,7 @@ namespace MyLanguage {
         this->_irGenerators.insert({"block", IRGenerators::generateBlock});
         this->_irGenerators.insert({"parenthetical", IRGenerators::nullGenerator});
         this->_irGenerators.insert({"if", IRGenerators::generateIf});
+        this->_irGenerators.insert({"while", IRGenerators::nullGenerator});
     }
 
     std::vector<TIRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)
