@@ -72,7 +72,7 @@ namespace MyLanguage {
             auto conditionVariableLocation = variableStack.negativeEndLocation(conditionVariable);
             auto labels = command->extractChildSubTypeValues("label", "name");
             return (
-                indent + "cmpq $0" + std::to_string(conditionVariableLocation) + "(%rbp)" + "\n" +
+                indent + "cmpq $0, " + std::to_string(conditionVariableLocation) + "(%rbp)" + "\n" +
                 indent + "jne ." + labels.at(0) + "\n" + 
                 indent + "jmp ." + labels.at(1) + "\n"
             );
