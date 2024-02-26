@@ -41,6 +41,7 @@ namespace DataStructures {
             result.insert(result.end(), this->_stack.top());
             this->_stack.pop();
         }
+        std::reverse(result.begin(), result.end());
         return result;
     }
 

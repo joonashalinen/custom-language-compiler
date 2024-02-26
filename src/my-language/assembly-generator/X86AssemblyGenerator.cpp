@@ -48,6 +48,24 @@ namespace MyLanguage {
             );
         }
 
+        std::string generateLessThan(
+            StructuredLanguage::VariableStack& variableStack, 
+            std::string indent,
+            std::pair<std::string, std::string> comparedVariables,
+            std::string outputVar
+        ) {
+            auto firstVarLocation = variableStack.negativeEndLocation(comparedVariables.first);
+            auto secondVarLocation = variableStack.negativeEndLocation(comparedVariables.second);
+            auto outputVarLocation = variableStack.negativeEndLocation(outputVar);
+            return (
+                indent + "xor %rax, %rax" + "\n" +
+                indent + "movq " + std::to_string(firstVarLocation) + "(%rbp)" + ", %rdx" + "\n" +
+                indent + "cmpq " + std::to_string(secondVarLocation) + "(%rbp)" + ", %rdx" + "\n" +
+                indent + "setl %al" + "\n" +
+                indent + "movq " + "%rax, " + std::to_string(outputVarLocation) + "(%rbp)" + "\n"
+            );
+        }
+
         std::string generateCopy(
             StructuredLanguage::VariableStack& variableStack, 
             std::string indent,
@@ -128,6 +146,8 @@ namespace MyLanguage {
 
             if (functionName == "+") {
                 return generateAdd(variableStack, indent, {argumentVars.at(0), argumentVars.at(1)}, outputVarName);
+            } else if (functionName == "<") {
+                return generateLessThan(variableStack, indent, {argumentVars.at(0), argumentVars.at(1)}, outputVarName);
             } else {
                 return generateFunctionCall(variableStack, indent, functionName, argumentVars, outputVarName);
             }

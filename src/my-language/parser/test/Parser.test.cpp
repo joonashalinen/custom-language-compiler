@@ -77,10 +77,9 @@ TEST_CASE("Variable declaration in block") {
     REQUIRE(parseTree->type() == "block");
     REQUIRE(parseTree->children().at(0)->type() == "chain");
     REQUIRE(parseTree->children().at(0)->children().at(0)->type() == "variable-declaration");
-    REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "a");
-    REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(1)->rootToken().value == "and");
-    REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(1)->children().at(0)->rootToken().value == "b");
-    REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(1)->children().at(1)->rootToken().value == "c");
+    REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "and");
+    REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "b");
+    REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->children().at(1)->rootToken().value == "c");
 }
 
 TEST_CASE("If then else") {

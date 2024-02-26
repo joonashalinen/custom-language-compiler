@@ -16,16 +16,16 @@ namespace MyLanguage {
      * Class that can be used to generate assembly code.
      */
     class AssemblyGenerator {
-        using TExpression = std::shared_ptr<Expression>;
-        /**
-         * Type of a function that generates assembly code from a given IR command..
-         */
-        using TGenerator = std::function<std::string(
-            StructuredLanguage::VariableStack&,
-            std::string indent,
-            TIRCommand
-        )>;
         public:
+            using TExpression = std::shared_ptr<Expression>;
+            /**
+             * Type of a function that generates assembly code from a given IR command..
+             */
+            using TGenerator = std::function<std::string(
+                StructuredLanguage::VariableStack&,
+                std::string indent,
+                TIRCommand
+            )>;
             AssemblyGenerator();
             /**
              * Generates assembly code from the given list of IR commands.
