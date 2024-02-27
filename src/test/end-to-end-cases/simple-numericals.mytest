@@ -1,0 +1,11 @@
+print_int(1 + 2);
+print_int(1 - 2);
+print_int(2 * 3);
+print_int(4 / 2);
+print_int(7 % 4)
+!expect!
+3
+-1
+6
+2
+3
