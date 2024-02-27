@@ -32,27 +32,44 @@ namespace MyLanguage {
             );
         }
 
-        std::string generateAdd(
+        std::string generateNumericBinaryOperator(
             StructuredLanguage::VariableStack& variableStack, 
             std::string indent,
             std::pair<std::string, std::string> summands,
-            std::string outputVar
+            std::string outputVar,
+            std::string operation
         ) {
-            auto firstSummandLocation = variableStack.negativeEndLocation(summands.first);
-            auto secondSummandLocation = variableStack.negativeEndLocation(summands.second);
+            auto firstVarLocation = variableStack.negativeEndLocation(summands.first);
+            auto secondVarLocation = variableStack.negativeEndLocation(summands.second);
             auto outputVarLocation = variableStack.negativeEndLocation(outputVar);
-            return (
-                indent + "movq " + std::to_string(firstSummandLocation) + "(%rbp)" + ", %rax" + "\n" +
-                indent + "addq " + std::to_string(secondSummandLocation) + "(%rbp)" + ", %rax" + "\n" +
-                indent + "movq " + "%rax, " + std::to_string(outputVarLocation) + "(%rbp)" + "\n"
-            );
+            auto result = indent + "movq " + std::to_string(firstVarLocation) + "(%rbp)" + ", %rax" + "\n";
+            if (operation == "+" || operation == "-" || operation == "*") {
+                std::map<std::string, std::string> operationInstructions{
+                    {"+", "addq"},
+                    {"-", "subq"},
+                    {"*", "imulq"}
+                };
+                auto operationInstruction = operationInstructions.at(operation);
+                result = result + indent + operationInstruction + " " + std::to_string(secondVarLocation) + "(%rbp)" + ", %rax" + "\n";
+            } else {
+                result = result + (
+                    indent + "cqto\n" + 
+                    indent + "idivq" + " " + std::to_string(secondVarLocation) + "(%rbp)" + "\n"
+                );
+                if (operation == "%") {
+                    result = result + indent + "movq " + "%rdx, " + "%rax" + "\n";
+                }
+            }
+            result = result + indent + "movq " + "%rax, " + std::to_string(outputVarLocation) + "(%rbp)" + "\n";
+            return result;
         }
 
         std::string generateLessThan(
             StructuredLanguage::VariableStack& variableStack, 
             std::string indent,
             std::pair<std::string, std::string> comparedVariables,
-            std::string outputVar
+            std::string outputVar,
+            bool orEqual = false
         ) {
             auto firstVarLocation = variableStack.negativeEndLocation(comparedVariables.first);
             auto secondVarLocation = variableStack.negativeEndLocation(comparedVariables.second);
@@ -61,7 +78,7 @@ namespace MyLanguage {
                 indent + "xor %rax, %rax" + "\n" +
                 indent + "movq " + std::to_string(firstVarLocation) + "(%rbp)" + ", %rdx" + "\n" +
                 indent + "cmpq " + std::to_string(secondVarLocation) + "(%rbp)" + ", %rdx" + "\n" +
-                indent + "setl %al" + "\n" +
+                indent + (orEqual ? "setle" : "setl") + " %al" "\n" +
                 indent + "movq " + "%rax, " + std::to_string(outputVarLocation) + "(%rbp)" + "\n"
             );
         }
@@ -144,10 +161,22 @@ namespace MyLanguage {
             auto argumentVars = command->children().at(1)->extractChildSubTypeValues("variable", "name");
             auto outputVarName = command->children().at(2)->subTypes().at("name");
 
-            if (functionName == "+") {
-                return generateAdd(variableStack, indent, {argumentVars.at(0), argumentVars.at(1)}, outputVarName);
+            if ((std::set<std::string>{"+", "-", "*", "/", "%"}).contains(functionName)) {
+                return generateNumericBinaryOperator(
+                    variableStack, 
+                    indent, 
+                    {argumentVars.at(0), argumentVars.at(1)}, 
+                    outputVarName, 
+                    functionName
+                );
             } else if (functionName == "<") {
                 return generateLessThan(variableStack, indent, {argumentVars.at(0), argumentVars.at(1)}, outputVarName);
+            } else if (functionName == ">") {
+                return generateLessThan(variableStack, indent, {argumentVars.at(1), argumentVars.at(0)}, outputVarName);
+            } else if (functionName == "<=") {
+                return generateLessThan(variableStack, indent, {argumentVars.at(0), argumentVars.at(1)}, outputVarName, true);
+            } else if (functionName == ">=") {
+                return generateLessThan(variableStack, indent, {argumentVars.at(1), argumentVars.at(0)}, outputVarName, true);
             } else {
                 return generateFunctionCall(variableStack, indent, functionName, argumentVars, outputVarName);
             }
