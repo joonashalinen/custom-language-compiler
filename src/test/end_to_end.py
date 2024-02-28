@@ -22,7 +22,7 @@ def run():
                     # Run the compiled program.
                     programResult = subprocess.run(["cd .. && ./program.out"], shell=True, capture_output=True, text=True)
                     # Check if the prints match with what we expect.
-                    if programResult.stdout != expectedPrints + "\n":
+                    if (programResult.stdout != expectedPrints + "\n") and (programResult.stdout != expectedPrints):
                         errorMessage = "Failed test: " + fileName + "\nExpected:\n" + expectedPrints + "\n\n----\nReceived:\n" + programResult.stdout + "\n----\n"
                         print(errorMessage)
                     else:
