@@ -1,0 +1,11 @@
+var a = true;
+var b = false;
+print_bool(a and b);
+print_bool(b and a);
+print_bool(a and true);
+print_bool(true and a);
+!expect!
+false
+false
+true
+true
