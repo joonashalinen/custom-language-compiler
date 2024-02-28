@@ -15,7 +15,7 @@ namespace Test {
 }
 
 TEST_CASE("generate") {
-    auto input = "1 % 2;";
+    auto input = "true and false;";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
     auto root = Test::parser.parse(tokens, 0);
     auto irCommands = Test::irGenerator.generate(root);

@@ -86,6 +86,12 @@ namespace MyLanguage {
         return command;
     }
 
+    TIRCommand IRCommandFactory::createNextLabel()
+    {
+        auto nextLabel = this->nextLabel();
+        return this->createLabel(nextLabel);
+    }
+
     TIRCommand IRCommandFactory::createCondJump(
         std::string conditionVar, 
         std::string onTrueLabel,

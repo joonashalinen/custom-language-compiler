@@ -166,6 +166,74 @@ namespace MyLanguage {
         }
 
         /**
+         * Generates the IR commands for the boolean 'and' binary operation.
+         */
+        IRGenerator::DGeneratorContext* inGenerateAnd(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression,
+            int childIndex
+        ) {
+            assert(expression->children().size() == 2);
+            
+            // If we have just generated the IR commands for the left side of the and-expression.
+            if (childIndex == 0) {
+                // Get the variable storing the result of the left side.
+                auto leftResultVar = context->variableStack.pop();
+                // Create the label we wish to move to in the case the left result is true.
+                // This is the label beginning the section where the right side of the 
+                // and-expression is evaluated.
+                auto rightLabel = context->commandFactory->nextLabel();
+                auto rightIRLabel = context->commandFactory->createLabel(rightLabel);
+                // Create the label skipping the rest of the and-expression. In case the result of the left side 
+                // is false, we wish to skip the rest of the and-expression and return false.
+                auto skipLabel = context->commandFactory->nextLabel();
+                // Create the label ending the whole and-expression. We wish to jump here from the end 
+                // of the right variable's section.
+                auto endLabel = context->commandFactory->nextLabel();
+                // Create the conditional jump command for checking where we should jump next.
+                auto condJump = context->commandFactory->createCondJump(leftResultVar, rightLabel, skipLabel);
+
+                context->irCommands.insert(context->irCommands.end(), condJump);
+                context->irCommands.insert(context->irCommands.end(), rightIRLabel);
+                context->labelStack.push({skipLabel, endLabel});
+
+            } else if (childIndex == 1) {
+                // If we have just generated the IR commands for the right side of the and-expression.
+
+                // Get the variable storing the result of the right side.
+                auto rightResultVar = context->variableStack.pop();
+                // Create the variable for storing the result of the whole and-expression.
+                auto resultIRVar = context->commandFactory->nextVariable();
+                // Create the command for copying the right result into the final result variable.
+                // The right result is logically equivalent to the final result of the whole and-expression.
+                auto copy = context->commandFactory->createCopy(rightResultVar, resultIRVar);
+                
+                auto endLabel = context->labelStack.pop();
+                auto skipLabel = context->labelStack.pop();
+
+                // Create the command for jumping past the skip-section.
+                auto jump1 = context->commandFactory->createJump(endLabel);
+                auto jump2 = context->commandFactory->createJump(endLabel);
+                // Create the commands for the skip-section of the and-expression.
+                auto skipIRLabel = context->commandFactory->createLabel(skipLabel);
+                auto loadSkipResult = context->commandFactory->createLoadBoolConst("false", resultIRVar);
+                // Create the end label command.
+                auto endIRLabel = context->commandFactory->createLabel(endLabel);
+
+                context->irCommands.insert(context->irCommands.end(), copy);
+                context->irCommands.insert(context->irCommands.end(), jump1);
+                context->irCommands.insert(context->irCommands.end(), skipIRLabel);
+                context->irCommands.insert(context->irCommands.end(), loadSkipResult);
+                context->irCommands.insert(context->irCommands.end(), jump2);
+                context->irCommands.insert(context->irCommands.end(), endIRLabel);
+
+                context->variableStack.push({resultIRVar});
+            }
+            
+            return context;
+        }
+
+        /**
          * Generates IR commands for binary operators.
          */
         IRGenerator::DGeneratorContext* generateBinaryOperator(
@@ -174,8 +242,10 @@ namespace MyLanguage {
         ) {
             if (expression->subTypes().at("name") == "=") {
                 return generateAssignment(context, expression);
-            } else {
+            } else if (!((std::set<std::string>{"and", "or"}).contains(expression->subTypes().at("name")))) {
                 return generateFunctionCall(context, expression);
+            } else {
+                return context;
             }
         }
 
@@ -365,6 +435,8 @@ namespace MyLanguage {
                 return inGenerateIf(context, expression, childIndex);
             } else if (expression->type() == "while") {
                 return inGenerateWhile(context, expression, childIndex);
+            } else if (expression->type() == "binary-operator" && expression->subTypes().at("name") == "and") {
+                return inGenerateAnd(context, expression, childIndex);
             } else {
                 return context;
             }

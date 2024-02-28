@@ -8,6 +8,7 @@
 #include "IRCommandFactory.h"
 #include <map>
 #include <stack>
+#include <set>
 
 namespace MyLanguage {
     class IRGenerator;
