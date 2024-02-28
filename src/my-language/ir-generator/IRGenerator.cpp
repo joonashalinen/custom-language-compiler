@@ -166,12 +166,13 @@ namespace MyLanguage {
         }
 
         /**
-         * Generates the IR commands for the boolean 'and' binary operation.
+         * Generates the IR commands for the boolean and/or binary operations.
          */
-        IRGenerator::DGeneratorContext* inGenerateAnd(
+        IRGenerator::DGeneratorContext* inGenerateBoolean(
             IRGenerator::DGeneratorContext* context,
             std::shared_ptr<Expression> expression,
-            int childIndex
+            int childIndex,
+            std::string operation
         ) {
             assert(expression->children().size() == 2);
             
@@ -184,28 +185,28 @@ namespace MyLanguage {
                 // and-expression is evaluated.
                 auto rightLabel = context->commandFactory->nextLabel();
                 auto rightIRLabel = context->commandFactory->createLabel(rightLabel);
-                // Create the label skipping the rest of the and-expression. In case the result of the left side 
-                // is false, we wish to skip the rest of the and-expression and return false.
+                // Create the label skipping the rest of the boolean expression.
                 auto skipLabel = context->commandFactory->nextLabel();
-                // Create the label ending the whole and-expression. We wish to jump here from the end 
+                // Create the label ending the whole boolean expression. We wish to jump here from the end 
                 // of the right variable's section.
                 auto endLabel = context->commandFactory->nextLabel();
                 // Create the conditional jump command for checking where we should jump next.
-                auto condJump = context->commandFactory->createCondJump(leftResultVar, rightLabel, skipLabel);
+                auto condJump = operation == "and" ? 
+                    context->commandFactory->createCondJump(leftResultVar, rightLabel, skipLabel) : 
+                    context->commandFactory->createCondJump(leftResultVar, skipLabel, rightLabel);
 
                 context->irCommands.insert(context->irCommands.end(), condJump);
                 context->irCommands.insert(context->irCommands.end(), rightIRLabel);
                 context->labelStack.push({skipLabel, endLabel});
 
             } else if (childIndex == 1) {
-                // If we have just generated the IR commands for the right side of the and-expression.
+                // If we have just generated the IR commands for the right side of the boolean expression.
 
                 // Get the variable storing the result of the right side.
                 auto rightResultVar = context->variableStack.pop();
-                // Create the variable for storing the result of the whole and-expression.
+                // Create the variable for storing the result of the whole boolean expression.
                 auto resultIRVar = context->commandFactory->nextVariable();
                 // Create the command for copying the right result into the final result variable.
-                // The right result is logically equivalent to the final result of the whole and-expression.
                 auto copy = context->commandFactory->createCopy(rightResultVar, resultIRVar);
                 
                 auto endLabel = context->labelStack.pop();
@@ -214,9 +215,12 @@ namespace MyLanguage {
                 // Create the command for jumping past the skip-section.
                 auto jump1 = context->commandFactory->createJump(endLabel);
                 auto jump2 = context->commandFactory->createJump(endLabel);
-                // Create the commands for the skip-section of the and-expression.
+                // Create the commands for the skip-section of the boolean expression.
                 auto skipIRLabel = context->commandFactory->createLabel(skipLabel);
-                auto loadSkipResult = context->commandFactory->createLoadBoolConst("false", resultIRVar);
+                auto loadSkipResult = context->commandFactory->createLoadBoolConst(
+                    operation == "and" ? "false" : "true", 
+                    resultIRVar
+                );
                 // Create the end label command.
                 auto endIRLabel = context->commandFactory->createLabel(endLabel);
 
@@ -435,8 +439,11 @@ namespace MyLanguage {
                 return inGenerateIf(context, expression, childIndex);
             } else if (expression->type() == "while") {
                 return inGenerateWhile(context, expression, childIndex);
-            } else if (expression->type() == "binary-operator" && expression->subTypes().at("name") == "and") {
-                return inGenerateAnd(context, expression, childIndex);
+            } else if (
+                expression->type() == "binary-operator" && 
+                (expression->subTypes().at("name") == "and" || expression->subTypes().at("name") == "or")
+            ) {
+                return inGenerateBoolean(context, expression, childIndex, expression->subTypes().at("name"));
             } else {
                 return context;
             }

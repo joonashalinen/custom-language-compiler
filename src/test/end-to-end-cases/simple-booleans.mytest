@@ -4,8 +4,16 @@ print_bool(a and b);
 print_bool(b and a);
 print_bool(a and true);
 print_bool(true and a);
+print_bool(a or b);
+print_bool(b or a);
+print_bool(b or false);
+print_bool(false or b);
 !expect!
 false
 false
 true
 true
+true
+true
+false
+false
