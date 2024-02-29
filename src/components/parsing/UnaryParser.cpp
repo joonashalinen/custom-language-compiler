@@ -2,10 +2,12 @@
 
 UnaryParser::UnaryParser(
         std::string operatorType,
+        std::set<std::string> acceptableOperators,
         IParseable& expressionParser
     ):
     _operatorType(operatorType),
-    _expressionParser(expressionParser){
+    _expressionParser(expressionParser),
+    _acceptableOperators(acceptableOperators) {
     
 }
 
@@ -15,7 +17,7 @@ std::shared_ptr<Expression> UnaryParser::parse(std::vector<DToken>& tokens, int 
     auto firstToken = tokenSequence.consume();
     
     // If the first token we encounter is the operator.
-    if (firstToken.type == this->_operatorType) {
+    if (this->_acceptableOperators.contains(firstToken.type)) {
         // Get the expression after the operator.
         auto followingExpression = this->_expressionParser.parse(tokens, tokenSequence.position());
 
@@ -27,7 +29,8 @@ std::shared_ptr<Expression> UnaryParser::parse(std::vector<DToken>& tokens, int 
             }
         );
         unaryExpression->tokens().insert(unaryExpression->tokens().end(), firstToken);
-        
+        unaryExpression->subTypes().insert({"name", firstToken.value});
+
         Expression::addChild(unaryExpression, followingExpression);
         return unaryExpression;
     } else {

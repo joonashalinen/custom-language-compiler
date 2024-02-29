@@ -135,6 +135,22 @@ namespace MyLanguage {
             );
         }
 
+        std::string generateUnaryOperator(
+            StructuredLanguage::VariableStack& variableStack, 
+            std::string indent,
+            std::string inputVar,
+            std::string outputVar,
+            std::string unaryOperator
+        ) {
+            auto inputVarLocation = variableStack.negativeEndLocation(inputVar);
+            auto outputVarLocation = variableStack.negativeEndLocation(outputVar);
+            return (
+                indent + "movq " + std::to_string(inputVarLocation) + "(%rbp), %rax" + "\n" + 
+                indent + (unaryOperator == "-" ? ("negq %rax\n") : ("xorq $1 %rax\n")) + 
+                indent + "movq %rax, " + std::to_string(outputVarLocation) + "(%rbp)" + "\n"
+            );
+        }
+
         std::string generateFunctionCall(
             StructuredLanguage::VariableStack& variableStack, 
             std::string indent,
@@ -161,7 +177,9 @@ namespace MyLanguage {
             auto argumentVars = command->children().at(1)->extractChildSubTypeValues("variable", "name");
             auto outputVarName = command->children().at(2)->subTypes().at("name");
 
-            if ((std::set<std::string>{"+", "-", "*", "/", "%"}).contains(functionName)) {
+            if ((functionName == "-" && argumentVars.size() == 1) || functionName == "not") {
+                return generateUnaryOperator(variableStack, indent, argumentVars.at(0), outputVarName, functionName);
+            } else if ((std::set<std::string>{"+", "-", "*", "/", "%"}).contains(functionName)) {
                 return generateNumericBinaryOperator(
                     variableStack, 
                     indent, 

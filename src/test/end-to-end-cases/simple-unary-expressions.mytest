@@ -1,0 +1,9 @@
+print_int(-1 + 2);
+print_int(-1);
+print_bool(not true);
+print_bool(not false and true);
+!expect!
+1
+-1
+false
+true

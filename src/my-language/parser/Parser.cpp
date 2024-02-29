@@ -9,13 +9,17 @@ MyLanguage::Parser::Parser() {
     this->_numberLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"number"});
     this->_booleanLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"boolean"});
     this->_binaryParser = std::unique_ptr<BinaryParser>(new BinaryParser{"binary-operator", *(this->_mapParser)});
-    this->_unaryParser = std::unique_ptr<UnaryParser>(new UnaryParser{"unary-operator", *(this->_mapParser)});
+
+    this->_unaryParser = std::unique_ptr<UnaryParser>(
+        new UnaryParser{"unary-operator", {"unary-operator", "minus"}, *(this->_mapParser)}
+    );
 
     this->_operatedChainParser = std::unique_ptr<OperatedChainParser>(
         new OperatedChainParser{
             *(this->_mapParser), 
             std::map<std::string, IParseable*>{
-                {"binary-operator", this->_binaryParser.get()}
+                {"binary-operator", this->_binaryParser.get()},
+                {"minus", this->_binaryParser.get()}
             }
         }
     );
@@ -65,6 +69,7 @@ MyLanguage::Parser::Parser() {
             {"number", this->_numberLiteralParser.get()},
             {"boolean", this->_booleanLiteralParser.get()},
             {"unary-operator", this->_unaryParser.get()},
+            {"minus", this->_unaryParser.get()},
             {"(", this->_parentheticalParser.get()},
             {"{", this->_blockParser.get()},
             {"if", this->_ifParser.get()},

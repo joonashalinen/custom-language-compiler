@@ -20,7 +20,7 @@ std::shared_ptr<Expression> OperatedChainParser::parse(std::vector<DToken>& toke
     // First encountered expression.
     auto firstExpression = this->_parser.parse(tokens, position);
     tokenSequence.setPosition(firstExpression->endPos());
-    
+
     // The next token past the first expression.
     auto nextToken = tokenSequence.consume();
 

@@ -456,6 +456,7 @@ namespace MyLanguage {
         this->_irGenerators.insert({"boolean", IRGenerators::generateBoolean});
         this->_irGenerators.insert({"chain", IRGenerators::generateChain});
         this->_irGenerators.insert({"binary-operator", IRGenerators::generateBinaryOperator});
+        this->_irGenerators.insert({"unary-operator", IRGenerators::generateFunctionCall});
         this->_irGenerators.insert({"function-call", IRGenerators::generateFunctionCall});
         this->_irGenerators.insert({"variable-declaration", IRGenerators::generateVariableDeclaration});
         this->_irGenerators.insert({"identifier", IRGenerators::generateIdentifier});
