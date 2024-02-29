@@ -146,7 +146,7 @@ namespace MyLanguage {
             auto outputVarLocation = variableStack.negativeEndLocation(outputVar);
             return (
                 indent + "movq " + std::to_string(inputVarLocation) + "(%rbp), %rax" + "\n" + 
-                indent + (unaryOperator == "-" ? ("negq %rax\n") : ("xorq $1 %rax\n")) + 
+                indent + (unaryOperator == "-" ? ("negq %rax\n") : ("xorq $1, %rax\n")) + 
                 indent + "movq %rax, " + std::to_string(outputVarLocation) + "(%rbp)" + "\n"
             );
         }
