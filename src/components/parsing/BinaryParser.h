@@ -6,6 +6,7 @@
 #include "TokenSequence.h"
 #include <string>
 #include <functional>
+#include <set>
 #include "TExpressions.h"
 #include "MapParser.h"
 
@@ -17,11 +18,13 @@ class BinaryParser: public IParseable {
     public:
         BinaryParser(
             std::string operatorType,
+            std::set<std::string> acceptedOperators,
             MapParser& mapParser
         );
         std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
     private:
         std::string _operatorType;
+        std::set<std::string> _acceptedOperators;
         MapParser& _mapParser;
 };
 

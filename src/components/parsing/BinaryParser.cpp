@@ -4,9 +4,11 @@
 
 BinaryParser::BinaryParser(
         std::string operatorType,
+        std::set<std::string> acceptedOperators,
         MapParser& mapParser
     ):
     _operatorType(operatorType),
+    _acceptedOperators(acceptedOperators),
     _mapParser(mapParser) {
     
 }
@@ -21,7 +23,7 @@ std::shared_ptr<Expression> BinaryParser::parse(std::vector<DToken>& tokens, int
     auto nextToken = tokenSequence.consume();
 
     // If the next token is the operator we were expecting.
-    if (nextToken.type == this->_operatorType) {
+    if (this->_acceptedOperators.contains(nextToken.type)) {
         // Get the expression succeeding the binary operator.
         auto secondExpression = this->_mapParser.parse(tokens, tokenSequence.position());
 

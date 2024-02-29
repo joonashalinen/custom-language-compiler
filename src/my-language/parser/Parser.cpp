@@ -8,7 +8,9 @@ MyLanguage::Parser::Parser() {
     this->_identifierLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"identifier"});
     this->_numberLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"number"});
     this->_booleanLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"boolean"});
-    this->_binaryParser = std::unique_ptr<BinaryParser>(new BinaryParser{"binary-operator", *(this->_mapParser)});
+    this->_binaryParser = std::unique_ptr<BinaryParser>(
+        new BinaryParser{"binary-operator", {"binary-operator", "minus"}, *(this->_mapParser)}
+    );
 
     this->_unaryParser = std::unique_ptr<UnaryParser>(
         new UnaryParser{"unary-operator", {"unary-operator", "minus"}, *(this->_mapParser)}
