@@ -1,4 +1,7 @@
 var a = 3 + 2;
+var b: Int = 2 + 1;
 print_int(a);
+print_int(b);
 !expect!
 5
+3

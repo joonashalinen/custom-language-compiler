@@ -188,3 +188,34 @@ TEST_CASE("Subtraction") {
     REQUIRE(parseTree->children().at(0)->rootToken().value == "2");
     REQUIRE(parseTree->children().at(1)->rootToken().value == "1");
 }
+
+TEST_CASE("Variable declaration") {
+    auto input = "var a = 1;";
+    auto tokens = Test::tokenizer.tokenizer.tokenize(input);
+
+    auto parseTree = Test::parser.parse(tokens, 0);
+
+    REQUIRE(parseTree->type() == "chain");
+    parseTree = parseTree->children().at(0);
+
+    REQUIRE(parseTree->type() == "variable-declaration");
+    REQUIRE(parseTree->subTypes().at("name") == "a");
+    REQUIRE(parseTree->children().size() == 1);
+    REQUIRE(parseTree->children().at(0)->rootToken().value == "1");
+}
+
+TEST_CASE("Typed variable declaration") {
+    auto input = "var a: Int = 1;";
+    auto tokens = Test::tokenizer.tokenizer.tokenize(input);
+
+    auto parseTree = Test::parser.parse(tokens, 0);
+
+    REQUIRE(parseTree->type() == "chain");
+    parseTree = parseTree->children().at(0);
+
+    REQUIRE(parseTree->type() == "variable-declaration");
+    REQUIRE(parseTree->subTypes().at("value-type") == "Int");
+    REQUIRE(parseTree->subTypes().at("name") == "a");
+    REQUIRE(parseTree->children().size() == 1);
+    REQUIRE(parseTree->children().at(0)->rootToken().value == "1");
+}
