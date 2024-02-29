@@ -1,0 +1,27 @@
+print_int(1 < 2);
+print_int(1 > 2);
+print_int(1 <= 2);
+print_int(1 >= 2);
+print_int(1 <= 1);
+print_int(1 >= 1);
+print_int(1 == 1);
+print_int(1 == 2);
+print_int(1 != 1);
+print_int(1 != 2);
+print_int(true == false);
+print_int(true == true);
+print_int(false == false);
+!expect!
+true
+false
+true
+false
+true
+true
+true
+false
+false
+true
+false
+true
+true

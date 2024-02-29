@@ -64,13 +64,21 @@ namespace MyLanguage {
             return result;
         }
 
-        std::string generateLessThan(
+        std::string generateComparison(
             StructuredLanguage::VariableStack& variableStack, 
             std::string indent,
             std::pair<std::string, std::string> comparedVariables,
             std::string outputVar,
-            bool orEqual = false
+            std::string operation
         ) {
+            std::map<std::string, std::string> instructions{
+                {"<=", "setle"},
+                {"<", "setl"},
+                {">", "setg"},
+                {">=", "setge"},
+                {"==", "sete"},
+                {"!=", "setne"}
+            }
             auto firstVarLocation = variableStack.negativeEndLocation(comparedVariables.first);
             auto secondVarLocation = variableStack.negativeEndLocation(comparedVariables.second);
             auto outputVarLocation = variableStack.negativeEndLocation(outputVar);
@@ -78,7 +86,7 @@ namespace MyLanguage {
                 indent + "xor %rax, %rax" + "\n" +
                 indent + "movq " + std::to_string(firstVarLocation) + "(%rbp)" + ", %rdx" + "\n" +
                 indent + "cmpq " + std::to_string(secondVarLocation) + "(%rbp)" + ", %rdx" + "\n" +
-                indent + (orEqual ? "setle" : "setl") + " %al" "\n" +
+                indent + instructions.at(operation) + " %al" "\n" +
                 indent + "movq " + "%rax, " + std::to_string(outputVarLocation) + "(%rbp)" + "\n"
             );
         }
@@ -187,14 +195,14 @@ namespace MyLanguage {
                     outputVarName, 
                     functionName
                 );
-            } else if (functionName == "<") {
-                return generateLessThan(variableStack, indent, {argumentVars.at(0), argumentVars.at(1)}, outputVarName);
-            } else if (functionName == ">") {
-                return generateLessThan(variableStack, indent, {argumentVars.at(1), argumentVars.at(0)}, outputVarName);
-            } else if (functionName == "<=") {
-                return generateLessThan(variableStack, indent, {argumentVars.at(0), argumentVars.at(1)}, outputVarName, true);
-            } else if (functionName == ">=") {
-                return generateLessThan(variableStack, indent, {argumentVars.at(1), argumentVars.at(0)}, outputVarName, true);
+            } else if ((std::set<std::string>{"<", "<=", ">", ">=", "!=", "=="}).contains(functionName)) {
+                return generateComparison(
+                    variableStack, 
+                    indent, 
+                    {argumentVars.at(0), argumentVars.at(1)}, 
+                    outputVarName, 
+                    functionName
+                );
             } else {
                 return generateFunctionCall(variableStack, indent, functionName, argumentVars, outputVarName);
             }
