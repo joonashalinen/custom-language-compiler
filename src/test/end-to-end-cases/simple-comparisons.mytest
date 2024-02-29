@@ -1,16 +1,16 @@
-print_int(1 < 2);
-print_int(1 > 2);
-print_int(1 <= 2);
-print_int(1 >= 2);
-print_int(1 <= 1);
-print_int(1 >= 1);
-print_int(1 == 1);
-print_int(1 == 2);
-print_int(1 != 1);
-print_int(1 != 2);
-print_int(true == false);
-print_int(true == true);
-print_int(false == false);
+print_bool(1 < 2);
+print_bool(1 > 2);
+print_bool(1 <= 2);
+print_bool(1 >= 2);
+print_bool(1 <= 1);
+print_bool(1 >= 1);
+print_bool(1 == 1);
+print_bool(1 == 2);
+print_bool(1 != 1);
+print_bool(1 != 2);
+print_bool(true == false);
+print_bool(true == true);
+print_bool(false == false);
 !expect!
 true
 false
