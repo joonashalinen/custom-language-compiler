@@ -78,7 +78,7 @@ namespace MyLanguage {
                 {">=", "setge"},
                 {"==", "sete"},
                 {"!=", "setne"}
-            }
+            };
             auto firstVarLocation = variableStack.negativeEndLocation(comparedVariables.first);
             auto secondVarLocation = variableStack.negativeEndLocation(comparedVariables.second);
             auto outputVarLocation = variableStack.negativeEndLocation(outputVar);
