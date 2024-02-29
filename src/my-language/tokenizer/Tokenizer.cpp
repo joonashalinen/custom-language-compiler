@@ -13,7 +13,8 @@ Tokenizer::Tokenizer(Tokenization::Tokenizer tokenizer):
     this->tokenizer.addRegexPattern("while", "while");
     this->tokenizer.addRegexPattern("do", "do");
     this->tokenizer.addRegexPattern("boolean", "(true|false)");
-    this->tokenizer.addRegexPattern("binary-operator", "(\\+|\\*|\\/|\\=|\\=\\=|\\!\\=|\\<|\\<\\=|\\>|\\>\\=|%|and|or)");
+    this->tokenizer.addRegexPattern("binary-operator", "(\\=\\=|\\!\\=|\\<\\=|\\>\\=)");
+    this->tokenizer.addRegexPattern("binary-operator", "(\\+|\\*|\\/|\\=|\\<|\\>|%|and|or)");
     this->tokenizer.addRegexPattern("minus", "-");
     this->tokenizer.addRegexPattern("unary-operator", "not");
     this->tokenizer.addRegexPattern("parentheses", "[(){}]");
