@@ -219,3 +219,20 @@ TEST_CASE("Typed variable declaration") {
     REQUIRE(parseTree->children().size() == 1);
     REQUIRE(parseTree->children().at(0)->rootToken().value == "1");
 }
+
+TEST_CASE("Module with function") {
+    auto input = "fun test(x, y) {\nprint_int(x);}\nprint_int(1, 2);";
+    auto tokens = Test::tokenizer.tokenizer.tokenize(input);
+
+    auto moduleExpression = Test::parser.parse(tokens, 0);
+    REQUIRE(moduleExpression->type() == "module");
+    auto function = moduleExpression->children().at(0);
+
+    REQUIRE(function->type() == "function");
+    REQUIRE(function->subTypes().at("name") == "test");
+    REQUIRE(function->children().at(0)->type() == "parameter-list");
+    REQUIRE(function->children().at(0)->children().at(0)->rootToken().value == "x");
+    REQUIRE(function->children().at(0)->children().at(1)->rootToken().value == "y");
+    REQUIRE(function->children().at(1)->type() == "function-definition");
+    REQUIRE(function->children().at(1)->children().at(0)->type() == "function-call");
+}

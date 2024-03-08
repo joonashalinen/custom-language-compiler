@@ -24,7 +24,7 @@ MyLanguage::ModuleParser::ModuleParser(
         new Parsing::ChainParser{
             "module", 
             ";", 
-            *(statementParser),
+            *(this->_moduleStatementParser),
             [](std::vector<DToken>& tokens, int position) {
                 if (position > 0) {
                     return tokens.at(position - 1).value == "}";
@@ -46,7 +46,7 @@ MyLanguage::ModuleParser::ModuleParser(
     // Next, we set the parsing rules.
 
     this->_moduleStatementParser->setParsers(std::map<std::string, IParseable*>{
-        {"fun", this->_functionParser.get()}
+        {"function-keyword", this->_functionParser.get()}
     });
     this->_moduleStatementParser->setWildCardParser(statementParser);
 
