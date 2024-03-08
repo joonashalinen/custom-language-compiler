@@ -221,7 +221,7 @@ TEST_CASE("Typed variable declaration") {
 }
 
 TEST_CASE("Module with function") {
-    auto input = "fun test(x, y) {\nprint_int(x);}\nprint_int(1, 2);";
+    auto input = "fun test(x, y) {\nprint_int(x); return y;}\nprint_int(1, 2);";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
 
     auto moduleExpression = Test::parser.parse(tokens, 0);
@@ -235,4 +235,6 @@ TEST_CASE("Module with function") {
     REQUIRE(function->children().at(0)->children().at(1)->rootToken().value == "y");
     REQUIRE(function->children().at(1)->type() == "function-definition");
     REQUIRE(function->children().at(1)->children().at(0)->type() == "function-call");
+    REQUIRE(function->children().at(1)->children().at(1)->type() == "return");
+    REQUIRE(function->children().at(1)->children().at(1)->children().at(0)->rootToken().value == "y");
 }

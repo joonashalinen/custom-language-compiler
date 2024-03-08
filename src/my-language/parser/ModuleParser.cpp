@@ -9,17 +9,6 @@ MyLanguage::ModuleParser::ModuleParser(
 
     this->_moduleStatementParser = std::unique_ptr<MapParser>(new MapParser{});
 
-    this->_functionDefinitionParser = std::unique_ptr<Parsing::ChainParser>(
-        new Parsing::ChainParser{
-            "function-definition", 
-            ";", 
-            *(statementParser),
-            [](std::vector<DToken>& tokens, int position) {
-                return false;
-            }
-        }
-    );
-
     this->_moduleParser = std::unique_ptr<Parsing::ChainParser>(
         new Parsing::ChainParser{
             "module", 
@@ -39,7 +28,7 @@ MyLanguage::ModuleParser::ModuleParser(
         new MyLanguage::FunctionParser{
             identifierParser,
             identifierParser,
-            this->_functionDefinitionParser.get()
+            statementParser
         }
     );
 

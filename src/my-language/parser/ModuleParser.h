@@ -15,7 +15,6 @@ namespace MyLanguage {
             ModuleParser(IParseable* statementParser, IParseable* identifierParser);
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         private:
-            std::unique_ptr<Parsing::ChainParser> _functionDefinitionParser;
             std::unique_ptr<Parsing::ChainParser> _moduleParser;
             std::unique_ptr<MapParser> _moduleStatementParser;
             std::unique_ptr<MyLanguage::FunctionParser> _functionParser;

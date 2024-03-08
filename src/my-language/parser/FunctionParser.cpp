@@ -3,11 +3,24 @@
 MyLanguage::FunctionParser::FunctionParser(
     IParseable* identifierParser, 
     IParseable* parameterParser,
-    IParseable* chainParser
+    IParseable* baseStatementParser
 ):  _identifierParser(identifierParser), _parameterParser(parameterParser)
 {
     this->_parameterListParser = std::unique_ptr<Parsing::ListParser>(
         new Parsing::ListParser{"parameter-list", "(", ")", ",", *parameterParser}
+    );
+
+    this->_statementParser = std::unique_ptr<MapParser>(new MapParser{});
+
+    this->_definitionParser = std::unique_ptr<Parsing::ChainParser>(
+        new Parsing::ChainParser{
+            "function-definition", 
+            ";", 
+            *(this->_statementParser),
+            [](std::vector<DToken>& tokens, int position) {
+                return false;
+            }
+        }
     );
 
     this->_parser = std::unique_ptr<Parsing::SkeletonParser>(
@@ -18,16 +31,36 @@ MyLanguage::FunctionParser::FunctionParser(
                 {"expression", "ID"},
                 {"expression", "L"},
                 {"token-value", "{"},
-                {"expression", "C"},
+                {"expression", "D"},
                 {"token-value", "}"}
             },
             std::map<std::string, IParseable*>{
                 {"ID", identifierParser},
                 {"L", this->_parameterListParser.get()},
-                {"C", chainParser}
+                {"D", this->_definitionParser.get()}
             }
         }
     );
+    
+    this->_returnParser = std::unique_ptr<Parsing::SkeletonParser>(
+        new Parsing::SkeletonParser{
+            "return",
+            {
+                {"token-value", "return"},
+                {"trail", ""},
+                {"expression", "E"}
+            },
+            {
+                {"E", baseStatementParser}
+            }
+        }
+    );
+
+    // Set parsing rules for individual statements within the function definition.
+    this->_statementParser->setParsers({
+        {"return", this->_returnParser.get()}
+    });
+    this->_statementParser->setWildCardParser(baseStatementParser);
 }
 
 std::shared_ptr<Expression> MyLanguage::FunctionParser::parse(std::vector<DToken>& tokens, int position)
