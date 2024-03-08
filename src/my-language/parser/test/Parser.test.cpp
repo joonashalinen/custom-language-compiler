@@ -14,7 +14,7 @@ TEST_CASE("Boolean expression without inner parentheses") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->rootToken().value == "or");
@@ -33,7 +33,7 @@ TEST_CASE("Boolean expression with inner parentheses") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->rootToken().value == "and");
@@ -53,7 +53,7 @@ TEST_CASE("Nested block statement") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->type() == "block");
@@ -71,7 +71,7 @@ TEST_CASE("Variable declaration in block") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->type() == "block");
@@ -88,7 +88,7 @@ TEST_CASE("If then else") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     REQUIRE(parseTree->children().at(0)->type() == "if");
     REQUIRE(parseTree->children().at(0)->children().at(0)->rootToken().value == "and");
     REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "a");
@@ -103,7 +103,7 @@ TEST_CASE("If then") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     REQUIRE(parseTree->children().at(0)->type() == "if");
     REQUIRE(parseTree->children().at(0)->children().at(0)->rootToken().value == "and");
     REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "a");
@@ -117,7 +117,7 @@ TEST_CASE("While do") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     REQUIRE(parseTree->children().at(0)->type() == "while");
     REQUIRE(parseTree->children().at(0)->children().at(0)->rootToken().value == "and");
     REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "a");
@@ -131,7 +131,7 @@ TEST_CASE("Function call") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->type() == "function-call");
@@ -147,7 +147,7 @@ TEST_CASE("Function call with inner operated chain expression") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->type() == "function-call");
@@ -164,7 +164,7 @@ TEST_CASE("Unary minus expression") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->type() == "unary-operator");
@@ -179,7 +179,7 @@ TEST_CASE("Subtraction") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->type() == "binary-operator");
@@ -195,7 +195,7 @@ TEST_CASE("Variable declaration") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->type() == "variable-declaration");
@@ -210,7 +210,7 @@ TEST_CASE("Typed variable declaration") {
 
     auto parseTree = Test::parser.parse(tokens, 0);
 
-    REQUIRE(parseTree->type() == "chain");
+    REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
 
     REQUIRE(parseTree->type() == "variable-declaration");

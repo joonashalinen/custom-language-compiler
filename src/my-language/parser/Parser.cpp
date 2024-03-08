@@ -63,6 +63,13 @@ MyLanguage::Parser::Parser() {
         }
     );
 
+    this->_moduleParser = std::unique_ptr<MyLanguage::ModuleParser>(
+        new MyLanguage::ModuleParser{
+            this->_chainParser->mapParser(),
+            this->_identifierLiteralParser.get()
+        }
+    );
+
     // Next, we set the look-forward parsing rules used when in a general expression parsing context.
 
     this->_mapParser->setParsers(
@@ -99,5 +106,5 @@ MyLanguage::Parser::Parser() {
 }
 
 std::shared_ptr<Expression> MyLanguage::Parser::parse(std::vector<DToken>& tokens, int position) {
-	return this->_chainParser->parse(tokens, position);
+	return this->_moduleParser->parse(tokens, position);
 }

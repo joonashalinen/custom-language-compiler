@@ -45,3 +45,7 @@ std::shared_ptr<Expression> MyLanguage::ChainParser::parse(std::vector<DToken>& 
 {
     return this->_chainParser->parse(tokens, position);
 }
+
+MapParser* MyLanguage::ChainParser::mapParser() {
+    return this->_mapParser.get();
+}

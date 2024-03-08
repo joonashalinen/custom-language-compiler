@@ -22,6 +22,8 @@ OBJS =  \
 	my-language/parser/WhileParser.o \
 	my-language/parser/FunctionCallParser.o \
 	my-language/parser/VariableDeclarationParser.o \
+	my-language/parser/FunctionParser.o \
+	my-language/parser/ModuleParser.o \
 	my-language/ir-generator/IRGenerator.o \
 	my-language/ir-generator/TIRCommand.o \
 	my-language/ir-generator/IRCommandFactory.o \
@@ -52,7 +54,6 @@ TEST_OBJS = \
 
 TEST_OBJ = \
 	my-language/parser/test/Parser.test.o
-
 # Here is a Make Macro defined by two Macro Expansions.
 # A Macro Expansion may be treated as a textual replacement of the Make Macro.
 # Macro Expansions are introduced with $ and enclosed in (parentheses).

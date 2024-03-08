@@ -22,6 +22,8 @@ OBJS =  \
 	my-language/parser/WhileParser.o \
 	my-language/parser/FunctionCallParser.o \
 	my-language/parser/VariableDeclarationParser.o \
+	my-language/parser/FunctionParser.o \
+	my-language/parser/ModuleParser.o \
 	my-language/ir-generator/IRGenerator.o \
 	my-language/ir-generator/TIRCommand.o \
 	my-language/ir-generator/IRCommandFactory.o \

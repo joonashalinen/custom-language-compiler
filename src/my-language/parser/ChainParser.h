@@ -12,6 +12,7 @@ namespace MyLanguage {
         public:
             ChainParser(OperatedChainParser* operatedChainParser);
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
+            MapParser* mapParser();
         private:
             OperatedChainParser* _operatedChainParser;
             std::unique_ptr<Parsing::ChainParser> _chainParser;
