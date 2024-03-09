@@ -230,9 +230,30 @@ TEST_CASE("Module with function") {
 
     REQUIRE(function->type() == "function");
     REQUIRE(function->subTypes().at("name") == "test");
-    REQUIRE(function->children().at(0)->type() == "parameter-list");
-    REQUIRE(function->children().at(0)->children().at(0)->rootToken().value == "x");
-    REQUIRE(function->children().at(0)->children().at(1)->rootToken().value == "y");
+    REQUIRE(function->children().at(0)->type() == "function-parameter-list");
+    REQUIRE(function->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "x");
+    REQUIRE(function->children().at(0)->children().at(1)->children().at(0)->rootToken().value == "y");
+    REQUIRE(function->children().at(1)->type() == "function-definition");
+    REQUIRE(function->children().at(1)->children().at(0)->type() == "function-call");
+    REQUIRE(function->children().at(1)->children().at(1)->type() == "return");
+    REQUIRE(function->children().at(1)->children().at(1)->children().at(0)->rootToken().value == "y");
+}
+
+TEST_CASE("Function with types") {
+    auto input = "fun test(x: Int, y: Int) {\nprint_int(x); return y;}";
+    auto tokens = Test::tokenizer.tokenizer.tokenize(input);
+
+    auto moduleExpression = Test::parser.parse(tokens, 0);
+    REQUIRE(moduleExpression->type() == "module");
+    auto function = moduleExpression->children().at(0);
+
+    REQUIRE(function->type() == "function");
+    REQUIRE(function->subTypes().at("name") == "test");
+    REQUIRE(function->children().at(0)->type() == "function-parameter-list");
+    REQUIRE(function->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "x");
+    REQUIRE(function->children().at(0)->children().at(0)->children().at(1)->rootToken().value == "Int");
+    REQUIRE(function->children().at(0)->children().at(1)->children().at(0)->rootToken().value == "y");
+    REQUIRE(function->children().at(0)->children().at(1)->children().at(1)->rootToken().value == "Int");
     REQUIRE(function->children().at(1)->type() == "function-definition");
     REQUIRE(function->children().at(1)->children().at(0)->type() == "function-call");
     REQUIRE(function->children().at(1)->children().at(1)->type() == "return");

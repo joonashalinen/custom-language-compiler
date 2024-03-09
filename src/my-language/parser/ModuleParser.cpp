@@ -27,7 +27,6 @@ MyLanguage::ModuleParser::ModuleParser(
     this->_functionParser = std::unique_ptr<MyLanguage::FunctionParser>(
         new MyLanguage::FunctionParser{
             identifierParser,
-            identifierParser,
             statementParser
         }
     );

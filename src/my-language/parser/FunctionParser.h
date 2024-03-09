@@ -19,11 +19,14 @@ namespace MyLanguage {
      */
     class FunctionParser: public IParseable {
         public:
-            FunctionParser(IParseable* identifierParser, IParseable* parameterParser, IParseable* baseStatementParser);
+            FunctionParser(
+                IParseable* identifierParser,  
+                IParseable* baseStatementParser
+            );
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         private:
             IParseable* _identifierParser;
-            IParseable* _parameterParser;
+            std::unique_ptr<Parsing::SkeletonParser> _parameterParser;
             std::unique_ptr<Parsing::ListParser> _parameterListParser;
             std::unique_ptr<Parsing::SkeletonParser> _parser;
             std::unique_ptr<Parsing::SkeletonParser> _returnParser;
