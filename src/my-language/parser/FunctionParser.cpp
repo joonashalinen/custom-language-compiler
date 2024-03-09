@@ -46,7 +46,7 @@ MyLanguage::FunctionParser::FunctionParser(
                 {"expression", "L"},
                 {"optional", ""},
                 {"token-value", ":"},
-                {"expression", "ID"},
+                {"token-type", "identifier"},
                 {"/optional", ""},
                 {"token-value", "{"},
                 {"expression", "D"},
@@ -90,6 +90,17 @@ std::shared_ptr<Expression> MyLanguage::FunctionParser::parse(std::vector<DToken
     auto identifier = functionExpression->children().at(0);
     Expression::removeChild(functionExpression, identifier);
     functionExpression->subTypes().insert({"name", identifier->rootToken().value});
+
+    // If the function has a return type specified.
+    if (functionExpression->children().at(1)->type() == "identifier") {
+        // Switch the return type from an expression into a subtype.
+        auto returnType = functionExpression->children().at(1);
+        Expression::removeChild(functionExpression, returnType);
+        functionExpression->subTypes().insert({"return-type", returnType->rootToken().value});
+    } else {
+        // The return type is void.
+        functionExpression->subTypes().insert({"return-type", "void"});
+    }
 
     return functionExpression;
 }

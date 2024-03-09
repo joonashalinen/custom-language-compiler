@@ -42,5 +42,33 @@ MyLanguage::ModuleParser::ModuleParser(
 
 std::shared_ptr<Expression> MyLanguage::ModuleParser::parse(std::vector<DToken>& tokens, int position)
 {
-    return this->_moduleParser->parse(tokens, position);
+    auto moduleExpression =  this->_moduleParser->parse(tokens, position);
+    auto moduleChildren = moduleExpression->children();
+
+    // First, we check that there is at most one top-level expression that is not a function definition.
+    
+    auto isNotAFunction = [](auto child) {
+        return child->type() != "function";
+    };
+
+    int nonFunctions = std::count_if(moduleChildren.begin(), moduleChildren.end(), isNotAFunction);
+    if (nonFunctions > 1) {
+        throw std::runtime_error("There can only be one top-level expression.");
+    }
+
+    // Next, we transform the top-level expression into a function called 'main'. If no top-level expression 
+    // is present, the 'main' function will have an empty definition.
+
+    std::shared_ptr<Expression> mainFunction;
+    if (nonFunctions == 1) {
+        auto topLevelExpression = *(std::find_if(moduleChildren.begin(), moduleChildren.end(), isNotAFunction));
+        mainFunction = (MyLanguage::ExpressionFactory{}).createFunction("main", "void", {}, {topLevelExpression});
+        Expression::removeChild(moduleExpression, topLevelExpression);
+    } else {
+        mainFunction = (MyLanguage::ExpressionFactory{}).createFunction("main", "void", {}, {});
+    }
+    
+    Expression::addChild(moduleExpression, mainFunction);
+
+    return moduleExpression;
 }

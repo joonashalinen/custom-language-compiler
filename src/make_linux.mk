@@ -24,6 +24,7 @@ OBJS =  \
 	my-language/parser/VariableDeclarationParser.o \
 	my-language/parser/FunctionParser.o \
 	my-language/parser/ModuleParser.o \
+	my-language/parser/ExpressionFactory.o \
 	my-language/ir-generator/IRGenerator.o \
 	my-language/ir-generator/TIRCommand.o \
 	my-language/ir-generator/IRCommandFactory.o \

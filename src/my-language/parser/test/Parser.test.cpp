@@ -16,6 +16,7 @@ TEST_CASE("Boolean expression without inner parentheses") {
 
     REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1)->children().at(0);
 
     REQUIRE(parseTree->rootToken().value == "or");
     REQUIRE(parseTree->children().at(0)->rootToken().value == "and");
@@ -35,6 +36,7 @@ TEST_CASE("Boolean expression with inner parentheses") {
 
     REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1)->children().at(0);
 
     REQUIRE(parseTree->rootToken().value == "and");
     REQUIRE(parseTree->children().at(0)->rootToken().value == "and");
@@ -55,6 +57,7 @@ TEST_CASE("Nested block statement") {
 
     REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1)->children().at(0);
 
     REQUIRE(parseTree->type() == "block");
     REQUIRE(parseTree->children().at(0)->type() == "chain");
@@ -73,6 +76,7 @@ TEST_CASE("Variable declaration in block") {
 
     REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1)->children().at(0);
 
     REQUIRE(parseTree->type() == "block");
     REQUIRE(parseTree->children().at(0)->type() == "chain");
@@ -89,6 +93,8 @@ TEST_CASE("If then else") {
     auto parseTree = Test::parser.parse(tokens, 0);
 
     REQUIRE(parseTree->type() == "module");
+    parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1);
     REQUIRE(parseTree->children().at(0)->type() == "if");
     REQUIRE(parseTree->children().at(0)->children().at(0)->rootToken().value == "and");
     REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "a");
@@ -104,6 +110,8 @@ TEST_CASE("If then") {
     auto parseTree = Test::parser.parse(tokens, 0);
 
     REQUIRE(parseTree->type() == "module");
+    parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1);
     REQUIRE(parseTree->children().at(0)->type() == "if");
     REQUIRE(parseTree->children().at(0)->children().at(0)->rootToken().value == "and");
     REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "a");
@@ -118,6 +126,8 @@ TEST_CASE("While do") {
     auto parseTree = Test::parser.parse(tokens, 0);
 
     REQUIRE(parseTree->type() == "module");
+    parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1);
     REQUIRE(parseTree->children().at(0)->type() == "while");
     REQUIRE(parseTree->children().at(0)->children().at(0)->rootToken().value == "and");
     REQUIRE(parseTree->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "a");
@@ -133,6 +143,7 @@ TEST_CASE("Function call") {
 
     REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1)->children().at(0);
 
     REQUIRE(parseTree->type() == "function-call");
     REQUIRE(parseTree->subTypes().at("name") == "f");
@@ -149,6 +160,7 @@ TEST_CASE("Function call with inner operated chain expression") {
 
     REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1)->children().at(0);
 
     REQUIRE(parseTree->type() == "function-call");
     REQUIRE(parseTree->subTypes().at("name") == "f");
@@ -166,6 +178,7 @@ TEST_CASE("Unary minus expression") {
 
     REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1)->children().at(0);
 
     REQUIRE(parseTree->type() == "unary-operator");
     REQUIRE(parseTree->subTypes().at("name") == "-");
@@ -181,6 +194,7 @@ TEST_CASE("Subtraction") {
 
     REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1)->children().at(0);
 
     REQUIRE(parseTree->type() == "binary-operator");
     REQUIRE(parseTree->subTypes().at("name") == "-");
@@ -197,6 +211,7 @@ TEST_CASE("Variable declaration") {
 
     REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1)->children().at(0);
 
     REQUIRE(parseTree->type() == "variable-declaration");
     REQUIRE(parseTree->subTypes().at("name") == "a");
@@ -212,6 +227,7 @@ TEST_CASE("Typed variable declaration") {
 
     REQUIRE(parseTree->type() == "module");
     parseTree = parseTree->children().at(0);
+    parseTree = parseTree->children().at(1)->children().at(0);
 
     REQUIRE(parseTree->type() == "variable-declaration");
     REQUIRE(parseTree->subTypes().at("value-type") == "Int");
@@ -230,6 +246,7 @@ TEST_CASE("Module with function") {
 
     REQUIRE(function->type() == "function");
     REQUIRE(function->subTypes().at("name") == "test");
+    REQUIRE(function->subTypes().at("return-type") == "void");
     REQUIRE(function->children().at(0)->type() == "function-parameter-list");
     REQUIRE(function->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "x");
     REQUIRE(function->children().at(0)->children().at(1)->children().at(0)->rootToken().value == "y");
@@ -237,6 +254,11 @@ TEST_CASE("Module with function") {
     REQUIRE(function->children().at(1)->children().at(0)->type() == "function-call");
     REQUIRE(function->children().at(1)->children().at(1)->type() == "return");
     REQUIRE(function->children().at(1)->children().at(1)->children().at(0)->rootToken().value == "y");
+
+    auto mainFunction = moduleExpression->children().at(1);
+    
+    REQUIRE(mainFunction->type() == "function");
+    REQUIRE(mainFunction->subTypes().at("name") == "main");
 }
 
 TEST_CASE("Function with types") {
@@ -249,14 +271,14 @@ TEST_CASE("Function with types") {
 
     REQUIRE(function->type() == "function");
     REQUIRE(function->subTypes().at("name") == "test");
+    REQUIRE(function->subTypes().at("return-type") == "Int");
     REQUIRE(function->children().at(0)->type() == "function-parameter-list");
     REQUIRE(function->children().at(0)->children().at(0)->children().at(0)->rootToken().value == "x");
     REQUIRE(function->children().at(0)->children().at(0)->children().at(1)->rootToken().value == "Int");
     REQUIRE(function->children().at(0)->children().at(1)->children().at(0)->rootToken().value == "y");
     REQUIRE(function->children().at(0)->children().at(1)->children().at(1)->rootToken().value == "Int");
-    REQUIRE(function->children().at(1)->rootToken().value == "Int");
-    REQUIRE(function->children().at(2)->type() == "function-definition");
-    REQUIRE(function->children().at(2)->children().at(0)->type() == "function-call");
-    REQUIRE(function->children().at(2)->children().at(1)->type() == "return");
-    REQUIRE(function->children().at(2)->children().at(1)->children().at(0)->rootToken().value == "y");
+    REQUIRE(function->children().at(1)->type() == "function-definition");
+    REQUIRE(function->children().at(1)->children().at(0)->type() == "function-call");
+    REQUIRE(function->children().at(1)->children().at(1)->type() == "return");
+    REQUIRE(function->children().at(1)->children().at(1)->children().at(0)->rootToken().value == "y");
 }

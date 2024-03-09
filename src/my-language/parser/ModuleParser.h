@@ -6,8 +6,11 @@
 #include "../../components/parsing/ChainParser.h"
 #include "../../components/parsing/SkeletonParser.h"
 #include "../../components/parsing/OperatedChainParser.h"
+#include "../../components/parsing/Expression.h"
 #include "ChainParser.h"
 #include "FunctionParser.h"
+#include "ExpressionFactory.h"
+#include <algorithm>
 
 namespace MyLanguage {
     class ModuleParser: public IParseable {
