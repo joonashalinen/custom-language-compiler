@@ -240,7 +240,7 @@ TEST_CASE("Module with function") {
 }
 
 TEST_CASE("Function with types") {
-    auto input = "fun test(x: Int, y: Int) {\nprint_int(x); return y;}";
+    auto input = "fun test(x: Int, y: Int): Int {\nprint_int(x); return y;}";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
 
     auto moduleExpression = Test::parser.parse(tokens, 0);
@@ -254,8 +254,9 @@ TEST_CASE("Function with types") {
     REQUIRE(function->children().at(0)->children().at(0)->children().at(1)->rootToken().value == "Int");
     REQUIRE(function->children().at(0)->children().at(1)->children().at(0)->rootToken().value == "y");
     REQUIRE(function->children().at(0)->children().at(1)->children().at(1)->rootToken().value == "Int");
-    REQUIRE(function->children().at(1)->type() == "function-definition");
-    REQUIRE(function->children().at(1)->children().at(0)->type() == "function-call");
-    REQUIRE(function->children().at(1)->children().at(1)->type() == "return");
-    REQUIRE(function->children().at(1)->children().at(1)->children().at(0)->rootToken().value == "y");
+    REQUIRE(function->children().at(1)->rootToken().value == "Int");
+    REQUIRE(function->children().at(2)->type() == "function-definition");
+    REQUIRE(function->children().at(2)->children().at(0)->type() == "function-call");
+    REQUIRE(function->children().at(2)->children().at(1)->type() == "return");
+    REQUIRE(function->children().at(2)->children().at(1)->children().at(0)->rootToken().value == "y");
 }

@@ -16,13 +16,13 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
 
     auto expressions = std::vector<std::shared_ptr<Expression>>{};
     auto expressionTokens = std::vector<DToken>{};
+    int optionalityLevel = 0;
 
     for (int i = 0; i < ((int) this->_pattern.size()); i++) {
         auto element = this->_pattern.at(i);
         auto elementType = element.first;
         auto elementValue = element.second;
-
-        // If the pattern is next expecting to see a token.
+        // If the pattern is next expecting to see a token and a matching one is encountered.
         if (
             (elementType == "token-value" && sequence.peek().value == elementValue) || 
             (elementType == "token-type" && sequence.peek().type == elementValue)
@@ -52,13 +52,22 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
             }
 
         } else if (elementType == "expression" && this->_parsers.contains(elementValue)) {
-            // If the pattern element is an expression that is recognized, we parse it using 
+            // If the pattern element is an expression that is recognized, we attempt to parse it using 
             // the given parsing rule.
             auto parser = this->_parsers.at(elementValue);
-            auto expression = parser->parse(sequence.tokens(), sequence.position());
-            expressions.insert(expressions.end(), expression);
-            sequence.setPosition(expression->endPos());
-        
+            auto canParse = parser->canParseAt(sequence.tokens(), sequence.position());
+            // If we can parse the expression.
+            if (canParse) {
+                auto expression = parser->parse(sequence.tokens(), sequence.position());
+                expressions.insert(expressions.end(), expression);
+                sequence.setPosition(expression->endPos());
+            } else if (optionalityLevel == 0 || this->_pattern.at(i - 1).first != "optional") {
+                // Else, if the expression is not optional or we are more than one element deep into an optional section.
+                throw std::runtime_error(
+                    "Skeleton pattern could not match the next pattern element '" + elementValue + "'" +
+                    " with the next token '" + sequence.peek().value + "', which was not optional."
+                );
+            }
         } else if (elementType == "trail") {
             // If the pattern has an optional trailing portion but the next part of the pattern 
             // does not match it, we end parsing.
@@ -72,6 +81,23 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
                 // Else, we advance to the next pattern element to continue parsing from there.
                 continue;
             }
+        } else if (elementType == "optional") {
+            // If the element is a meta-element denoting the beginning of an optional section.
+            optionalityLevel = optionalityLevel + 1;
+
+        } else if (elementType == "/optional") {
+            // If the element is a meta-element denoting the end of an optional section.
+            optionalityLevel = optionalityLevel - 1;
+
+        } else if (optionalityLevel > 0) {
+            // If no rule was matched for the next pattern element but we are in an optional section, we 
+            // skip to the end of the current optional section.
+            auto skippableElement = this->_pattern.at(i);
+            while (skippableElement.first != "/optional" && i + 1 < ((int) this->_pattern.size())) {
+                i = i + 1;
+                skippableElement = this->_pattern.at(i);
+            }
+            optionalityLevel = optionalityLevel - 1;
         } else {
             throw std::runtime_error(
                 "Skeleton pattern could not match the next pattern element '" + elementValue + "'" +

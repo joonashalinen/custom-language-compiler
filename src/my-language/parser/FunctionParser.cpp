@@ -44,6 +44,10 @@ MyLanguage::FunctionParser::FunctionParser(
                 {"token-value", "fun"},
                 {"expression", "ID"},
                 {"expression", "L"},
+                {"optional", ""},
+                {"token-value", ":"},
+                {"expression", "ID"},
+                {"/optional", ""},
                 {"token-value", "{"},
                 {"expression", "D"},
                 {"token-value", "}"}
