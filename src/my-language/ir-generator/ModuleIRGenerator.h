@@ -24,8 +24,11 @@ namespace MyLanguage {
              * Generate the IR commands for each function under the given 
              * module expression.
              */
-            std::map<std::string, std::vector<TIRCommand>> generate(IRGenerator::TExpression module);
+            std::map<std::string, std::vector<TIRCommand>> generate(
+                IRGenerator::TExpression moduleExpression
+            );
         private:
+            IRGenerator _generator;
     };
 };
 

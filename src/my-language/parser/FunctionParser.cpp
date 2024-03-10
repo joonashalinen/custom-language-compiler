@@ -5,19 +5,8 @@ MyLanguage::FunctionParser::FunctionParser(
     IParseable* baseStatementParser
 ):  _identifierParser(identifierParser)
 {
-    this->_parameterParser = std::unique_ptr<Parsing::SkeletonParser>(
-        new Parsing::SkeletonParser{
-            "function-parameter",
-            {
-                {"expression", "ID"},
-                {"trail", ""},
-                {"token-value", ":"},
-                {"expression", "ID"},
-            },
-            {
-                {"ID", identifierParser}
-            }
-        }
+    this->_parameterParser = std::unique_ptr<MyLanguage::FunctionParameterParser>(
+        new MyLanguage::FunctionParameterParser{}
     );
 
     this->_parameterListParser = std::unique_ptr<Parsing::ListParser>(

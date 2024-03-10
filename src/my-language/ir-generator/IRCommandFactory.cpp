@@ -46,6 +46,31 @@ namespace MyLanguage {
         return command;
     }
 
+    TIRCommand IRCommandFactory::createLoadFunctionParam(int index, std::string variable)
+    {
+        TIRCommand command = this->createExpression("irCommand", "command", "LoadFunctionParam");
+        auto variableExpression = this->createExpression("variable", "name", variable);
+        variableExpression->subTypes().insert({"index", std::to_string(index)});
+        Expression::addChild(command, variableExpression);
+        return command;
+    }
+
+    TIRCommand IRCommandFactory::createWriteFunctionReturn(std::string fromVar)
+    {
+        TIRCommand command = this->createExpression("irCommand", "command", "WriteFunctionReturn");
+        auto variableExpression = this->createExpression("variable", "name", fromVar);
+        Expression::addChild(command, variableExpression);
+        return command;
+    }
+
+    TIRCommand IRCommandFactory::createLoadFunctionReturn(std::string toVar)
+    {
+        TIRCommand command = this->createExpression("irCommand", "command", "LoadFunctionReturn");
+        auto variableExpression = this->createExpression("variable", "name", toVar);
+        Expression::addChild(command, variableExpression);
+        return command;
+    }
+
     TIRCommand IRCommandFactory::createCall(
         std::string functionName, 
         std::vector<std::string> argumentVars, 

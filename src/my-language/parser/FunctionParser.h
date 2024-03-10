@@ -9,6 +9,7 @@
 #include "../../components/parsing/ListParser.h"
 #include "../../components/parsing/SkeletonParser.h"
 #include "../../components/parsing/MapParser.h"
+#include "FunctionParameterParser.h"
 #include <string>
 #include <functional>
 #include <vector>
@@ -26,7 +27,7 @@ namespace MyLanguage {
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         private:
             IParseable* _identifierParser;
-            std::unique_ptr<Parsing::SkeletonParser> _parameterParser;
+            std::unique_ptr<MyLanguage::FunctionParameterParser> _parameterParser;
             std::unique_ptr<Parsing::ListParser> _parameterListParser;
             std::unique_ptr<Parsing::SkeletonParser> _parser;
             std::unique_ptr<Parsing::SkeletonParser> _returnParser;

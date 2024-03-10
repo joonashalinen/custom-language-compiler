@@ -13,6 +13,9 @@ namespace MyLanguage {
             std::shared_ptr<Expression> createVariableList(std::vector<std::string> variables);
             TIRCommand createLoadIntConst(std::string value, std::string variable);
             TIRCommand createLoadBoolConst(std::string value, std::string variable);
+            TIRCommand createLoadFunctionParam(int index, std::string variable);
+            TIRCommand createWriteFunctionReturn(std::string fromVar);
+            TIRCommand createLoadFunctionReturn(std::string toVar);
             TIRCommand createCopy(std::string fromVar, std::string toVar);
             TIRCommand createCall(std::string functionName, std::vector<std::string> argumentVars, std::string outputVar);
             TIRCommand createCondJump(std::string conditionVar, std::string onTrueLabel, std::string onFalseLabel);

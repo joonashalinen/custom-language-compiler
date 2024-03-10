@@ -99,6 +99,24 @@ namespace MyLanguage {
         }
 
         /**
+         * IR generation function for a return expression inside a function definition.
+         */
+        IRGenerator::DGeneratorContext* generateReturn(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            // If the return statement returns a proper value instead of returning nothing.
+            if (expression->children().size() > 0) {
+                // Get the variable storing the return value.
+                auto irVariable = context->variableStack.pop(1).at(0);
+                // Generate the IR command for the return statement.
+                auto command = context->commandFactory->createWriteFunctionReturn(irVariable);
+                context->irCommands.insert(context->irCommands.end(), command);
+            } 
+            return context;
+        }
+
+        /**
          * Generates the IR commands for a chain expression.
          */
         IRGenerator::DGeneratorContext* generateChain(
@@ -128,13 +146,13 @@ namespace MyLanguage {
             // Reserve the next variable we want to store the function call's result in.
             auto resultVariable = context->commandFactory->nextVariable();
             // Create the IR command for the function call.
-            auto command = context->commandFactory->createCall(
+            auto callCommand = context->commandFactory->createCall(
                 expression->subTypes().at("name"), 
                 argumentVars,
                 resultVariable
             );
 
-            context->irCommands.insert(context->irCommands.end(), command);
+            context->irCommands.insert(context->irCommands.end(), callCommand);
             context->variableStack.push({resultVariable});
 
             return context;
@@ -341,6 +359,21 @@ namespace MyLanguage {
         }
 
         /**
+         * Does in-order IR generation logic for function parameters.
+         */
+        IRGenerator::DGeneratorContext* inGenerateFunctionParameter(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression,
+            int childIndex
+        ) {
+            auto parameterName = expression->subTypes().at("name");
+            auto irVariable = context->commandFactory->nextVariable();
+            auto command = context->commandFactory->createLoadFunctionParam(childIndex, irVariable);
+            context->symbolTable.insert(parameterName, irVariable);
+            return context;
+        }
+
+        /**
          * Generates the IR commands for a while-do expression during 
          * an in-order traversal of the abstract syntax tree.
          */
@@ -444,6 +477,8 @@ namespace MyLanguage {
                 (expression->subTypes().at("name") == "and" || expression->subTypes().at("name") == "or")
             ) {
                 return inGenerateBoolean(context, expression, childIndex, expression->subTypes().at("name"));
+            } else if (expression->type() == "function-parameter") {
+                return inGenerateFunctionParameter(context, expression, childIndex);
             } else {
                 return context;
             }
@@ -464,6 +499,10 @@ namespace MyLanguage {
         this->_irGenerators.insert({"parenthetical", IRGenerators::nullGenerator});
         this->_irGenerators.insert({"if", IRGenerators::generateIf});
         this->_irGenerators.insert({"while", IRGenerators::nullGenerator});
+        this->_irGenerators.insert({"function", IRGenerators::nullGenerator});
+        this->_irGenerators.insert({"function-parameter-list", IRGenerators::nullGenerator});
+        this->_irGenerators.insert({"function-definition", IRGenerators::nullGenerator});
+        this->_irGenerators.insert({"return", IRGenerators::generateReturn});
     }
 
     std::vector<TIRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)
