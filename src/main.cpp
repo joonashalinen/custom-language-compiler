@@ -4,7 +4,7 @@
 #include <array>
 #include "my-language/tokenizer/Tokenizer.h"
 #include "my-language/parser/Parser.h"
-#include "my-language/ir-generator/IRGenerator.h"
+#include "my-language/ir-generator/ModuleIRGenerator.h"
 #include "my-language/assembly-generator/X86AssemblyGenerator.h"
 
 int main(int argc, char* argv[]) {
@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
     // Create compiler parts.
     auto tokenizer = Tokenizer{};
     auto parser = MyLanguage::Parser{};
-    auto irGenerator = MyLanguage::IRGenerator{};
+    auto irGenerator = MyLanguage::ModuleIRGenerator{};
     auto assemblyGenerator = MyLanguage::X86AssemblyGenerator{};
 
     // Read input code file.
