@@ -39,5 +39,7 @@ std::shared_ptr<Expression> MyLanguage::FunctionParameterParser::parse(std::vect
         Expression::removeChild(expression, type);
     }
 
+    assert(expression->children().size() == 0);
+
     return expression;
 }

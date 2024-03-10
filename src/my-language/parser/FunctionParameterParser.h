@@ -14,6 +14,7 @@
 #include <functional>
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 namespace MyLanguage {
     /**

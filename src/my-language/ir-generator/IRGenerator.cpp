@@ -372,9 +372,8 @@ namespace MyLanguage {
             IRGenerator::DGeneratorContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            // Generate the label beginning the function. We prefix function label names with F to prevent conflicts 
-            // with other labels.
-            auto label = context->commandFactory->createLabel("F" + expression->subTypes().at("name"));
+            // Generate the label beginning the function.
+            auto label = context->commandFactory->createFunctionLabel(expression->subTypes().at("name"));
             context->irCommands.insert(context->irCommands.end(), label);
             return context;
         }
@@ -394,7 +393,7 @@ namespace MyLanguage {
             if (returns == 0) {
                 // Generate IR code for returning 0.
                 auto irVariable = context->commandFactory->nextVariable();
-                auto loadIntCommand = context->commandFactory->createLoadIntConst(0, irVariable);
+                auto loadIntCommand = context->commandFactory->createLoadIntConst("0", irVariable);
                 auto returnCommand = context->commandFactory->createWriteFunctionReturn(irVariable);
                 context->irCommands.insert(context->irCommands.end(), loadIntCommand);
                 context->irCommands.insert(context->irCommands.end(), returnCommand);
@@ -403,17 +402,19 @@ namespace MyLanguage {
         }
 
         /**
-         * Does in-order IR generation logic for function parameters.
+         * Does in-order IR generation logic for function parameter lists.
          */
-        IRGenerator::DGeneratorContext* inGenerateFunctionParameter(
+        IRGenerator::DGeneratorContext* inGenerateFunctionParameterList(
             IRGenerator::DGeneratorContext* context,
             std::shared_ptr<Expression> expression,
             int childIndex
         ) {
-            auto parameterName = expression->subTypes().at("name");
+            auto parameter = expression->children().at(childIndex);
+            auto parameterName = parameter->subTypes().at("name");
             auto irVariable = context->commandFactory->nextVariable();
             auto command = context->commandFactory->createLoadFunctionParam(childIndex, irVariable);
             context->symbolTable.insert(parameterName, irVariable);
+            context->irCommands.insert(context->irCommands.end(), command);
             return context;
         }
 
@@ -523,8 +524,8 @@ namespace MyLanguage {
                 (expression->subTypes().at("name") == "and" || expression->subTypes().at("name") == "or")
             ) {
                 return inGenerateBoolean(context, expression, childIndex, expression->subTypes().at("name"));
-            } else if (expression->type() == "function-parameter") {
-                return inGenerateFunctionParameter(context, expression, childIndex);
+            } else if (expression->type() == "function-parameter-list") {
+                return inGenerateFunctionParameterList(context, expression, childIndex);
             } else {
                 return context;
             }
@@ -547,7 +548,8 @@ namespace MyLanguage {
         this->_irGenerators.insert({"while", IRGenerators::nullGenerator});
         this->_irGenerators.insert({"function", IRGenerators::nullGenerator});
         this->_irGenerators.insert({"function-parameter-list", IRGenerators::nullGenerator});
-        this->_irGenerators.insert({"function-definition", IRGenerators::nullGenerator});
+        this->_irGenerators.insert({"function-parameter", IRGenerators::nullGenerator});
+        this->_irGenerators.insert({"function-definition", IRGenerators::generateFunctionDefinition});
         this->_irGenerators.insert({"return", IRGenerators::generateReturn});
     }
 

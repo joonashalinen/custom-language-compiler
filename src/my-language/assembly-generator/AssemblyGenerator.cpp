@@ -19,34 +19,21 @@ namespace MyLanguage {
         });
 
         // Reserve memory locations for each variable.
+        auto variableStack = StructuredLanguage::VariableStack{};
         auto variableNamesList = std::vector<std::string>(variableNames.size());
         std::copy(variableNames.begin(), variableNames.end(), variableNamesList.begin());
-        this->_variableStack.push(variableNamesList);
-
-        // Make sure we reserve an amount of memory divisible by 16 to 
-        // ensure the stack is initially aligned to 16 bytes.
-        auto reserveMemoryAmount = (
-            this->_variableStack.size() % 16 == 0 ? 
-                this->_variableStack.size() : 
-                this->_variableStack.size() + 8
-        );
-
-        // Reserve the required amount of memory on the stack to store all variables.
-        auto beginPortion = (
-            this->_prelude + 
-            this->_indent + "subq $" + std::to_string(reserveMemoryAmount) + ", %rsp" + "\n"
-        );
+        variableStack.push(variableNamesList);
 
         // Generate assembly code for each IR command and join it all together.
-        return beginPortion + std::accumulate(
+        return std::accumulate(
             irCommands.begin(), 
             irCommands.end(), 
             std::string(""), 
-            [this](std::string assembly, TIRCommand command) {
+            [this, &variableStack](std::string assembly, TIRCommand command) {
                 auto commandType = command->subTypes().at("command");
                 if (this->_generators.contains(commandType)) {
                     auto generator = this->_generators.at(commandType);
-                    return assembly + generator(this->_variableStack, this->_indent, command);
+                    return assembly + generator(variableStack, this->_indent, command);
                 } else {
                     throw std::runtime_error("No assembly generator found for command with type: '" + commandType + "'.");
                 }
@@ -56,12 +43,12 @@ namespace MyLanguage {
 
     std::string AssemblyGenerator::generate(std::map<std::string, std::vector<TIRCommand>> irCommands)
     {
-        return std::accumulate(
+        return this->_prelude + std::accumulate(
             irCommands.begin(), 
             irCommands.end(), 
             std::string(""), 
             [this](std::string assembly, std::pair<std::string, std::vector<TIRCommand>> p) {
-                return this->generateForFunction(p.second);
+                return assembly + this->generateForFunction(p.second);
             }
         );
     }

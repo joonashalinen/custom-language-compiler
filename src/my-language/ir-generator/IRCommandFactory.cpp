@@ -111,6 +111,15 @@ namespace MyLanguage {
         return command;
     }
 
+    TIRCommand IRCommandFactory::createFunctionLabel(std::string label) {
+        auto command = this->createExpression("irCommand", "command", "FunctionLabel");
+        auto labelExpression = this->createExpression("label", "name", label);
+        
+        Expression::addChild(command, labelExpression);
+
+        return command;
+    }
+
     TIRCommand IRCommandFactory::createNextLabel()
     {
         auto nextLabel = this->nextLabel();

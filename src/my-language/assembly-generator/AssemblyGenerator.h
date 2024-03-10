@@ -55,10 +55,6 @@ namespace MyLanguage {
              * The indent string we use for a single indentation level.
              */
             std::string _indent;
-            /**
-             * Data structure for managing the memory locations of variables.
-             */
-            StructuredLanguage::VariableStack _variableStack;
     };
 };
 

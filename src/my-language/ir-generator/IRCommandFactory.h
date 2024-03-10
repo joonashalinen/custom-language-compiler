@@ -4,6 +4,7 @@
 #include "TIRCommand.h"
 #include <string>
 #include <algorithm>
+#include <iostream>
 
 namespace MyLanguage {
     class IRCommandFactory {
@@ -21,6 +22,7 @@ namespace MyLanguage {
             TIRCommand createCondJump(std::string conditionVar, std::string onTrueLabel, std::string onFalseLabel);
             TIRCommand createJump(std::string label);
             TIRCommand createLabel(std::string label);
+            TIRCommand createFunctionLabel(std::string label);
             TIRCommand createNextLabel();
             std::string nextVariable();
             std::string nextLabel();

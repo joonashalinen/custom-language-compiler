@@ -143,6 +143,28 @@ namespace MyLanguage {
             );
         }
 
+        std::string generateFunctionLabel(
+            StructuredLanguage::VariableStack& variableStack, 
+            std::string indent,
+            TIRCommand command
+        ) {
+            // Make sure we reserve an amount of memory divisible by 16 to 
+            // ensure the stack is initially aligned to 16 bytes.
+            auto reserveMemoryAmount = (
+                variableStack.size() % 16 == 0 ? 
+                    variableStack.size() : 
+                    variableStack.size() + 8
+            );
+
+            auto label = command->children().at(0)->subTypes().at("name");
+            return (
+                "" + label + ":" + "\n" + 
+                indent + "pushq %rbp" + "\n" + 
+                indent + "movq %rsp, %rbp" + "\n" +
+                indent + "subq $" + std::to_string(reserveMemoryAmount) + ", %rsp" + "\n"
+            );
+        }
+
         std::string generateUnaryOperator(
             StructuredLanguage::VariableStack& variableStack, 
             std::string indent,
@@ -250,10 +272,7 @@ namespace MyLanguage {
             indent + ".global main" + "\n" +
             indent + "\n" +
             indent + ".section .text" + "\n" +
-            indent + "\n" + 
-            "main:" + "\n" + 
-            indent + "pushq %rbp" + "\n" + 
-            indent + "movq %rsp, %rbp" + "\n"
+            indent + "\n"
         );
 
         // Configure assembly generating functions for each IR command type.
@@ -262,9 +281,11 @@ namespace MyLanguage {
         this->_assemblyGenerator.generators().insert({"CondJump", X86AssemblyGenerators::generateCondJump});
         this->_assemblyGenerator.generators().insert({"Jump", X86AssemblyGenerators::generateJump});
         this->_assemblyGenerator.generators().insert({"Label", X86AssemblyGenerators::generateLabel});
+        this->_assemblyGenerator.generators().insert({"FunctionLabel", X86AssemblyGenerators::generateFunctionLabel});
         this->_assemblyGenerator.generators().insert({"Call", X86AssemblyGenerators::generateCall});
         this->_assemblyGenerator.generators().insert({"Copy", X86AssemblyGenerators::generateCopy});
         this->_assemblyGenerator.generators().insert({"WriteFunctionReturn", X86AssemblyGenerators::generateWriteFunctionReturn});
+        this->_assemblyGenerator.generators().insert({"LoadFunctionParam", X86AssemblyGenerators::generateLoadFunctionParam});
     }
 
     std::string X86AssemblyGenerator::generate(std::map<std::string, std::vector<TIRCommand>> irCommands)
