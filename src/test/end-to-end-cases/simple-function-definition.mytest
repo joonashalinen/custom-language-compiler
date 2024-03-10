@@ -1,0 +1,6 @@
+fun sum(x, y) {
+    return x + y;
+}
+print_int(sum(1, 2));
+!expect!
+3
