@@ -13,11 +13,7 @@ namespace MyLanguage {
     class X86AssemblyGenerator {
         public:
             X86AssemblyGenerator();
-            std::string generate(std::vector<TIRCommand> irCommands);
-            /**
-             * Generates the assembly code for a LoadIntConst IR command.
-             */
-            std::string generateLoadIntConst(TIRCommand command);
+            std::string generate(std::map<std::string, std::vector<TIRCommand>> irCommands);
         private:
             AssemblyGenerator _assemblyGenerator;
     };

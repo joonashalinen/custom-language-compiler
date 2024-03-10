@@ -176,7 +176,36 @@ namespace MyLanguage {
             );
         }
 
-       std::string generateCall(
+        std::string generateWriteFunctionReturn(
+            StructuredLanguage::VariableStack& variableStack, 
+            std::string indent,
+            TIRCommand command
+        ) {
+            auto variableName = command->children().at(0)->subTypes().at("name");
+            auto variableLocation = variableStack.negativeEndLocation(variableName);
+            return (
+                indent + "movq " + std::to_string(variableLocation) + "(%rbp)" + ", %rax" + "\n" +
+                indent + "movq %rbp, %rsp" + "\n" + 
+                indent + "popq %rbp" + "\n" + 
+                indent + "ret" + "\n"
+            );
+        }
+        
+        std::string generateLoadFunctionParam(
+            StructuredLanguage::VariableStack& variableStack, 
+            std::string indent,
+            TIRCommand command
+        ) {
+            auto paramRegisters = std::vector<std::string>{"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+            auto variableName = command->children().at(0)->subTypes().at("name");
+            auto variableLocation = variableStack.negativeEndLocation(variableName);
+            int paramIndex = std::stoi(command->subTypes().at("index"));
+            return (
+                indent + "movq " + paramRegisters.at(paramIndex) + ", " + std::to_string(variableLocation) + "(%rbp)" + "\n"
+            );
+        }
+
+        std::string generateCall(
             StructuredLanguage::VariableStack& variableStack, 
             std::string indent,
             TIRCommand command
@@ -235,9 +264,10 @@ namespace MyLanguage {
         this->_assemblyGenerator.generators().insert({"Label", X86AssemblyGenerators::generateLabel});
         this->_assemblyGenerator.generators().insert({"Call", X86AssemblyGenerators::generateCall});
         this->_assemblyGenerator.generators().insert({"Copy", X86AssemblyGenerators::generateCopy});
+        this->_assemblyGenerator.generators().insert({"WriteFunctionReturn", X86AssemblyGenerators::generateWriteFunctionReturn});
     }
 
-    std::string X86AssemblyGenerator::generate(std::vector<TIRCommand> irCommands)
+    std::string X86AssemblyGenerator::generate(std::map<std::string, std::vector<TIRCommand>> irCommands)
     {
         return this->_assemblyGenerator.generate(irCommands);
     }

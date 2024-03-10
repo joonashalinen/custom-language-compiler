@@ -112,7 +112,14 @@ namespace MyLanguage {
                 // Generate the IR command for the return statement.
                 auto command = context->commandFactory->createWriteFunctionReturn(irVariable);
                 context->irCommands.insert(context->irCommands.end(), command);
-            } 
+            }  else {
+                // If the return statement does not return a value, we make it return 0.
+                auto irVariable = context->commandFactory->nextVariable();
+                auto loadIntCommand = context->commandFactory->createLoadIntConst(0, irVariable);
+                auto returnCommand = context->commandFactory->createWriteFunctionReturn(irVariable);
+                context->irCommands.insert(context->irCommands.end(), loadIntCommand);
+                context->irCommands.insert(context->irCommands.end(), returnCommand);
+            }
             return context;
         }
 
@@ -359,6 +366,43 @@ namespace MyLanguage {
         }
 
         /**
+         * Does pre-order IR generation logic for function statements.
+         */
+        IRGenerator::DGeneratorContext* preGenerateFunction(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            // Generate the label beginning the function. We prefix function label names with F to prevent conflicts 
+            // with other labels.
+            auto label = context->commandFactory->createLabel("F" + expression->subTypes().at("name"));
+            context->irCommands.insert(context->irCommands.end(), label);
+            return context;
+        }
+
+        /**
+         * Does post-order IR generation logic for function definitions.
+         */
+        IRGenerator::DGeneratorContext* generateFunctionDefinition(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            // Check if there is a return statement within the definition.
+            auto returns = std::count_if(expression->children().begin(), expression->children().end(), [](auto child) {
+                return child->type() == "return";
+            });
+            // If there is no return statement.
+            if (returns == 0) {
+                // Generate IR code for returning 0.
+                auto irVariable = context->commandFactory->nextVariable();
+                auto loadIntCommand = context->commandFactory->createLoadIntConst(0, irVariable);
+                auto returnCommand = context->commandFactory->createWriteFunctionReturn(irVariable);
+                context->irCommands.insert(context->irCommands.end(), loadIntCommand);
+                context->irCommands.insert(context->irCommands.end(), returnCommand);
+            }
+            return context;
+        }
+
+        /**
          * Does in-order IR generation logic for function parameters.
          */
         IRGenerator::DGeneratorContext* inGenerateFunctionParameter(
@@ -453,6 +497,8 @@ namespace MyLanguage {
                 return context;
             } else if (expression->type() == "while") {
                 return preGenerateWhile(context, expression);
+            } else if (expression->type() == "function") {
+                return preGenerateFunction(context, expression);
             } else {
                 return context;
             }

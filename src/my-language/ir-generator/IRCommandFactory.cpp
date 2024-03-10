@@ -50,7 +50,7 @@ namespace MyLanguage {
     {
         TIRCommand command = this->createExpression("irCommand", "command", "LoadFunctionParam");
         auto variableExpression = this->createExpression("variable", "name", variable);
-        variableExpression->subTypes().insert({"index", std::to_string(index)});
+        command->subTypes().insert({"index", std::to_string(index)});
         Expression::addChild(command, variableExpression);
         return command;
     }

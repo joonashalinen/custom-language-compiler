@@ -7,8 +7,7 @@ namespace MyLanguage {
         
     }
 
-    std::string AssemblyGenerator::generate(std::vector<TIRCommand> irCommands)
-    {
+    std::string AssemblyGenerator::generateForFunction(std::vector<TIRCommand> irCommands) {
         // Gather the names of all variables from the IR commands.
         auto variableNames = std::set<std::string>{};
         std::for_each(irCommands.begin(), irCommands.end(), [&variableNames](TIRCommand command) {
@@ -38,13 +37,6 @@ namespace MyLanguage {
             this->_indent + "subq $" + std::to_string(reserveMemoryAmount) + ", %rsp" + "\n"
         );
 
-        auto endPortion = (
-            this->_indent + "movq $0, %rax" + "\n" + 
-            this->_indent + "movq %rbp, %rsp" + "\n" + 
-            this->_indent + "popq %rbp" + "\n" + 
-            this->_indent + "ret" + "\n"
-        );
-
         // Generate assembly code for each IR command and join it all together.
         return beginPortion + std::accumulate(
             irCommands.begin(), 
@@ -59,7 +51,19 @@ namespace MyLanguage {
                     throw std::runtime_error("No assembly generator found for command with type: '" + commandType + "'.");
                 }
             }
-        ) + endPortion;
+        );
+    }
+
+    std::string AssemblyGenerator::generate(std::map<std::string, std::vector<TIRCommand>> irCommands)
+    {
+        return std::accumulate(
+            irCommands.begin(), 
+            irCommands.end(), 
+            std::string(""), 
+            [this](std::string assembly, std::pair<std::string, std::vector<TIRCommand>> p) {
+                return this->generateForFunction(p.second);
+            }
+        );
     }
 
     std::string AssemblyGenerator::prelude()

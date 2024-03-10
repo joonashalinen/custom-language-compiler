@@ -19,7 +19,7 @@ namespace MyLanguage {
         public:
             using TExpression = std::shared_ptr<Expression>;
             /**
-             * Type of a function that generates assembly code from a given IR command..
+             * Type of a function that generates assembly code from a given IR command.
              */
             using TGenerator = std::function<std::string(
                 StructuredLanguage::VariableStack&,
@@ -27,10 +27,16 @@ namespace MyLanguage {
                 TIRCommand
             )>;
             AssemblyGenerator();
+
             /**
-             * Generates assembly code from the given list of IR commands.
+             * Generates assembly code for the given function's IR commands.
              */
-            std::string generate(std::vector<TIRCommand> irCommands);
+            std::string generateForFunction(std::vector<TIRCommand> irCommands);
+            /**
+             * Generates assembly code from the given map of IR commands 
+             * for each function.
+             */
+            std::string generate(std::map<std::string, std::vector<TIRCommand>> irCommands);
             std::string prelude();
             std::string indent();
             std::map<std::string, TGenerator>& generators();

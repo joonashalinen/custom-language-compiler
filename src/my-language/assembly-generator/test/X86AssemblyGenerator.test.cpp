@@ -2,7 +2,7 @@
 
 #include "../../../libraries/doctest.h"
 #include "../X86AssemblyGenerator.h"
-#include "../../ir-generator/IRGenerator.h"
+#include "../../ir-generator/ModuleIRGenerator.h"
 #include "../../parser/Parser.h"
 #include "../../tokenizer/Tokenizer.h"
 #include <iostream>
@@ -10,7 +10,7 @@
 namespace Test {
     auto parser = MyLanguage::Parser{};
     auto tokenizer = Tokenizer{};
-    auto irGenerator = MyLanguage::IRGenerator{};
+    auto irGenerator = MyLanguage::ModuleIRGenerator{};
     auto assemblyGenerator = MyLanguage::X86AssemblyGenerator{};
 }
 
