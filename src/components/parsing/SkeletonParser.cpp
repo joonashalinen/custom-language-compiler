@@ -61,7 +61,7 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
                 auto expression = parser->parse(sequence.tokens(), sequence.position());
                 expressions.insert(expressions.end(), expression);
                 sequence.setPosition(expression->endPos());
-            } else if (optionalityLevel == 0 || this->_pattern.at(i - 1).first != "optional") {
+            } else if (optionalityLevel == 0 || (this->_pattern.at(i - 1).first != "optional" && this->_pattern.at(i - 1).first != "trail")) {
                 // Else, if the expression is not optional or we are more than one element deep into an optional section.
                 throw std::runtime_error(
                     "Skeleton pattern could not match the next pattern element '" + elementValue + "'" +
@@ -79,6 +79,7 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
                 break;
             } else {
                 // Else, we advance to the next pattern element to continue parsing from there.
+                optionalityLevel = optionalityLevel + 1;
                 continue;
             }
         } else if (elementType == "optional") {
