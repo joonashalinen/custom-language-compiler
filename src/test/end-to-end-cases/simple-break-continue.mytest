@@ -1,7 +1,7 @@
 var i = 0;
 while i < 10 do {if i < 3 then {print_int(i); i = i +1;} else break}
 i = 0;
-while i < 10 do {if i < 5 then print_int(i) else {i = i + 10; continue; i = 0;}}
+while i < 10 do {if i < 5 then {print_int(i); i = i +1;} else {i = i + 10; continue; i = 0;}}
 !expect!
 0
 1
