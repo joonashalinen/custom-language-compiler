@@ -1,6 +1,6 @@
-fun sum(x, y) {
-    return x + y;
+fun divide(x, y) {
+    return x / y;
 }
-print_int(sum(1, 2));
+print_int(divide(10, 2));
 !expect!
-3
+5

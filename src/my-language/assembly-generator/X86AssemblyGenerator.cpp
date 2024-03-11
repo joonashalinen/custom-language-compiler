@@ -188,11 +188,18 @@ namespace MyLanguage {
             std::vector<std::string> argumentVars,
             std::string outputVar
         ) {
-            // Currently we only support function calls that take a single argument.
-            auto argLocation = variableStack.negativeEndLocation(argumentVars.at(0));
+            assert(argumentVars.size() <= 6); // Functions can only accept up to six arguments.
+
+            auto paramRegisters = std::vector<std::string>{"%rdi", "%rsi", "%rdx", "%rcx", "%r8", "%r9"};
+            auto storeArguments = std::string("");
+            for (int i = 0; i < ((int) argumentVars.size()); i++) {
+                auto argLocation = variableStack.negativeEndLocation(argumentVars.at(i));
+                storeArguments += indent + "movq " + std::to_string(argLocation) + "(%rbp)" + ", " + paramRegisters.at(i) + "\n";
+            }
+
             auto outputLocation = variableStack.negativeEndLocation(outputVar);
             return (
-                indent + "movq " + std::to_string(argLocation) + "(%rbp)" + ", %rdi" + "\n" +
+                storeArguments +
                 indent + "call " + functionName + "\n" +
                 indent + "movq " + "%rax, " + std::to_string(outputLocation) + "(%rbp)" + "\n"
             );
