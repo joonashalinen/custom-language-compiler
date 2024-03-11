@@ -1,0 +1,13 @@
+var i = 0;
+while i < 10 do {if i < 3 then print_int(i) else break}
+i = 0;
+while i < 10 do {if i < 5 then print_int(i) else continue}
+!expect!
+0
+1
+2
+0
+1
+2
+3
+4

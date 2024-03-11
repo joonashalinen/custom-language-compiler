@@ -45,8 +45,10 @@ namespace MyLanguage {
                 IRCommandFactory* commandFactory {nullptr};
                 DataStructures::BatchStack<std::string> variableStack {};
                 DataStructures::BatchStack<std::string> labelStack {};
+                DataStructures::BatchStack<std::string> loopLabelStack {};
                 DataStructures::LinkedMap<std::string> symbolTable {};
                 std::vector<TIRCommand> irCommands {};
+                int loopLevel {0};
             };
 
             IRGenerator();

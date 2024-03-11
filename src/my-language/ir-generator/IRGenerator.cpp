@@ -124,6 +124,42 @@ namespace MyLanguage {
         }
 
         /**
+         * IR generation function for a break expression inside a loop.
+         */
+        IRGenerator::DGeneratorContext* generateBreak(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            if (context->loopLevel == 0) {
+                throw std::runtime_error("Encountered a break statement outside of a loop.");
+            } else {
+                auto endLabel = context->loopLabelStack.stack().top();
+                // Generate jump command that jumps past the loop.
+                auto jump = context->commandFactory->createJump(endLabel);
+                context->irCommands.insert(context->irCommands.end(), jump);
+                return context;
+            }
+        }
+
+        /**
+         * IR generation function for a break expression inside a loop.
+         */
+        IRGenerator::DGeneratorContext* generateContinue(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            if (context->loopLevel == 0) {
+                throw std::runtime_error("Encountered a continue statement outside of a loop.");
+            } else {
+                auto continueLabel = context->loopLabelStack.top(2).at(0);
+                // Generate jump command that jumps to the condition portion of the loop.
+                auto jump = context->commandFactory->createJump(continueLabel);
+                context->irCommands.insert(context->irCommands.end(), jump);
+                return context;
+            }
+        }
+
+        /**
          * Generates the IR commands for a chain expression.
          */
         IRGenerator::DGeneratorContext* generateChain(
@@ -294,6 +330,17 @@ namespace MyLanguage {
         }
 
         /**
+         * Does post-order IR generation logic for while-loops.
+         */
+        IRGenerator::DGeneratorContext* generateWhile(
+            IRGenerator::DGeneratorContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            context->loopLevel = context->loopLevel - 1;
+            return context;
+        }
+
+        /**
          * Generates the IR commands for a in if or an if-else expression during 
          * an in-order traversal of the abstract syntax tree.
          */
@@ -362,6 +409,7 @@ namespace MyLanguage {
             auto conditionIRLabel = context->commandFactory->createLabel(conditionLabel);
             context->irCommands.insert(context->irCommands.end(), conditionIRLabel);
             context->labelStack.stack().push(conditionLabel);
+            context->loopLevel = context->loopLevel + 1;
             return context;
         }
 
@@ -448,6 +496,13 @@ namespace MyLanguage {
                 // Add the label skipping the entire while-do block to the stack so it can be used later.
                 context->labelStack.push({endLabel});
 
+                // Get the label beginning the condition portion of the loop.
+                auto conditionLabel = context->labelStack.stack().top();
+                // Add the condition label and end label to the stack of loop labels. This stack is necessary 
+                // for implementing break and continue statements within the do-portion.
+                context->loopLabelStack.push({conditionLabel});
+                context->loopLabelStack.push({endLabel});
+
             } else if (childIndex == 1) {
                  // If we have just generated the IR commands for the do-portion.
 
@@ -463,6 +518,10 @@ namespace MyLanguage {
                 
                 context->irCommands.insert(context->irCommands.end(), jumpToCondition);
                 context->irCommands.insert(context->irCommands.end(), endIRLabel);
+
+                // Remove the loop labels for this while loop, since 
+                // break and continue statements cannot appear outside the do-portion for this loop.
+                context->loopLabelStack.pop(2);
             }
 
             return context;
@@ -545,12 +604,14 @@ namespace MyLanguage {
         this->_irGenerators.insert({"block", IRGenerators::generateBlock});
         this->_irGenerators.insert({"parenthetical", IRGenerators::nullGenerator});
         this->_irGenerators.insert({"if", IRGenerators::generateIf});
-        this->_irGenerators.insert({"while", IRGenerators::nullGenerator});
+        this->_irGenerators.insert({"while", IRGenerators::generateWhile});
         this->_irGenerators.insert({"function", IRGenerators::nullGenerator});
         this->_irGenerators.insert({"function-parameter-list", IRGenerators::nullGenerator});
         this->_irGenerators.insert({"function-parameter", IRGenerators::nullGenerator});
         this->_irGenerators.insert({"function-definition", IRGenerators::generateFunctionDefinition});
         this->_irGenerators.insert({"return", IRGenerators::generateReturn});
+        this->_irGenerators.insert({"break", IRGenerators::generateBreak});
+        this->_irGenerators.insert({"continue", IRGenerators::generateContinue});
     }
 
     std::vector<TIRCommand> IRGenerator::generate(std::shared_ptr<Expression> root)
