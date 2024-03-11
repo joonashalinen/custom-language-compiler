@@ -1,5 +1,5 @@
 fun sumSeries(sum, n) {
-    return if n <= 0 then sum else sumSeries(sum, n - 1);
+    return if n <= 0 then sum else sum + sumSeries(sum, n - 1);
 }
 print_int(sumSeries(0, 5));
 !expect!
