@@ -51,19 +51,18 @@ std::shared_ptr<Expression> MyLanguage::ModuleParser::parse(std::vector<DToken>&
         return child->type() != "function";
     };
 
-    int nonFunctions = std::count_if(moduleChildren.begin(), moduleChildren.end(), isNotAFunction);
-    if (nonFunctions > 1) {
-        throw std::runtime_error("There can only be one top-level expression.");
-    }
+    auto topLevelExpressions = std::vector<std::shared_ptr<Expression>>{};
+    std::copy_if(moduleChildren.begin(), moduleChildren.end(), std::back_inserter(topLevelExpressions), isNotAFunction);
 
-    // Next, we transform the top-level expression into a function called 'main'. If no top-level expression 
+    // Next, we transform the top-level expressions into a function called 'main'. If no top-level expression 
     // is present, the 'main' function will have an empty definition.
 
     std::shared_ptr<Expression> mainFunction;
-    if (nonFunctions == 1) {
-        auto topLevelExpression = *(std::find_if(moduleChildren.begin(), moduleChildren.end(), isNotAFunction));
-        mainFunction = (MyLanguage::ExpressionFactory{}).createFunction("main", "void", {}, {topLevelExpression});
-        Expression::removeChild(moduleExpression, topLevelExpression);
+    if (topLevelExpressions.size() > 0) {
+        mainFunction = (MyLanguage::ExpressionFactory{}).createFunction("main", "void", {}, topLevelExpressions);
+        std::for_each(topLevelExpressions.begin(), topLevelExpressions.end(), [&moduleExpression](auto expression) {
+            Expression::removeChild(moduleExpression, expression);
+        });
     } else {
         mainFunction = (MyLanguage::ExpressionFactory{}).createFunction("main", "void", {}, {});
     }
