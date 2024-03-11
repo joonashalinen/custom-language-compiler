@@ -1,0 +1,9 @@
+fun sumSeries(sum, n) {
+    if n <= 0 then
+        return sum
+    else
+        return sumSeries(sum, n - 1);
+}
+print_int(sumSeries(0, 5));
+!expect!
+15
