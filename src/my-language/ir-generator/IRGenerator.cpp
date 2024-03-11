@@ -136,8 +136,7 @@ namespace MyLanguage {
                 auto endLabel = context->loopLabelStack.stack().top();
                 // Generate jump command that jumps past the loop.
                 auto jump = context->commandFactory->createJump(endLabel);
-                context->irCommands.insert(context->irCommands.end(), jump);
-
+                
                 // If the break statement has a return value.
                 if (expression->children().size() > 0) {
                     // Generate command to copy the return value to the variable storing the result of the loop.
@@ -147,6 +146,7 @@ namespace MyLanguage {
                     context->irCommands.insert(context->irCommands.end(), copy);
                 }
 
+                context->irCommands.insert(context->irCommands.end(), jump);
                 return context;
             }
         }
