@@ -424,7 +424,7 @@ namespace MyLanguage {
             auto resultVar = context->commandFactory->nextVariable();
             // 0 (Unit) is the default result of the loop. Thus, we create a command for setting this value to the result variable. 
             // This value will get overriden if there is a break statement within the loop that returns a value.
-            auto writeResult = context->commandFactory->createLoadIntConst(0, resultVar);
+            auto writeResult = context->commandFactory->createLoadIntConst("0", resultVar);
             
             context->irCommands.insert(context->irCommands.end(), writeResult);
             context->irCommands.insert(context->irCommands.end(), conditionIRLabel);

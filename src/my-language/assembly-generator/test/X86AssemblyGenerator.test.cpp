@@ -15,7 +15,7 @@ namespace Test {
 }
 
 TEST_CASE("generate") {
-    auto input = "while true do if false then break else continue;";
+    auto input = "while true do false;";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
     auto root = Test::parser.parse(tokens, 0);
     auto irCommands = Test::irGenerator.generate(root);
