@@ -137,6 +137,16 @@ namespace MyLanguage {
                 // Generate jump command that jumps past the loop.
                 auto jump = context->commandFactory->createJump(endLabel);
                 context->irCommands.insert(context->irCommands.end(), jump);
+
+                // If the break statement has a return value.
+                if (expression->children().size() > 0) {
+                    // Generate command to copy the return value to the variable storing the result of the loop.
+                    auto breakResultVar = context->variableStack.pop();
+                    auto loopResultVar = context->loopVariableStack.stack().top();
+                    auto copy = context->commandFactory->createCopy(breakResultVar, loopResultVar);
+                    context->irCommands.insert(context->irCommands.end(), copy);
+                }
+
                 return context;
             }
         }
@@ -337,6 +347,9 @@ namespace MyLanguage {
             std::shared_ptr<Expression> expression
         ) {
             context->loopLevel = context->loopLevel - 1;
+            // Return the result of the loop.
+            auto resultVar = context->loopVariableStack.pop();
+            context->variableStack.push({resultVar});
             return context;
         }
 
@@ -404,12 +417,20 @@ namespace MyLanguage {
             IRGenerator::DGeneratorContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            // Generate the IR label beginning the condition portion of the while-do block.
+            // Create the IR label beginning the condition portion of the while-do block.
             auto conditionLabel = context->commandFactory->nextLabel();
             auto conditionIRLabel = context->commandFactory->createLabel(conditionLabel);
+            // Create the variable for storing the result of the loop.
+            auto resultVar = context->commandFactory->nextVariable();
+            // 0 (Unit) is the default result of the loop. Thus, we create a command for setting this value to the result variable. 
+            // This value will get overriden if there is a break statement within the loop that returns a value.
+            auto writeResult = context->commandFactory->createLoadIntConst(0, resultVar);
+            
+            context->irCommands.insert(context->irCommands.end(), writeResult);
             context->irCommands.insert(context->irCommands.end(), conditionIRLabel);
             context->labelStack.stack().push(conditionLabel);
             context->loopLevel = context->loopLevel + 1;
+            context->loopVariableStack.stack().push(resultVar);
             return context;
         }
 
