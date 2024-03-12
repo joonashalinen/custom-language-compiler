@@ -32,6 +32,7 @@ OBJS =  \
 	my-language/ir-generator/IRCommandFactory.o \
 	my-language/assembly-generator/AssemblyGenerator.o \
 	my-language/assembly-generator/X86AssemblyGenerator.o \
+	my-language/type-checker/TypeChecker.o \
 	components/tokenization/Tokenization.o \
 	components/text/RegexPattern.o \
 	components/parsing/OperatedChainParser.o \

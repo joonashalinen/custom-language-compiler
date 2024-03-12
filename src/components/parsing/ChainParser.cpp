@@ -38,17 +38,18 @@ std::shared_ptr<Expression> Parsing::ChainParser::parse(std::vector<DToken>& tok
                 sequence.peek().value + "' was encountered instead at position " + std::to_string(sequence.position()) 
             );
         } else {
-            // Determine whether the chain has a closing separator or not.
-            if (sequence.peek().value == this->_separator) {
-                subTypes.insert({"openness", "closed"});
-            } else {
-                subTypes.insert({"openness", "open"});
-            }
             // Skip over potential (optional) following separators.
             while (sequence.peek().value == this->_separator) {
                 sequence.consume();
             }
         }
+    }
+
+    // Determine whether the chain has a closing separator or not.
+    if ((sequence.position() > 0) && (sequence.tokens().at(sequence.position() - 1).value != this->_separator)) {
+        subTypes.insert({"openness", "open"});
+    } else {
+        subTypes.insert({"openness", "closed"});
     }
 
     // Next, we form the resulting root expression.
