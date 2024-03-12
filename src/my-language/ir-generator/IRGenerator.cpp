@@ -179,7 +179,11 @@ namespace MyLanguage {
             if (expression->children().size() > 0) {
                 auto irVariables = context->variableStack.pop(expression->children().size());
                 std::string lastIRVariable = irVariables.back();
-                context->variableStack.push({lastIRVariable});
+                if (expression->subTypes().at("openness") == "open") {
+                    context->variableStack.push({lastIRVariable});
+                } else {
+                    context->variableStack.push({"Unit"});
+                }
             }
             return context;
         }
