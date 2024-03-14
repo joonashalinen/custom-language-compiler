@@ -354,9 +354,13 @@ namespace MyLanguage {
                         parameterTypes.end(),
                         std::pair<int, bool>{0, true}, // Iteration index and the accumulated boolean.
                         [&functionType](auto acc, auto parameterType) {
+                            auto acceptedParameter = functionType.parameterTypes.at(acc.first);
                             return std::pair<int, bool>{
                                 acc.first + 1,
-                                acc.second && (parameterType == functionType.parameterTypes.at(acc.first))
+                                acc.second && (
+                                    acceptedParameter == "Any" || 
+                                    parameterType == acceptedParameter
+                                )
                             };
                         }
                     )).second;
