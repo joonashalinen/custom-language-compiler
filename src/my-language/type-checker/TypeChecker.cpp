@@ -42,7 +42,11 @@ namespace MyLanguage {
                     {"<=", {"Int"}},
                     {">=", {"Int"}},
                     {"==", {"Int", "Bool"}},
-                    {"!=", {"Int", "Bool"}}
+                    {"+", {"Int"}},
+                    {"-", {"Int"}},
+                    {"*", {"Int"}},
+                    {"/", {"Int"}},
+                    {"%", {"Int"}}
                 };
                 if (!(acceptedTypes.contains(operatorName))) {
                     throwTypeError(expression, std::string("'") + operatorName + "' is not a recognized binary operator");
