@@ -6,6 +6,7 @@
 #include "my-language/parser/Parser.h"
 #include "my-language/ir-generator/ModuleIRGenerator.h"
 #include "my-language/assembly-generator/X86AssemblyGenerator.h"
+#include "my-language/type-checker/TypeChecker.h"
 
 int main(int argc, char* argv[]) {
     assert(argc == 3);
@@ -13,6 +14,7 @@ int main(int argc, char* argv[]) {
     // Create compiler parts.
     auto tokenizer = Tokenizer{};
     auto parser = MyLanguage::Parser{};
+    auto typeChecker = MyLanguage::TypeChecker{};
     auto irGenerator = MyLanguage::ModuleIRGenerator{};
     auto assemblyGenerator = MyLanguage::X86AssemblyGenerator{};
 
@@ -37,6 +39,7 @@ int main(int argc, char* argv[]) {
     // Compile the code into assembly.
     auto tokens = tokenizer.tokenizer.tokenize(code);
     auto root = parser.parse(tokens, 0);
+    typeChecker.check(root);
     auto irCommands = irGenerator.generate(root);
     auto assemblyCode = assemblyGenerator.generate(irCommands);
 
