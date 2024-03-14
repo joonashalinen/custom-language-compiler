@@ -14,7 +14,7 @@ namespace Test {
 }
 
 int main(int argc, char* argv[]) {
-    auto input = "var a = 1;\nvar b = {var a = 2; a}\nvar c = a;\nprint_int(c);";
+    auto input = "if then 1 else 2;";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
     auto root = Test::parser.parse(tokens, 0);
     Test::typeChecker.check(root);

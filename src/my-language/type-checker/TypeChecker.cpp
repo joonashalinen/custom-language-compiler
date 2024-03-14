@@ -280,16 +280,30 @@ namespace MyLanguage {
             TypeChecker::DTypeCheckContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            // Type of the then-portion's expression.
-            auto conditionType = context->typeStack.pop(expression->children().size()).at(0);
-            if (conditionType != "Bool") {
+            // Types of the portions of the if-statement.
+            auto portionTypes = context->typeStack.pop(expression->children().size());
+            // If the condition is not a boolean.
+            if (portionTypes.at(0) != "Bool") {
                 throwTypeError(
                     expression, 
                     std::string("Expected the condition of an if-statement to be of type 'Bool' but instead it was of type '") + 
-                    conditionType + "'"
+                    portionTypes.at(0) + "'"
                 );
             }
-            context->typeStack.stack().push("Unit");
+            // If the if-statement includes an else-statement.
+            if (expression->children().size() == 3) {
+                // Check that the then-portion and the else-portion have the same type.
+                if (portionTypes.at(1) != portionTypes.at(2)) {
+                    throwTypeError(
+                        expression,
+                        "If-else statement has different types for the then-portion and the else-portion"
+                    );
+                }
+                // The return type is the type of the then-portion and else-portion.
+                context->typeStack.stack().push(portionTypes.at(1));
+            } else {
+                context->typeStack.stack().push("Unit");
+            }
             return context;
         }
 
