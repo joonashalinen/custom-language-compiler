@@ -198,7 +198,7 @@ namespace MyLanguage {
             TypeChecker::DTypeCheckContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            auto variableName = expression->subTypes().at("name");
+            auto variableName = expression->subTypes().at("literal-value");
             if (!(context->typeSymbolTable.contains(variableName))) {
                 throwTypeError(
                     expression, 
@@ -519,7 +519,7 @@ namespace MyLanguage {
             {"return", TypeCheckers::postCheckReturn},
             {"assignment", TypeCheckers::postCheckAssignment},
             {"module", TypeCheckers::postCheckModule},
-            {"break", TypeCheckers::postCheckBreak},
+            {"break", TypeCheckers::postCheckBreak}
         };
     }
 

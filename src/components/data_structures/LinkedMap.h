@@ -57,10 +57,10 @@ namespace DataStructures {
     template<class T>
     inline T& LinkedMap<T>::at(std::string key)
     {
-        auto mapIt = std::find_if(this->_maps.begin(), this->_maps.end(), [key](LinkedMap::TMap map) {
+        auto mapIt = std::find_if(this->_maps.rbegin(), this->_maps.rend(), [key](LinkedMap::TMap map) {
             return map->contains(key);
         });
-        if (mapIt != this->_maps.end()) {
+        if (mapIt != this->_maps.rend()) {
             return (*mapIt)->at(key);
         } else {
             throw std::runtime_error("No value at key " + key + " in LinkedMap.");
@@ -70,22 +70,22 @@ namespace DataStructures {
     template<class T>
     inline std::map<std::string, T>& LinkedMap<T>::front()
     {
-        return *(this->_maps.front());
+        return *(this->_maps.back());
     }
 
     template<class T>
     inline bool LinkedMap<T>::contains(std::string key)
     {
-        auto mapIt = std::find_if(this->_maps.begin(), this->_maps.end(), [key](LinkedMap::TMap map) {
+        auto mapIt = std::find_if(this->_maps.rbegin(), this->_maps.rend(), [key](LinkedMap::TMap map) {
             return map->contains(key);
         });
-        return (mapIt != this->_maps.end());
+        return (mapIt != this->_maps.rend());
     }
 
     template<class T>
     inline void LinkedMap<T>::insert(std::string key, T value)
     {
-        this->_maps.front()->insert({key, value});
+        this->_maps.back()->insert({key, value});
     }
 
     template<class T>
