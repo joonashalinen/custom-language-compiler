@@ -158,7 +158,7 @@ namespace MyLanguage {
             auto operatorName = expression->subTypes().at("name");
             auto acceptedTypes = std::map<std::string, std::string>{
                 {"not", "Bool"},
-                {"minus", "Int"}
+                {"-", "Int"},
             };
             if (!(acceptedTypes.contains(operatorName))) {
                 throwTypeError(expression, std::string("'") + operatorName + "' is not a recognized unary operator");
