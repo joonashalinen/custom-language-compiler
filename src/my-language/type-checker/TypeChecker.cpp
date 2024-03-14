@@ -516,7 +516,10 @@ namespace MyLanguage {
             {"while", TypeCheckers::postCheckWhile},
             {"function", TypeCheckers::postCheckFunction},
             {"function-parameter", TypeCheckers::postCheckFunctionParameter},
-            {"return", TypeCheckers::postCheckReturn}
+            {"return", TypeCheckers::postCheckReturn},
+            {"assignment", TypeCheckers::postCheckAssignment},
+            {"module", TypeCheckers::postCheckModule},
+            {"break", TypeCheckers::postCheckBreak},
         };
     }
 
