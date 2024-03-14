@@ -1,4 +1,4 @@
-fun sumSeries(n) {
+fun sumSeries(n): Int {
     return if n <= 0 then 0 else n + sumSeries(n - 1);
 }
 print_int(sumSeries(5));
