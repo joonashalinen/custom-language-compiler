@@ -25,7 +25,11 @@ namespace MyLanguage {
             auto valueTypes = context->typeStack.pop(2);
             auto operatorName = expression->subTypes().at("name");
 
-            if (valueTypes.at(0) != valueTypes.at(1)) {
+            if (
+                valueTypes.at(0) != "Any" &&
+                valueTypes.at(1) != "Any" &&
+                valueTypes.at(0) != valueTypes.at(1)
+            ) {
                 auto errorMessage = (
                     std::string("The left value to binary operator '") + operatorName + 
                     "' was of type '" + valueTypes.at(0) +
