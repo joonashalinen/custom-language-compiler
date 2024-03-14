@@ -56,13 +56,13 @@ namespace MyLanguage {
                     throwTypeError(expression, std::string("'") + operatorName + "' is not a recognized binary operator");
                 }
                 auto acceptedTypesForOperator = acceptedTypes.at(operatorName);
-                if (!(acceptedTypesForOperator.contains(valueTypes.at(0)))) {
+                if (valueTypes.at(0) != "Any" && !(acceptedTypesForOperator.contains(valueTypes.at(0)))) {
                     throwTypeError(
                         expression,
                         std::string("The left-hand type '") + valueTypes.at(0) + "' to binary operator '" + 
                         operatorName + "' is an invalid type"
                     );
-                } else if (!(acceptedTypesForOperator.contains(valueTypes.at(1)))) {
+                } else if (valueTypes.at(1) != "Any" && !(acceptedTypesForOperator.contains(valueTypes.at(1)))) {
                     throwTypeError(
                         expression,
                         std::string("The right-hand type '") + valueTypes.at(1) + "' to binary operator '" + 
