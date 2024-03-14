@@ -30,8 +30,6 @@ namespace MyLanguage {
             std::unique_ptr<LiteralParser> _identifierLiteralParser;
             std::unique_ptr<LiteralParser> _numberLiteralParser;
             std::unique_ptr<LiteralParser> _booleanLiteralParser;
-            std::unique_ptr<LiteralParser> _continueLiteralParser;
-            std::unique_ptr<Parsing::SkeletonParser> _breakParser;
             std::unique_ptr<Parsing::ConflictParser> _identifierParser;
             std::unique_ptr<Parsing::ParentheticalParser> _parentheticalParser;
             std::unique_ptr<Parsing::ParentheticalParser> _blockParser;

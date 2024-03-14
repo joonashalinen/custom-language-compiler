@@ -23,7 +23,7 @@ std::shared_ptr<Expression> MyLanguage::FunctionParameterParser::parse(std::vect
 {
     auto expression = this->_skeletonParser->parse(tokens, position);
 
-    // We want to change the parameter name and return type into sub-types of the expression 
+    // We want to change the parameter name and type into sub-types of the expression 
     // instead of proper child expressions.
 
     auto parameter = expression->children().at(0);
@@ -35,8 +35,10 @@ std::shared_ptr<Expression> MyLanguage::FunctionParameterParser::parse(std::vect
     if (expression->children().size() > 0) {
         auto type = expression->children().at(0);
         auto typeName = type->subTypes().at("literal-value");
-        expression->subTypes().insert({"explicit-type", typeName});
+        expression->subTypes().insert({"value-type", typeName});
         Expression::removeChild(expression, type);
+    } else {
+        expression->subTypes().insert({"value-type", "Any"});
     }
 
     assert(expression->children().size() == 0);

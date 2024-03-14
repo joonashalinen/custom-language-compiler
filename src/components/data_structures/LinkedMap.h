@@ -21,6 +21,14 @@ namespace DataStructures {
              */
             T& at(std::string key);
             /**
+             * Get the front-most map of values.
+             */
+            std::map<std::string, T>& front();
+            /**
+             * Whether a value at the given key exists.
+             */
+            bool contains(std::string key);
+            /**
              * Insert a given value at the given key to the map at the front 
              * of the linked list of maps.
              */
@@ -57,6 +65,21 @@ namespace DataStructures {
         } else {
             throw std::runtime_error("No value at key " + key + " in LinkedMap.");
         }
+    }
+
+    template<class T>
+    inline std::map<std::string, T>& LinkedMap<T>::front()
+    {
+        return *(this->_maps.front());
+    }
+
+    template<class T>
+    inline bool LinkedMap<T>::contains(std::string key)
+    {
+        auto mapIt = std::find_if(this->_maps.begin(), this->_maps.end(), [key](LinkedMap::TMap map) {
+            return map->contains(key);
+        });
+        return (mapIt != this->_maps.end());
     }
 
     template<class T>

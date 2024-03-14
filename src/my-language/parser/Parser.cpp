@@ -8,7 +8,6 @@ MyLanguage::Parser::Parser() {
     this->_identifierLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"identifier"});
     this->_numberLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"number"});
     this->_booleanLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"boolean"});
-    this->_continueLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"continue"});
     this->_binaryParser = std::unique_ptr<BinaryParser>(
         new BinaryParser{"binary-operator", {"binary-operator", "minus"}, *(this->_mapParser)}
     );
@@ -23,20 +22,6 @@ MyLanguage::Parser::Parser() {
             std::map<std::string, IParseable*>{
                 {"binary-operator", this->_binaryParser.get()},
                 {"minus", this->_binaryParser.get()}
-            }
-        }
-    );
-
-    this->_breakParser = std::unique_ptr<Parsing::SkeletonParser>(
-        new Parsing::SkeletonParser{
-            "break", 
-            {
-                {"token-value", "break"},
-                {"trail", ""},
-                {"expression", "E"}
-            },
-            {
-                {"E", this->_operatedChainParser.get()}
             }
         }
     );
@@ -92,8 +77,6 @@ MyLanguage::Parser::Parser() {
             {"identifier", this->_identifierParser.get()},
             {"number", this->_numberLiteralParser.get()},
             {"boolean", this->_booleanLiteralParser.get()},
-            {"break", this->_breakParser.get()},
-            {"continue", this->_continueLiteralParser.get()},
             {"unary-operator", this->_unaryParser.get()},
             {"minus", this->_unaryParser.get()},
             {"(", this->_parentheticalParser.get()},

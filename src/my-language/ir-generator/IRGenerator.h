@@ -47,7 +47,6 @@ namespace MyLanguage {
                 DataStructures::BatchStack<std::string> labelStack {};
                 DataStructures::LinkedMap<std::string> symbolTable {};
                 std::vector<TIRCommand> irCommands {};
-                int loopLevel {0};
                 DataStructures::BatchStack<std::string> loopLabelStack {};
                 DataStructures::BatchStack<std::string> loopVariableStack {};
             };

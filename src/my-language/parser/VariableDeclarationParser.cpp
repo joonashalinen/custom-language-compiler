@@ -43,6 +43,9 @@ std::shared_ptr<Expression> MyLanguage::VariableDeclarationParser::parse(
         // Change the type child expression into a subtype of the variable declaration.
         expression->subTypes().insert({"value-type", expression->tokens().at(3).value});
         Expression::removeChild(expression, expression->children().at(1));
+    } else {
+        // Set the value type of the variable to 'Any'.
+        expression->subTypes().insert({"value-type", "Any"});
     }
     // Set the proper subtype for the name of the declared variable.
     expression->subTypes().insert({"name", expression->tokens().at(1).value});

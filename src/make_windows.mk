@@ -57,7 +57,7 @@ TEST_OBJS = \
 	components/parsing/test/OperatedChainParser.test.o \
 
 TEST_OBJ = \
-	my-language/assembly-generator/test/X86AssemblyGenerator.test.o
+	my-language/parser/test/Parser.test.o
 # Here is a Make Macro defined by two Macro Expansions.
 # A Macro Expansion may be treated as a textual replacement of the Make Macro.
 # Macro Expansions are introduced with $ and enclosed in (parentheses).

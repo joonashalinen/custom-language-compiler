@@ -130,25 +130,21 @@ namespace MyLanguage {
             IRGenerator::DGeneratorContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            if (context->loopLevel == 0) {
-                throw std::runtime_error("Encountered a break statement outside of a loop.");
-            } else {
-                auto endLabel = context->loopLabelStack.stack().top();
-                // Generate jump command that jumps past the loop.
-                auto jump = context->commandFactory->createJump(endLabel);
-                
-                // If the break statement has a return value.
-                if (expression->children().size() > 0) {
-                    // Generate command to copy the return value to the variable storing the result of the loop.
-                    auto breakResultVar = context->variableStack.pop();
-                    auto loopResultVar = context->loopVariableStack.stack().top();
-                    auto copy = context->commandFactory->createCopy(breakResultVar, loopResultVar);
-                    context->irCommands.insert(context->irCommands.end(), copy);
-                }
-
-                context->irCommands.insert(context->irCommands.end(), jump);
-                return context;
+            auto endLabel = context->loopLabelStack.stack().top();
+            // Generate jump command that jumps past the loop.
+            auto jump = context->commandFactory->createJump(endLabel);
+            
+            // If the break statement has a return value.
+            if (expression->children().size() > 0) {
+                // Generate command to copy the return value to the variable storing the result of the loop.
+                auto breakResultVar = context->variableStack.pop();
+                auto loopResultVar = context->loopVariableStack.stack().top();
+                auto copy = context->commandFactory->createCopy(breakResultVar, loopResultVar);
+                context->irCommands.insert(context->irCommands.end(), copy);
             }
+
+            context->irCommands.insert(context->irCommands.end(), jump);
+            return context;
         }
 
         /**
@@ -158,15 +154,11 @@ namespace MyLanguage {
             IRGenerator::DGeneratorContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            if (context->loopLevel == 0) {
-                throw std::runtime_error("Encountered a continue statement outside of a loop.");
-            } else {
-                auto continueLabel = context->loopLabelStack.top(2).at(0);
-                // Generate jump command that jumps to the condition portion of the loop.
-                auto jump = context->commandFactory->createJump(continueLabel);
-                context->irCommands.insert(context->irCommands.end(), jump);
-                return context;
-            }
+            auto continueLabel = context->loopLabelStack.top(2).at(0);
+            // Generate jump command that jumps to the condition portion of the loop.
+            auto jump = context->commandFactory->createJump(continueLabel);
+            context->irCommands.insert(context->irCommands.end(), jump);
+            return context;
         }
 
         /**
@@ -350,7 +342,6 @@ namespace MyLanguage {
             IRGenerator::DGeneratorContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            context->loopLevel = context->loopLevel - 1;
             // Return the result of the loop.
             auto resultVar = context->loopVariableStack.pop();
             context->variableStack.push({resultVar});
@@ -433,7 +424,6 @@ namespace MyLanguage {
             context->irCommands.insert(context->irCommands.end(), writeResult);
             context->irCommands.insert(context->irCommands.end(), conditionIRLabel);
             context->labelStack.stack().push(conditionLabel);
-            context->loopLevel = context->loopLevel + 1;
             context->loopVariableStack.stack().push(resultVar);
             return context;
         }

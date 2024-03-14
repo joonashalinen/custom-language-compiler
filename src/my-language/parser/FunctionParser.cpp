@@ -87,9 +87,16 @@ std::shared_ptr<Expression> MyLanguage::FunctionParser::parse(std::vector<DToken
         Expression::removeChild(functionExpression, returnType);
         functionExpression->subTypes().insert({"return-type", returnType->rootToken().value});
     } else {
-        // The return type is void.
-        functionExpression->subTypes().insert({"return-type", "void"});
+        // The return type is Unit.
+        functionExpression->subTypes().insert({"return-type", "Unit"});
     }
+
+    // Determine whether the function contains a return statement.
+    auto definitionChildren = functionExpression->children().at(1)->children();
+    int returns = std::count_if(definitionChildren.begin(), definitionChildren.end(), [](auto statement) {
+        return statement->type() == "return";
+    });
+    functionExpression->subTypes().insert({"returns-amount", std::to_string(returns)});
 
     return functionExpression;
 }

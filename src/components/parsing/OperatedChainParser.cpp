@@ -104,3 +104,18 @@ void OperatedChainParser::setPrecedenceLevels(std::map<std::string, int> precede
 {
     this->_precedenceLevels = precedenceLevels;
 }
+
+IParseable& OperatedChainParser::parser()
+{
+    return this->_parser;
+}
+
+std::map<std::string, IParseable*> OperatedChainParser::nonUnaryParsers()
+{
+    return this->_nonUnaryParsers;
+}
+
+std::map<std::string, int> OperatedChainParser::precedenceLevels()
+{
+    return this->_precedenceLevels;
+}

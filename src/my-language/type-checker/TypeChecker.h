@@ -7,6 +7,8 @@
 #include "../../components/parsing/Expression.h"
 #include <map>
 #include <algorithm>
+#include <set>
+#include <stack>
 
 namespace MyLanguage {
     /**
@@ -25,14 +27,23 @@ namespace MyLanguage {
                 )
             >;
 
+            struct DFunctionType {
+                std::vector<std::string> parameterTypes {};
+                std::string returnType {};
+            };
+
             /**
              * Type of the context object being passed around when type checking 
              *  the abstract syntax tree by folding over it.
              */
             struct DTypeCheckContext {
-                std::map<std::string, TTypeChecker>* typeCheckers {nullptr};
+                std::map<std::string, TTypeChecker>* preTypeCheckers {nullptr};
+                std::map<std::string, TTypeChecker>* postTypeCheckers {nullptr};
                 DataStructures::BatchStack<std::string> typeStack {};
-                DataStructures::LinkedMap<std::string> symbolTable {};
+                DataStructures::LinkedMap<std::string> typeSymbolTable {};
+                DataStructures::LinkedMap<DFunctionType> functionTypeSymbolTable {};
+                DataStructures::BatchStack<std::string> loopBreakTypeStack {};
+                DataStructures::BatchStack<DFunctionType> functionTypeStack {};
             };
 
             TypeChecker();
@@ -41,7 +52,8 @@ namespace MyLanguage {
              */
             void check(TExpression root);
         private:
-            std::map<std::string, TTypeChecker> _typeCheckers;
+            std::map<std::string, TTypeChecker> _preTypeCheckers;
+            std::map<std::string, TTypeChecker> _postTypeCheckers;
     };
 };
 
