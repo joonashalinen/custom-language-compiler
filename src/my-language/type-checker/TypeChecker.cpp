@@ -52,6 +52,20 @@ namespace MyLanguage {
                     {"/", {"Int"}},
                     {"%", {"Int"}}
                 };
+                auto returnedTypes = std::map<std::string, std::string>{
+                    {"and", "Bool"},
+                    {"or", "Bool"},
+                    {"<", "Bool"},
+                    {">", "Bool"},
+                    {"<=", "Bool"},
+                    {">=", "Bool"},
+                    {"==", "Bool"},
+                    {"+", "Int"},
+                    {"-", "Int"},
+                    {"*", "Int"},
+                    {"/", "Int"},
+                    {"%", "Int"}
+                };
                 if (!(acceptedTypes.contains(operatorName))) {
                     throwTypeError(expression, std::string("'") + operatorName + "' is not a recognized binary operator");
                 }
@@ -69,7 +83,7 @@ namespace MyLanguage {
                         operatorName + "' is an invalid type"
                     );
                 }
-                context->typeStack.stack().push(valueTypes.at(0));
+                context->typeStack.stack().push(returnedTypes.at(operatorName));
             }
             return context;
         }
