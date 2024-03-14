@@ -246,7 +246,7 @@ TEST_CASE("Module with function") {
 
     REQUIRE(function->type() == "function");
     REQUIRE(function->subTypes().at("name") == "test");
-    REQUIRE(function->subTypes().at("return-type") == "void");
+    REQUIRE(function->subTypes().at("return-type") == "Unit");
     REQUIRE(function->children().at(0)->type() == "function-parameter-list");
     REQUIRE(function->children().at(0)->children().at(0)->subTypes().at("name") == "x");
     REQUIRE(function->children().at(0)->children().at(1)->subTypes().at("name") == "y");
@@ -274,9 +274,9 @@ TEST_CASE("Function with types") {
     REQUIRE(function->subTypes().at("return-type") == "Int");
     REQUIRE(function->children().at(0)->type() == "function-parameter-list");
     REQUIRE(function->children().at(0)->children().at(0)->subTypes().at("name") == "x");
-    REQUIRE(function->children().at(0)->children().at(0)->subTypes().at("explicit-type") == "Int");
+    REQUIRE(function->children().at(0)->children().at(0)->subTypes().at("value-type") == "Int");
     REQUIRE(function->children().at(0)->children().at(1)->subTypes().at("name") == "y");
-    REQUIRE(function->children().at(0)->children().at(1)->subTypes().at("explicit-type") == "Int");
+    REQUIRE(function->children().at(0)->children().at(1)->subTypes().at("value-type") == "Int");
     REQUIRE(function->children().at(1)->type() == "function-definition");
     REQUIRE(function->children().at(1)->children().at(0)->type() == "function-call");
     REQUIRE(function->children().at(1)->children().at(1)->type() == "return");
