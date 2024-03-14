@@ -81,7 +81,7 @@ namespace MyLanguage {
                 throwTypeError(
                     expression, 
                     std::string("The variable '") + variableName + 
-                    "' has already been declared in this scope."
+                    "' has already been declared in this scope"
                 );
             }
             if (variableType != "Any" && variableType != rightHandType) {
@@ -304,7 +304,7 @@ namespace MyLanguage {
             auto breakResultType = expression->children().size() == 0 ? "Unit" : context->typeStack.pop();
             std::string& expectedResultType = context->loopBreakTypeStack.stack().top();
             if (expectedResultType != "Any" && breakResultType != expectedResultType) {
-                throwTypeError(expression, "Breaks in loop have mismatching return types.");
+                throwTypeError(expression, "Breaks in loop have mismatching return types");
             } else {
                 expectedResultType = breakResultType;
             }
@@ -325,7 +325,7 @@ namespace MyLanguage {
                 auto functionType = context->functionTypeSymbolTable.at(functionName);
                 auto parameterTypes = context->typeStack.pop(expression->children().size());
                 if (functionType.parameterTypes.size() != parameterTypes.size()) {
-                    throwTypeError(expression, "Mismatching amount of arguments given to function call.");
+                    throwTypeError(expression, "Mismatching amount of arguments given to function call");
                 } else {
                     auto parameterTypesMatch = (std::accumulate(
                         parameterTypes.begin(),
@@ -342,7 +342,7 @@ namespace MyLanguage {
                     if (!parameterTypesMatch) {
                         throwTypeError(
                             expression, 
-                            "Types of given arguments do not match the expected parameters in function call."
+                            "Types of given arguments do not match the expected parameters in function call"
                         );
                     } else {
                         context->typeStack.stack().push(functionType.returnType);
@@ -519,9 +519,14 @@ namespace MyLanguage {
     void TypeChecker::check(TExpression root)
     {
         auto context = TypeChecker::DTypeCheckContext{&(this->_preTypeCheckers), &(this->_postTypeCheckers)};
+
+        // Set global built-in functions.
+        context.functionTypeSymbolTable.insert("print_int", TypeChecker::DFunctionType{{"Int"}, "Unit"});
+        context.functionTypeSymbolTable.insert("print_bool", TypeChecker::DFunctionType{{"Bool"}, "Unit"});
+        context.functionTypeSymbolTable.insert("read_int", TypeChecker::DFunctionType{{}, "Int"});
+
         auto foldable = DataStructures::FoldableNode<TypeChecker::DTypeCheckContext*, TypeChecker::TExpression>{root};
         foldable.setPreFolder(TypeCheckers::preCheckAny);
         foldable.fold(TypeCheckers::postCheckAny, &context);
     }
 }
-

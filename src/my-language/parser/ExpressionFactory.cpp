@@ -45,5 +45,12 @@ std::shared_ptr<Expression> MyLanguage::ExpressionFactory::createFunction(
     Expression::addChild(f, parameterList);
     Expression::addChild(f, definition);
 
+    // Determine whether the function contains a return statement.
+    auto definitionChildren = f->children().at(1)->children();
+    int returns = std::count_if(definitionChildren.begin(), definitionChildren.end(), [](auto statement) {
+        return statement->type() == "return";
+    });
+    f->subTypes().insert({"returns-amount", std::to_string(returns)});
+
     return f;
 }

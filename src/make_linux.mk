@@ -55,6 +55,7 @@ TEST_OBJS = \
 	my-language/ir-generator/test/IRGenerator.test.o \
 	my-language/assembly-generator/test/X86AssemblyGenerator.test.o \
 	components/parsing/test/OperatedChainParser.test.o \
+	test/manual.o \
 
 TEST_OBJ = \
 	my-language/assembly-generator/test/X86AssemblyGenerator.test.o

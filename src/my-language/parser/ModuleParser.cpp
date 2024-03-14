@@ -59,12 +59,12 @@ std::shared_ptr<Expression> MyLanguage::ModuleParser::parse(std::vector<DToken>&
 
     std::shared_ptr<Expression> mainFunction;
     if (topLevelExpressions.size() > 0) {
-        mainFunction = (MyLanguage::ExpressionFactory{}).createFunction("main", "void", {}, topLevelExpressions);
+        mainFunction = (MyLanguage::ExpressionFactory{}).createFunction("main", "Unit", {}, topLevelExpressions);
         std::for_each(topLevelExpressions.begin(), topLevelExpressions.end(), [&moduleExpression](auto expression) {
             Expression::removeChild(moduleExpression, expression);
         });
     } else {
-        mainFunction = (MyLanguage::ExpressionFactory{}).createFunction("main", "void", {}, {});
+        mainFunction = (MyLanguage::ExpressionFactory{}).createFunction("main", "Unit", {}, {});
     }
     
     Expression::addChild(moduleExpression, mainFunction);
