@@ -571,7 +571,7 @@ namespace MyLanguage {
             {"assignment", TypeCheckers::postCheckAssignment},
             {"module", TypeCheckers::postCheckModule},
             {"break", TypeCheckers::postCheckBreak},
-            {"break", TypeCheckers::postCheckContinue}
+            {"continue", TypeCheckers::postCheckContinue}
         };
     }
 
