@@ -1,9 +1,9 @@
+#ifndef TEXT_REGEXPATTERN_HH
+#define TEXT_REGEXPATTERN_HH
+
 #include <string>
 #include <regex>
 #include "ITextPattern.h"
-
-#ifndef TEXT_REGEXPATTERN_HH
-#define TEXT_REGEXPATTERN_HH
 
 class RegexPattern: public ITextPattern {
     public:

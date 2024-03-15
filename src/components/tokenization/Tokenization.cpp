@@ -24,12 +24,17 @@ DToken Tokenization::Tokenizer::recognizeToken(std::string text) {
     if (pattern != this->_patterns.end()) {
         // Get the match.
         auto match = (*pattern)->second->recognize(text);
+        // Determine the start and end positions of the match.
+        int startPos = match.first;
+        int endPos = match.first + ((int) match.second.size());
         // Create a new token object from the match.
         DToken token{
             (*pattern)->first, 
             match.second, 
-            match.first, 
-            match.first + ((int) match.second.size())
+            startPos,
+            endPos,
+            Text::Location{startPos, text.begin()},
+            Text::Location{endPos, text.begin()}
         };
         return token;
     } else {

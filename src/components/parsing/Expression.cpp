@@ -6,8 +6,26 @@ Expression::Expression(
 	int startPos, 
 	int endPos
 ):
-    _type(type), _startPos(startPos), _endPos(endPos)
+	_type(type), _startPos(startPos), _endPos(endPos)
 {
+}
+
+Text::Location Expression::startLocation() {
+	return this->_startLocation;
+}
+
+void Expression::setStartLocation(Text::Location location)
+{
+	this->_startLocation = location;
+}
+
+Text::Location Expression::endLocation() {
+	return this->_endLocation;
+}
+
+void Expression::setEndLocation(Text::Location location)
+{
+	this->_endLocation = location;
 }
 
 std::map<std::string, std::string>& Expression::subTypes()

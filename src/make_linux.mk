@@ -35,6 +35,7 @@ OBJS =  \
 	my-language/type-checker/TypeChecker.o \
 	components/tokenization/Tokenization.o \
 	components/text/RegexPattern.o \
+	components/text/Location.o \
 	components/parsing/OperatedChainParser.o \
 	components/parsing/TokenSequence.o \
 	components/parsing/MapParser.o \
