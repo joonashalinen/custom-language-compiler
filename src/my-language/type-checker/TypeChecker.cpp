@@ -100,6 +100,7 @@ namespace MyLanguage {
             auto variableName = expression->subTypes().at("name");
             auto variableType = expression->subTypes().at("value-type");
             auto rightHandType = context->typeStack.pop();
+            
             // If the variable already exists in this scope.
             if (context->typeSymbolTable.front().contains(variableName)) {
                 throwTypeError(

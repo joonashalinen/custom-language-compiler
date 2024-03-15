@@ -13,7 +13,7 @@ Expression::Expression(
 Text::Location Expression::startLocation() {
 	auto childLocation = this->_children.size() > 0 ? this->_children.front()->startLocation() : Text::Location{};
 	auto firstTokenLocation = this->_tokens.size() > 0 ? this->_tokens.front().startLocation : Text::Location{};
-	if (childLocation.positionIndex() < firstTokenLocation.positionIndex()) {
+	if (childLocation.positionIndex() != -1 && childLocation.positionIndex() < firstTokenLocation.positionIndex()) {
 		return childLocation;
 	}else {
 		return firstTokenLocation;
@@ -21,9 +21,9 @@ Text::Location Expression::startLocation() {
 }
 
 Text::Location Expression::endLocation() {
-	auto childLocation = this->_children.size() > 0 ? this->_children.back()->startLocation() : Text::Location{};
+	auto childLocation = this->_children.size() > 0 ? this->_children.back()->endLocation() : Text::Location{};
 	auto firstTokenLocation = this->_tokens.size() > 0 ? this->_tokens.back().startLocation : Text::Location{};
-	if (childLocation.positionIndex() > firstTokenLocation.positionIndex()) {
+	if (childLocation.positionIndex() != -1 && childLocation.positionIndex() > firstTokenLocation.positionIndex()) {
 		return childLocation;
 	}else {
 		return firstTokenLocation;

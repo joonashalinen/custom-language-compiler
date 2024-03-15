@@ -32,9 +32,7 @@ DToken Tokenization::Tokenizer::recognizeToken(std::string text) {
             (*pattern)->first, 
             match.second, 
             startPos,
-            endPos,
-            Text::Location{startPos, text.begin()},
-            Text::Location{endPos, text.begin()}
+            endPos
         };
         return token;
     } else {
@@ -63,6 +61,8 @@ std::vector<DToken> Tokenization::Tokenizer::tokenize(std::string text) {
             // to the whole text.
             token.startPos = pos;
             token.endPos = pos + token.value.size();
+            token.startLocation = Text::Location{token.startPos, text.begin()};
+            token.endLocation = Text::Location{token.endPos, text.begin()};
             // Add the token to the result only if it is not a comment 
             // or whitespace, since we do not care about these.
             if (token.type != "comment" && token.type != "whitespace") {
