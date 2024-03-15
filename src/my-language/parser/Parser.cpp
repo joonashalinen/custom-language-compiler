@@ -21,7 +21,8 @@ MyLanguage::Parser::Parser() {
             *(this->_mapParser), 
             std::map<std::string, IParseable*>{
                 {"binary-operator", this->_binaryParser.get()},
-                {"minus", this->_binaryParser.get()}
+                {"minus", this->_binaryParser.get()},
+                {"asterisk", this->_binaryParser.get()}
             }
         }
     );
