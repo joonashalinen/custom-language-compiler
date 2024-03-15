@@ -12,12 +12,14 @@ namespace Text {
     class Location {
         public:
             Location();
-            Location(int line, int column);
+            Location(int positionIndex, int line, int column);
             Location(int positionIndex, const std::string::iterator textStart);
+            int positionIndex();
             int line();
             int column();
             std::string toString();
         private:
+            int _positionIndex;
             int _line;
             int _column;
     };

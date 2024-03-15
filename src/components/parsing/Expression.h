@@ -15,9 +15,7 @@ class Expression {
     public:
         Expression(std::string type, int startPos, int endPos);
         Text::Location startLocation();
-        void setStartLocation(Text::Location location);
         Text::Location endLocation();
-        void setEndLocation(Text::Location location);
         std::map<std::string, std::string>& subTypes();
         void setSubTypes(std::map<std::string, std::string> subTypes);
         std::vector<DToken>& tokens();

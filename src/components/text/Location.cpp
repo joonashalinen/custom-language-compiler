@@ -1,15 +1,16 @@
 #include "Location.h"
 
 Text::Location::Location():
-	_line(-1), _column(-1) {
+	_positionIndex(-1), _line(-1), _column(-1) {
 }
 
-Text::Location::Location(int line, int column):
-	_line(line), _column(column) {
+Text::Location::Location(int positionIndex, int line, int column):
+	_positionIndex(positionIndex), _line(line), _column(column) {
 }
 
 Text::Location::Location(int positionIndex, const std::string::iterator textStart)
 {
+	this->_positionIndex = positionIndex;
 	// Determine the line number.
 	this->_line = 1 + std::count_if(textStart, textStart + positionIndex + 1, [](char c) {return c == '\n';});
 	// Determine the column number.
@@ -26,6 +27,11 @@ Text::Location::Location(int positionIndex, const std::string::iterator textStar
 		}
 	).first;
 	this->_column = positionIndex - lastNewLineIndex + 1;
+}
+
+int Text::Location::positionIndex()
+{
+	return this->_positionIndex;
 }
 
 int Text::Location::line()

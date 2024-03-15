@@ -10,8 +10,8 @@ struct DToken {
     std::string value;
     int startPos;
     int endPos;
-    Text::Location startLocation {Text::Location{-1, -1}};
-    Text::Location endLocation {Text::Location{-1, -1}};
+    Text::Location startLocation {};
+    Text::Location endLocation {};
 };
 
 #endif

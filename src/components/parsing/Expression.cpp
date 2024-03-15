@@ -11,21 +11,23 @@ Expression::Expression(
 }
 
 Text::Location Expression::startLocation() {
-	return this->_startLocation;
-}
-
-void Expression::setStartLocation(Text::Location location)
-{
-	this->_startLocation = location;
+	auto childLocation = this->_children.size() > 0 ? this->_children.front()->startLocation() : Text::Location{};
+	auto firstTokenLocation = this->_tokens.size() > 0 ? this->_tokens.front().startLocation : Text::Location{};
+	if (childLocation.positionIndex() < firstTokenLocation.positionIndex()) {
+		return childLocation;
+	}else {
+		return firstTokenLocation;
+	}
 }
 
 Text::Location Expression::endLocation() {
-	return this->_endLocation;
-}
-
-void Expression::setEndLocation(Text::Location location)
-{
-	this->_endLocation = location;
+	auto childLocation = this->_children.size() > 0 ? this->_children.back()->startLocation() : Text::Location{};
+	auto firstTokenLocation = this->_tokens.size() > 0 ? this->_tokens.back().startLocation : Text::Location{};
+	if (childLocation.positionIndex() > firstTokenLocation.positionIndex()) {
+		return childLocation;
+	}else {
+		return firstTokenLocation;
+	}
 }
 
 std::map<std::string, std::string>& Expression::subTypes()
