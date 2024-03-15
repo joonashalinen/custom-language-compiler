@@ -298,7 +298,8 @@ namespace MyLanguage {
                 if (portionTypes.at(1) != portionTypes.at(2)) {
                     throwTypeError(
                         expression,
-                        "If-else statement has different types for the then-portion and the else-portion"
+                        "The then-portion of if-else statement has type '" + portionTypes.at(1) + 
+                        "' but the else-portion has type '" + portionTypes.at(2) + "'"
                     );
                 }
                 // The return type is the type of the then-portion and else-portion.
