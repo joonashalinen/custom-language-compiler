@@ -352,6 +352,17 @@ namespace MyLanguage {
         }
 
         /**
+         * Post-order type checking code for continue-expressions.
+         */
+        TypeChecker::DTypeCheckContext* postCheckContinue(
+            TypeChecker::DTypeCheckContext* context,
+            std::shared_ptr<Expression> expression
+        ) {
+            context->typeStack.stack().push("Unit");
+            return context;
+        }
+
+        /**
          * Type checking code for function calls.
          */
         TypeChecker::DTypeCheckContext* postCheckFunctionCall(
@@ -559,7 +570,8 @@ namespace MyLanguage {
             {"return", TypeCheckers::postCheckReturn},
             {"assignment", TypeCheckers::postCheckAssignment},
             {"module", TypeCheckers::postCheckModule},
-            {"break", TypeCheckers::postCheckBreak}
+            {"break", TypeCheckers::postCheckBreak},
+            {"break", TypeCheckers::postCheckContinue}
         };
     }
 
