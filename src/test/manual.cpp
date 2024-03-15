@@ -14,7 +14,7 @@ namespace Test {
 }
 
 int main(int argc, char* argv[]) {
-    auto input = "while true do break;";
+    auto input = "var i = 0;\nwhile i < 10 do {if i < 3 then {print_int(i); i = i +1;} else break}";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
     auto root = Test::parser.parse(tokens, 0);
     Test::typeChecker.check(root);

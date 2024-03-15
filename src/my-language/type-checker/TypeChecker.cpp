@@ -346,6 +346,7 @@ namespace MyLanguage {
                 throwTypeError(expression, "Breaks in loop have mismatching return types");
             } else {
                 expectedResultType = breakResultType;
+                context->typeStack.stack().push(breakResultType);
             }
             return context;
         }
