@@ -18,7 +18,9 @@ Tokenizer::Tokenizer(Tokenization::Tokenizer tokenizer):
     this->tokenizer.addRegexPattern("continue", "continue");
     this->tokenizer.addRegexPattern("boolean", "(true|false)");
     this->tokenizer.addRegexPattern("binary-operator", "(\\=\\=|\\!\\=|\\<\\=|\\>\\=)");
-    this->tokenizer.addRegexPattern("binary-operator", "(\\+|\\*|\\/|\\=|\\<|\\>|%|and|or)");
+    this->tokenizer.addRegexPattern("binary-operator", "(\\+|\\/|\\=|\\<|\\>|%|and|or)");
+    this->tokenizer.addRegexPattern("asterisk", "\\*");
+    this->tokenizer.addRegexPattern("ampersand", "\\&");
     this->tokenizer.addRegexPattern("minus", "-");
     this->tokenizer.addRegexPattern("unary-operator", "not");
     this->tokenizer.addRegexPattern("parentheses", "[(){}]");
