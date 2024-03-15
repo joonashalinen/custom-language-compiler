@@ -1,9 +1,7 @@
 #include "WhileParser.h"
 
-MyLanguage::WhileParser::WhileParser(OperatedChainParser* operatedChainParser)
-{
-    this->_operatedChainParser = operatedChainParser;
-
+MyLanguage::WhileParser::WhileParser(OperatedChainParser* operatedChainParser):
+    _operatedChainParser(operatedChainParser), _parseLevel(0) {
     this->_breakParser = std::unique_ptr<Parsing::SkeletonParser>(
         new Parsing::SkeletonParser{
             "break", 
@@ -38,17 +36,21 @@ MyLanguage::WhileParser::WhileParser(OperatedChainParser* operatedChainParser)
 
 std::shared_ptr<Expression> MyLanguage::WhileParser::parse(std::vector<DToken>& tokens, int position)
 {
-    auto mapParser = ((MapParser&) this->_operatedChainParser->parser());
+    auto& mapParser = ((MapParser&) this->_operatedChainParser->parser());
 
-    if (!(mapParser.parsers().contains("break"))) {
+    if (this->_parseLevel == 0) {
         mapParser.parsers().insert({"break", this->_breakParser.get()});
-    }
-    if (!(mapParser.parsers().contains("continue"))) {
         mapParser.parsers().insert({"continue", this->_continueParser.get()});
     }
+    this->_parseLevel = this->_parseLevel + 1;
 
 	auto result = this->_mainParser->parse(tokens, position);
-    this->_restore();
+ 
+    this->_parseLevel = this->_parseLevel - 1;
+    if (this->_parseLevel == 0) {
+        mapParser.parsers().erase("break");
+        mapParser.parsers().erase("continue");
+    }
     return result;
 }
 
@@ -57,15 +59,4 @@ bool MyLanguage::WhileParser::canParseAt(std::vector<DToken>& tokens, int positi
     auto sequence = TokenSequence{tokens};
     sequence.setPosition(position);
     return sequence.peek().value == "while";
-}
-
-void MyLanguage::WhileParser::_restore()
-{
-    auto mapParser = ((MapParser&) this->_operatedChainParser->parser());
-    if (mapParser.parsers().contains("break")) {
-        mapParser.parsers().erase("break");
-    }
-    if (mapParser.parsers().contains("continue")) {
-        mapParser.parsers().erase("continue");
-    }
 }

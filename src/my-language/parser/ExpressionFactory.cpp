@@ -23,19 +23,19 @@ std::shared_ptr<Expression> MyLanguage::ExpressionFactory::createFunction(
 )
 {
     // Create function expression.
-    auto f = std::shared_ptr<Expression>(new Expression{"function", -1, -1});
+    auto f = std::shared_ptr<Expression>(new Expression{"function", 0, 0});
     f->subTypes().insert({"name", name});
     f->subTypes().insert({"return-type", returnType});
 
     // Create parameter list expression.
-    auto parameterList = std::shared_ptr<Expression>(new Expression{"function-parameter-list", -1, -1});
+    auto parameterList = std::shared_ptr<Expression>(new Expression{"function-parameter-list", 0, 0});
     // Populate parameter list.
     std::for_each(parameterExpressions.begin(), parameterExpressions.end(), [&parameterList](auto parameter) {
         Expression::addChild(parameterList, parameter);
     });
 
     // Create function definition expression.
-    auto definition = std::shared_ptr<Expression>(new Expression{"function-definition", -1, -1});
+    auto definition = std::shared_ptr<Expression>(new Expression{"function-definition", 0, 0});
     // Populate definition expression's children.
     std::for_each(definitionExpressions.begin(), definitionExpressions.end(), [&definition](auto statement) {
         Expression::addChild(definition, statement);

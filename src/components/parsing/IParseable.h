@@ -5,6 +5,7 @@
 #include <memory>
 #include "../tokenization/DToken.h"
 #include "Expression.h"
+#include <iostream>
 
 class IParseable {
     public:

@@ -57,7 +57,7 @@ int Expression::endPos()
 void Expression::setEndPos(int endPos)
 {
 	this->_endPos = endPos;
-	if (this->_parent && this->isLastChild()) {
+	if (this->_parent && this->isLastChild() && this->_parent->endPos() < this->_endPos) {
 		this->_parent->setEndPos(this->_endPos);
 	}
 }
@@ -116,7 +116,9 @@ std::shared_ptr<Expression> Expression::earliestAncestor(std::shared_ptr<Express
 void Expression::addChild(std::shared_ptr<Expression> expression, std::shared_ptr<Expression> child)
 {
     expression->children().insert(expression->children().end(), child);
-	expression->setEndPos(child->endPos());
+	if (child->endPos() > expression->endPos()) {
+		expression->setEndPos(child->endPos());
+	}
     child->setParent(expression);
 }
 

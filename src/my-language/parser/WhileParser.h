@@ -5,6 +5,7 @@
 #include "../../components/parsing/OperatedChainParser.h"
 #include "../../components/parsing/MapParser.h"
 #include "../../components/parsing/LiteralParser.h"
+#include <iostream>
 
 namespace MyLanguage {
     class WhileParser: public IParseable {
@@ -17,10 +18,7 @@ namespace MyLanguage {
             std::unique_ptr<Parsing::SkeletonParser> _mainParser;
             std::unique_ptr<LiteralParser> _continueParser;
             std::unique_ptr<Parsing::SkeletonParser> _breakParser;
-            /**
-             * Undo changes made to sub-parsers.
-             */
-            void _restore();
+            int _parseLevel;
     };
 };
 
