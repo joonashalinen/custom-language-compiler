@@ -1,0 +1,6 @@
+fun test(a: Int): Int {
+    return a;
+}
+test(true);
+!expect-compiler-error!
+Types of given arguments do not match the expected parameters in function call
