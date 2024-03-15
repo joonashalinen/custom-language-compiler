@@ -1,0 +1,3 @@
+while true do {break 1; {break 2; break true}};
+!expect-compiler-error!
+Breaks in loop have mismatching return types
