@@ -35,13 +35,13 @@ std::shared_ptr<Expression> Parsing::ParentheticalParser::parse(std::vector<DTok
         } else {
             throw std::runtime_error(
                 "Expected a '" + this->_endCharacter + "' but instead encountered '" + 
-                endToken.value + "' at position " + std::to_string(sequence.position() - 1)
+                endToken.value + "' at " + endToken.startLocation.toString()
             );
         }
     } else {
         throw std::runtime_error(
             "Expected a '" + this->_beginCharacter + "' but instead encountered '" + 
-            beginToken.value + "' at position " + std::to_string(sequence.position() - 1)
+            beginToken.value + "' at " + beginToken.startLocation.toString()
         );
     }
 }

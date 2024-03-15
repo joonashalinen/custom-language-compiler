@@ -25,7 +25,7 @@ std::shared_ptr<Expression> Parsing::ConflictParser::parse(std::vector<DToken>& 
     ));
 
     if (longestExpression->endPos() == -1) {
-        throw std::runtime_error("No rule could be matched.");
+        throw std::runtime_error("No parsing rule could be matched at " + tokens.at(position).startLocation.toString());
     }
 
     return longestExpression;

@@ -64,8 +64,7 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
             } else if (optionalityLevel == 0 || (this->_pattern.at(i - 1).first != "optional" && this->_pattern.at(i - 1).first != "trail")) {
                 // Else, if the expression is not optional or we are more than one element deep into an optional section.
                 throw std::runtime_error(
-                    "Skeleton pattern could not match the next pattern element '" + elementValue + "'" +
-                    " with the next token '" + sequence.peek().value + "', which was not optional."
+                    "Unexpected token '" + elementValue + "' encountered at " + sequence.peek().startLocation.toString()
                 );
             }
         } else if (elementType == "trail") {
@@ -101,8 +100,7 @@ std::shared_ptr<Expression> Parsing::SkeletonParser::parse(std::vector<DToken>& 
             optionalityLevel = optionalityLevel - 1;
         } else {
             throw std::runtime_error(
-                "Skeleton pattern could not match the next pattern element '" + elementValue + "'" +
-                " with the next token '" + sequence.peek().value + "'."
+                "Unexpected token '" + elementValue + "' encountered at " + sequence.peek().startLocation.toString()
             );
         }
     }

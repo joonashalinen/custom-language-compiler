@@ -41,6 +41,9 @@ std::shared_ptr<Expression> BinaryParser::parse(std::vector<DToken>& tokens, int
         Expression::addChild(binaryExpression, secondExpression);
         return binaryExpression;
     } else {
-        throw std::runtime_error("Expected the operator: " + this->_operatorType);
+        throw std::runtime_error(
+            "Expected the binary operator: " + this->_operatorType + " at " + 
+            nextToken.startLocation.toString()
+        );
     }
 }

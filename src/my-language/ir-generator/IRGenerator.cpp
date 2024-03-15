@@ -554,7 +554,7 @@ namespace MyLanguage {
                 auto generate = context->irGenerators->at(expression->type());
                 return generate(context, expression);
             } else {
-                throw std::runtime_error("No generator found for type: '" + expression->type() + "'.");
+                throw std::runtime_error("No IR generator found for type: '" + expression->type() + "'.");
             }
         }
 

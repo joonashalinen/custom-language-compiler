@@ -109,8 +109,8 @@ std::shared_ptr<Expression> MyLanguage::Parser::parse(std::vector<DToken>& token
 	auto root = this->_moduleParser->parse(tokens, position);
     if (root->endPos() != ((int) tokens.size()) - 1) {
         throw std::runtime_error(
-            std::string("Error during parsing: Nothing parseable encountered beyond position ") + 
-            std::to_string(root->endPos())
+            std::string("Error during parsing: Nothing parseable encountered beyond ") + 
+            root->endLocation().toString()
         );
     }
     return root;

@@ -18,7 +18,10 @@ std::shared_ptr<Expression> MapParser::parse(std::vector<DToken>& tokens, int po
         // Parse using a wildcard parsing rule.
         return this->_wildCardParser->parse(tokens, position);
     } else {
-        throw std::runtime_error("Unexpected token '" + token.value + "' found at position " + std::to_string(position));
+        throw std::runtime_error(
+            "Unexpected token '" + token.value + "' found at " +
+            token.startLocation.toString()
+        );
     }
 }
 

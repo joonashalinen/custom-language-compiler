@@ -10,8 +10,8 @@ namespace MyLanguage {
             std::string message
         ) {
             throw std::runtime_error(
-                std::string("Error encountered at position ") + 
-                std::to_string(expression->startPos()) + ": " + message + "."
+                std::string("Error encountered at ") + 
+                expression->startLocation().toString() + ": " + message + "."
             );
         }
 

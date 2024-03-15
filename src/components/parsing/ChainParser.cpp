@@ -35,7 +35,7 @@ std::shared_ptr<Expression> Parsing::ChainParser::parse(std::vector<DToken>& tok
         if (!separatorIsOptional && sequence.peek().value != this->_separator) {
             throw std::runtime_error(
                 "Expected a separator character '" + this->_separator + "' to follow but '" +
-                sequence.peek().value + "' was encountered instead at position " + std::to_string(sequence.position()) 
+                sequence.peek().value + "' was encountered instead at " + sequence.peek().startLocation.toString() 
             );
         } else {
             // Skip over potential (optional) following separators.

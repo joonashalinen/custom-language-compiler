@@ -34,6 +34,6 @@ std::shared_ptr<Expression> UnaryParser::parse(std::vector<DToken>& tokens, int 
         Expression::addChild(unaryExpression, followingExpression);
         return unaryExpression;
     } else {
-        throw std::runtime_error("Expected the operator: " + this->_operatorType);
+        throw std::runtime_error("Expected the operator '" + this->_operatorType + "' at " + firstToken.startLocation.toString());
     }
 }
