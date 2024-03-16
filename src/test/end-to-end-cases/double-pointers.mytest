@@ -1,0 +1,6 @@
+var a: Int = 2;
+var ap: Int* = &a;
+var app: Int** = &ap;
+print_int(**app);
+!expect!
+2
