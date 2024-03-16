@@ -207,23 +207,27 @@ namespace MyLanguage {
         ) {
             auto& valueType = context->typeStack.stack().top();
             auto operatorName = expression->subTypes().at("name");
-            auto acceptedTypes = std::map<std::string, std::set<std::string>>{
-                {"not", {"Bool"}},
-                {"-", {"Int"}},
-                {"*", {"Int*", "Bool*"}},
-                {"&", {"Int", "Bool"}}
-            };
-            if (!(acceptedTypes.contains(operatorName))) {
-                throwTypeError(expression, std::string("'") + operatorName + "' is not a recognized unary operator");
-            } else if (!(acceptedTypes.at(operatorName).contains(valueType))) {
-                throwTypeError(
-                    expression, 
-                    std::string("The type '") + valueType + 
-                    "' is not a valid operand type for the unary operator '" + operatorName + "'"
-                );
-            }
-            if (operatorName == "&") {
+            auto invalidTypeError = (
+                std::string("The type '") + valueType + 
+                "' is not a valid operand type for the unary operator '" + operatorName + "'"
+            );
+            if (operatorName == "not" || operatorName == "-") {
+                auto acceptedTypes = std::map<std::string, std::set<std::string>>{
+                    {"not", {"Bool"}},
+                    {"-", {"Int"}}
+                };
+                if (!(acceptedTypes.at(operatorName).contains(valueType))) {
+                    throwTypeError(expression, invalidTypeError);
+                }
+           } else if (operatorName == "&") {
                 valueType = valueType + "*";
+            } else if (operatorName == "*") {
+                if (valueType.back() != '*') {
+                    throwTypeError(expression, invalidTypeError);
+                }
+                valueType.pop_back();
+            } else {
+                throwTypeError(expression, std::string("'") + operatorName + "' is not a recognized unary operator");
             }
             return context;
         }
