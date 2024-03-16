@@ -129,6 +129,9 @@ namespace MyLanguage {
             std::shared_ptr<Expression> expression
         ) {
             auto leftHand = expression->children().at(0);
+
+            // First, we check that the left hand side of the assignment is a valid type.
+
             // If the left side of the assignment is not an identifier or a pointer dereference.
             if (
                 leftHand->type() != "identifier" && 
@@ -146,41 +149,64 @@ namespace MyLanguage {
                     std::string("Left-hand side of assignment is not an identifier or a pointer dereference")
                 );
             }
-            // If the left hand expression is an identifier.
-            if (leftHand->type() == "identifier") {
-                // Name of the variable being assigned to.
-                auto variableName = leftHand->subTypes().at("literal-value");
-                // If the variable does not exist.
-                if (!(context->typeSymbolTable.contains(variableName))) {
-                    throwTypeError(
-                        expression, 
-                        std::string("Trying to assign to a variable '") + variableName + 
-                        "' that has not been defined"
-                    );
+
+            // Next, we want to find the name of the variable present in the left hand expression.
+
+            // How many pointer dereferences are preceding the left hand variable identifier.
+            auto dereferenceLevel = 0;
+
+            // If the left hand expression is a pointer dereference.
+            if (leftHand->type() == "unary-operator") {
+                // Find the variable identifier expression.
+                dereferenceLevel = 1;
+                while (leftHand->type() == "unary-operator") {
+                    leftHand = leftHand->children().at(0);
+                    dereferenceLevel = dereferenceLevel + 1;
                 }
-                auto variableType = context->typeSymbolTable.at(variableName);
-                // Type of the value being assigned.
-                auto valueType = context->typeStack.pop();
-                // If the types do not match.
-                if (variableType != valueType) {
-                    auto errorMessage = (
-                        std::string("The type of the variable '") + variableName + 
-                        "' being assigned to was of type '" + variableType +
-                        "' but the value being assigned was of type '" + valueType + "'"
-                    );
-                    throwTypeError(expression, errorMessage);
-                }                
-            } else {
-                // Else, the left hand expression is a pointer dereference.
-                
-                // Now, we want to do further type checking to see if the value being dereferenced can be assigned to. 
-                // To do this, we peel back one layer of the left-hand pointer dereference expression and 
-                // recursively call type checking again.
-                auto clone = std::shared_ptr<Expression>(new Expression{});
-                *clone = *expression;
-                clone->setChildren({leftHand->children().at(0), expression->children().at(1)});
-                postCheckAssignment(context, clone);
             }
+
+            // Name of the variable present in the left hand expression.
+            auto variableName = leftHand->subTypes().at("literal-value");
+
+            // Next, we want to check that the left hand variable exists in the symbol table.
+
+            // If the variable does not exist.
+            if (!(context->typeSymbolTable.contains(variableName))) {
+                throwTypeError(
+                    expression, 
+                    std::string("Trying to assign to a variable '") + variableName + 
+                    "' that has not been defined"
+                );
+            }
+
+            // Now, we want to find the type of the left hand expression.
+
+            auto leftHandType = context->typeSymbolTable.at(variableName);
+
+            // If the left hand expression contains pointer dereferences.
+            if (dereferenceLevel != 0) {
+                // The type of the left hand expression is the type of the associated variable minus 
+                // the levels of pointer asterisks accessed.
+                for (int i = 0; i < dereferenceLevel; i++) {
+                    leftHandType.pop_back();
+                }
+            }
+
+            // Finally, we can now check that the types of the left hand expression and the 
+            // right hand expression match.
+
+            // Type of the value being assigned.
+            auto valueType = context->typeStack.pop();
+            // If the types do not match.
+            if (leftHandType != valueType) {
+                auto errorMessage = (
+                    std::string("The type of the variable '") + variableName + 
+                    "' being assigned to was of type '" + leftHandType +
+                    "' but the value being assigned was of type '" + valueType + "'"
+                );
+                throwTypeError(expression, errorMessage);
+            }
+
             return context;
         }
 
