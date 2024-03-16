@@ -1,6 +1,10 @@
 #include "Expression.h"
 #include <algorithm>
 
+Expression::Expression(): _type("__NULL__"), _startPos(-1), _endPos(-1) {
+
+}
+
 Expression::Expression(
 	std::string type, 
 	int startPos, 

@@ -15,7 +15,11 @@
 namespace MyLanguage {
     class ModuleParser: public IParseable {
         public:
-            ModuleParser(IParseable* statementParser, IParseable* identifierParser);
+            ModuleParser(
+                IParseable* statementParser, 
+                IParseable* identifierParser,
+                IParseable* typeParser 
+            );
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         private:
             std::unique_ptr<Parsing::ChainParser> _moduleParser;

@@ -16,6 +16,7 @@
 #include "FunctionCallParser.h"
 #include "FunctionParser.h"
 #include "ModuleParser.h"
+#include "TypeParser.h"
 
 namespace MyLanguage {
     /**
@@ -41,6 +42,7 @@ namespace MyLanguage {
             std::unique_ptr<MyLanguage::WhileParser> _whileParser;
             std::unique_ptr<MyLanguage::FunctionCallParser> _functionCallParser;
             std::unique_ptr<MyLanguage::ModuleParser> _moduleParser;
+            std::unique_ptr<MyLanguage::TypeParser> _typeParser;
     };
 };
 

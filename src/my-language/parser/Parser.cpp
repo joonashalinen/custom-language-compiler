@@ -8,6 +8,8 @@ MyLanguage::Parser::Parser() {
     this->_identifierLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"identifier"});
     this->_numberLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"number"});
     this->_booleanLiteralParser = std::unique_ptr<LiteralParser>(new LiteralParser{"boolean"});
+    this->_typeParser = std::unique_ptr<MyLanguage::TypeParser>(new MyLanguage::TypeParser{});
+
     this->_binaryParser = std::unique_ptr<BinaryParser>(
         new BinaryParser{"binary-operator", {"binary-operator", "minus", "asterisk", "ampersand"}, *(this->_mapParser)}
     );
@@ -45,7 +47,7 @@ MyLanguage::Parser::Parser() {
     );
 
     this->_chainParser = std::unique_ptr<MyLanguage::ChainParser>(
-        new MyLanguage::ChainParser{this->_operatedChainParser.get()}
+        new MyLanguage::ChainParser{this->_operatedChainParser.get(), this->_typeParser.get()}
     );
 
     this->_blockParser = std::unique_ptr<Parsing::ParentheticalParser>(
@@ -67,7 +69,8 @@ MyLanguage::Parser::Parser() {
     this->_moduleParser = std::unique_ptr<MyLanguage::ModuleParser>(
         new MyLanguage::ModuleParser{
             this->_chainParser->mapParser(),
-            this->_identifierLiteralParser.get()
+            this->_identifierLiteralParser.get(),
+            this->_typeParser.get()
         }
     );
 

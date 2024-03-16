@@ -1,12 +1,15 @@
 #include "ChainParser.h"
 
-MyLanguage::ChainParser::ChainParser(OperatedChainParser* operatedChainParser)
+MyLanguage::ChainParser::ChainParser(
+    OperatedChainParser* operatedChainParser,
+    IParseable* typeParser
+)
 {
     // First, we construct the sub-parsers.
 
     this->_mapParser = std::unique_ptr<MapParser>(new MapParser{});
     this->_variableDeclarationParser = std::unique_ptr<VariableDeclarationParser>(
-        new VariableDeclarationParser{operatedChainParser}
+        new VariableDeclarationParser{operatedChainParser, typeParser}
     );
 
     // Next, we set the parsing rules.

@@ -1,7 +1,8 @@
 #include "VariableDeclarationParser.h"
 
 MyLanguage::VariableDeclarationParser::VariableDeclarationParser(
-    OperatedChainParser* operatedChainParser
+    OperatedChainParser* operatedChainParser,
+    IParseable* typeParser
 ) {
     this->_skeletonParser = this->_createSkeletonParser(
         {
@@ -10,18 +11,20 @@ MyLanguage::VariableDeclarationParser::VariableDeclarationParser(
             {"token-value", "="},
             {"expression", "E"}
         },
-        operatedChainParser
+        operatedChainParser,
+        typeParser
     );
     this->_typedSkeletonParser = this->_createSkeletonParser(
         {
             {"token-value", "var"},
             {"token-type", "identifier"},
             {"token-value", ":"},
-            {"token-type", "identifier"},
+            {"expression", "T"},
             {"token-value", "="},
             {"expression", "E"}
         },
-        operatedChainParser
+        operatedChainParser,
+        typeParser
     );
     this->_conflictParser = std::shared_ptr<Parsing::ConflictParser>{
         new Parsing::ConflictParser{
@@ -56,14 +59,16 @@ std::shared_ptr<Expression> MyLanguage::VariableDeclarationParser::parse(
 
 std::shared_ptr<Parsing::SkeletonParser> MyLanguage::VariableDeclarationParser::_createSkeletonParser(
     std::vector<std::pair<std::string, std::string>> pattern,
-    OperatedChainParser* operatedChainParser
+    OperatedChainParser* operatedChainParser,
+    IParseable* typeParser
 ) {
     auto skeletonParser = std::shared_ptr<Parsing::SkeletonParser>(
         new Parsing::SkeletonParser{
             "variable-declaration",
             pattern,
             std::map<std::string, IParseable*>{
-                {"E", operatedChainParser}
+                {"E", operatedChainParser},
+                {"T", typeParser}
             }
         }
     );

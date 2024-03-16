@@ -8,7 +8,7 @@ Parsing::ParentheticalParser::ParentheticalParser(
     std::string endCharacter, 
     IParseable& parser
 ):
-    _type(type), _beginCharacter(beginCharacter), _endCharacter(endCharacter), _parser(parser){
+    _type(type), _beginCharacter(beginCharacter), _endCharacter(endCharacter), _parser(parser), _stripParentheses(false) {
 }
 
 std::shared_ptr<Expression> Parsing::ParentheticalParser::parse(std::vector<DToken>& tokens, int position)
@@ -25,13 +25,17 @@ std::shared_ptr<Expression> Parsing::ParentheticalParser::parse(std::vector<DTok
         auto endToken = sequence.consume();
 
         if (endToken.value == this->_endCharacter) {
-            auto result = std::shared_ptr<Expression>(
-                new Expression{this->_type, position, sequence.position()}
-            );
-            result->tokens().insert(result->tokens().end(), beginToken);
-            result->tokens().insert(result->tokens().end(), endToken);
-            result->children().insert(result->children().end(), expression);
-            return result;
+            if (!this->_stripParentheses) {
+                auto result = std::shared_ptr<Expression>(
+                    new Expression{this->_type, position, sequence.position()}
+                );
+                result->tokens().insert(result->tokens().end(), beginToken);
+                result->tokens().insert(result->tokens().end(), endToken);
+                result->children().insert(result->children().end(), expression);
+                return result;
+            } else {
+                return expression;
+            }
         } else {
             throw std::runtime_error(
                 "Expected a '" + this->_endCharacter + "' but instead encountered '" + 
@@ -44,4 +48,9 @@ std::shared_ptr<Expression> Parsing::ParentheticalParser::parse(std::vector<DTok
             beginToken.value + "' at " + beginToken.startLocation.toString()
         );
     }
+}
+
+void Parsing::ParentheticalParser::setStripParentheses(bool stripParentheses)
+{
+    this->_stripParentheses = stripParentheses;
 }

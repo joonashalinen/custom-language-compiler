@@ -2,7 +2,8 @@
 
 MyLanguage::ModuleParser::ModuleParser(
     IParseable* statementParser,
-    IParseable* identifierParser
+    IParseable* identifierParser,
+    IParseable* typeParser
     )
 {
     // First, we construct the parsers.
@@ -27,7 +28,8 @@ MyLanguage::ModuleParser::ModuleParser(
     this->_functionParser = std::unique_ptr<MyLanguage::FunctionParser>(
         new MyLanguage::FunctionParser{
             identifierParser,
-            statementParser
+            statementParser,
+            typeParser
         }
     );
 

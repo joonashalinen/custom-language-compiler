@@ -1,6 +1,6 @@
 #include "FunctionParameterParser.h"
 
-MyLanguage::FunctionParameterParser::FunctionParameterParser()
+MyLanguage::FunctionParameterParser::FunctionParameterParser(IParseable* typeParser)
 {
     this->_identifierParser = std::unique_ptr<LiteralParser>(new LiteralParser{"identifier"});
     this->_skeletonParser = std::unique_ptr<Parsing::SkeletonParser>(
@@ -10,10 +10,11 @@ MyLanguage::FunctionParameterParser::FunctionParameterParser()
                 {"expression", "ID"},
                 {"trail", ""},
                 {"token-value", ":"},
-                {"expression", "ID"},
+                {"expression", "T"},
             },
             {
-                {"ID", this->_identifierParser.get()}
+                {"ID", this->_identifierParser.get()},
+                {"T", typeParser}
             }
         }
     );

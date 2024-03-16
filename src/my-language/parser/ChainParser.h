@@ -6,11 +6,12 @@
 #include "../../components/parsing/SkeletonParser.h"
 #include "../../components/parsing/OperatedChainParser.h"
 #include "VariableDeclarationParser.h"
+#include "TypeParser.h"
 
 namespace MyLanguage {
     class ChainParser: public IParseable {
         public:
-            ChainParser(OperatedChainParser* operatedChainParser);
+            ChainParser(OperatedChainParser* operatedChainParser, IParseable* typeParser);
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
             MapParser* mapParser();
         private:

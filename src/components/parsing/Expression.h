@@ -13,6 +13,7 @@
  */
 class Expression {
     public:
+        Expression();
         Expression(std::string type, int startPos, int endPos);
         Text::Location startLocation();
         Text::Location endLocation();

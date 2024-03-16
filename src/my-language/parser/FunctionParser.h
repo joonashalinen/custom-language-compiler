@@ -22,7 +22,8 @@ namespace MyLanguage {
         public:
             FunctionParser(
                 IParseable* identifierParser,  
-                IParseable* baseStatementParser
+                IParseable* baseStatementParser,
+                IParseable* typeParser
             );
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         private:

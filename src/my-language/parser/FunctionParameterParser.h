@@ -22,7 +22,7 @@ namespace MyLanguage {
      */
     class FunctionParameterParser: public IParseable {
         public:
-            FunctionParameterParser();
+            FunctionParameterParser(IParseable* typeParser);
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         private:
             std::unique_ptr<LiteralParser> _identifierParser;

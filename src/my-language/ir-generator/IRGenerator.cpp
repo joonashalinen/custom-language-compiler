@@ -215,7 +215,6 @@ namespace MyLanguage {
             std::shared_ptr<Expression> expression
         ) {
             assert(expression->children().size() == 2);
-            assert(expression->children().at(0)->type() == "identifier");
             // Name of the variable being assigned to.
             auto variableName = expression->children().at(0)->subTypes().at("literal-value");
             // Name of the corresponding IR variable.

@@ -2,11 +2,12 @@
 
 MyLanguage::FunctionParser::FunctionParser(
     IParseable* identifierParser, 
-    IParseable* baseStatementParser
+    IParseable* baseStatementParser,
+    IParseable* typeParser
 ):  _identifierParser(identifierParser)
 {
     this->_parameterParser = std::unique_ptr<MyLanguage::FunctionParameterParser>(
-        new MyLanguage::FunctionParameterParser{}
+        new MyLanguage::FunctionParameterParser{typeParser}
     );
 
     this->_parameterListParser = std::unique_ptr<Parsing::ListParser>(
@@ -35,7 +36,7 @@ MyLanguage::FunctionParser::FunctionParser(
                 {"expression", "L"},
                 {"optional", ""},
                 {"token-value", ":"},
-                {"token-type", "identifier"},
+                {"expression", "T"},
                 {"/optional", ""},
                 {"token-value", "{"},
                 {"expression", "D"},
@@ -44,7 +45,8 @@ MyLanguage::FunctionParser::FunctionParser(
             std::map<std::string, IParseable*>{
                 {"ID", identifierParser},
                 {"L", this->_parameterListParser.get()},
-                {"D", this->_definitionParser.get()}
+                {"D", this->_definitionParser.get()},
+                {"T", typeParser}
             }
         }
     );
@@ -81,11 +83,11 @@ std::shared_ptr<Expression> MyLanguage::FunctionParser::parse(std::vector<DToken
     functionExpression->subTypes().insert({"name", identifier->rootToken().value});
 
     // If the function has a return type specified.
-    if (functionExpression->children().at(1)->type() == "identifier") {
+    if (functionExpression->children().at(1)->type() == "type") {
         // Switch the return type from an expression into a subtype.
         auto returnType = functionExpression->children().at(1);
         Expression::removeChild(functionExpression, returnType);
-        functionExpression->subTypes().insert({"return-type", returnType->rootToken().value});
+        functionExpression->subTypes().insert({"return-type", returnType->subTypes().at("literal-value")});
     } else {
         // The return type is Unit.
         functionExpression->subTypes().insert({"return-type", "Unit"});

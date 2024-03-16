@@ -8,7 +8,7 @@
 namespace MyLanguage {
     class VariableDeclarationParser: public IParseable {
         public:
-            VariableDeclarationParser(OperatedChainParser* operatedChainParser);
+            VariableDeclarationParser(OperatedChainParser* operatedChainParser, IParseable* typeParser);
             std::shared_ptr<Expression> parse(std::vector<DToken>& tokens, int position);
         private:
             std::shared_ptr<Parsing::SkeletonParser> _skeletonParser;
@@ -16,7 +16,8 @@ namespace MyLanguage {
             std::shared_ptr<Parsing::ConflictParser> _conflictParser;
             std::shared_ptr<Parsing::SkeletonParser> _createSkeletonParser(
                 std::vector<std::pair<std::string, std::string>> pattern,
-                OperatedChainParser* operatedChainParser
+                OperatedChainParser* operatedChainParser,
+                IParseable* typeParser
             );
     };
 };

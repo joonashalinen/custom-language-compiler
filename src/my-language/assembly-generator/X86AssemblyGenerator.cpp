@@ -174,11 +174,24 @@ namespace MyLanguage {
         ) {
             auto inputVarLocation = variableStack.negativeEndLocation(inputVar);
             auto outputVarLocation = variableStack.negativeEndLocation(outputVar);
-            return (
-                indent + "movq " + std::to_string(inputVarLocation) + "(%rbp), %rax" + "\n" + 
-                indent + (unaryOperator == "-" ? ("negq %rax\n") : ("xorq $1, %rax\n")) + 
-                indent + "movq %rax, " + std::to_string(outputVarLocation) + "(%rbp)" + "\n"
-            );
+            if (unaryOperator != "&") {
+                auto operatorAssemblies = std::map<std::string, std::string>{
+                    {"-", "negq %rax"},
+                    {"not", "xorq $1, %rax"},
+                    {"*", "movq (%rax), %rax"}
+                };
+                return (
+                    indent + "movq " + std::to_string(inputVarLocation) + "(%rbp), %rax" + "\n" + 
+                    indent + operatorAssemblies.at(unaryOperator) + "\n" +
+                    indent + "movq %rax, " + std::to_string(outputVarLocation) + "(%rbp)" + "\n"
+                );                
+            } else {
+               return (
+                    indent + "movq %rbp, %rax" + "\n" + 
+                    indent + "addq $" + std::to_string(inputVarLocation) + ", %rax" + "\n" + 
+                    indent + "movq %rax, " + std::to_string(outputVarLocation) + "(%rbp)" + "\n"
+                );
+            }
         }
 
         std::string generateFunctionCall(
@@ -243,7 +256,7 @@ namespace MyLanguage {
             auto argumentVars = command->children().at(1)->extractChildSubTypeValues("variable", "name");
             auto outputVarName = command->children().at(2)->subTypes().at("name");
 
-            if ((functionName == "-" && argumentVars.size() == 1) || functionName == "not") {
+            if ((std::set<std::string>{"-", "not", "*", "&"}).contains(functionName)) {
                 return generateUnaryOperator(variableStack, indent, argumentVars.at(0), outputVarName, functionName);
             } else if ((std::set<std::string>{"+", "-", "*", "/", "%"}).contains(functionName)) {
                 return generateNumericBinaryOperator(

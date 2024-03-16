@@ -128,28 +128,55 @@ namespace MyLanguage {
             TypeChecker::DTypeCheckContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            // Name of the variable being assigned to.
-            auto variableName = expression->children().at(0)->subTypes().at("literal-value");
-            // If the variable does not exist.
-            if (!(context->typeSymbolTable.contains(variableName))) {
+            auto leftHand = expression->children().at(0);
+            // If the left side of the assignment is not an identifier or a pointer dereference.
+            if (
+                leftHand->type() != "identifier" || 
+                leftHand->type() != "unary-operator" || 
+                (
+                    leftHand->type() == "unary-operator" && 
+                    leftHand->subTypes().at("name") != "*"
+                )
+            ) {
                 throwTypeError(
-                    expression, 
-                    std::string("Trying assign to a variable '") + variableName + 
-                    "' that has not been defined"
+                    expression,
+                    std::string("Left-hand side of assignment is not an identifier or a pointer dereference")
                 );
             }
-
-            auto variableType = context->typeSymbolTable.at(variableName);
-            // Type of the value being assigned.
-            auto valueType = context->typeStack.pop();
-            // If the types do not match.
-            if (variableType != valueType) {
-                auto errorMessage = (
-                    std::string("The type of the variable '") + variableName + 
-                    "' being assigned to was of type '" + variableType +
-                    "' but the value being assigned was of type '" + valueType + "'"
-                );
-                throwTypeError(expression, errorMessage);
+            // If the left hand expression is an identifier.
+            if (leftHand->type() == "identifier") {
+                // Name of the variable being assigned to.
+                auto variableName = leftHand->subTypes().at("literal-value");
+                // If the variable does not exist.
+                if (!(context->typeSymbolTable.contains(variableName))) {
+                    throwTypeError(
+                        expression, 
+                        std::string("Trying to assign to a variable '") + variableName + 
+                        "' that has not been defined"
+                    );
+                }
+                auto variableType = context->typeSymbolTable.at(variableName);
+                // Type of the value being assigned.
+                auto valueType = context->typeStack.pop();
+                // If the types do not match.
+                if (variableType != valueType) {
+                    auto errorMessage = (
+                        std::string("The type of the variable '") + variableName + 
+                        "' being assigned to was of type '" + variableType +
+                        "' but the value being assigned was of type '" + valueType + "'"
+                    );
+                    throwTypeError(expression, errorMessage);
+                }                
+            } else {
+                // Else, the left hand expression is a pointer dereference.
+                
+                // Now, we want to do further type checking to see if the value being dereferenced can be assigned to. 
+                // To do this, we peel back one layer of the left-hand pointer dereference expression and 
+                // recursively call type checking again.
+                auto clone = std::shared_ptr<Expression>(new Expression{});
+                *clone = *expression;
+                clone->setChildren({leftHand->children().at(0), expression->children().at(1)});
+                postCheckAssignment(context, clone);
             }
             return context;
         }
@@ -175,20 +202,25 @@ namespace MyLanguage {
             TypeChecker::DTypeCheckContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            auto valueType = context->typeStack.stack().top();
+            auto& valueType = context->typeStack.stack().top();
             auto operatorName = expression->subTypes().at("name");
-            auto acceptedTypes = std::map<std::string, std::string>{
-                {"not", "Bool"},
-                {"-", "Int"},
+            auto acceptedTypes = std::map<std::string, std::set<std::string>>{
+                {"not", {"Bool"}},
+                {"-", {"Int"}},
+                {"*", {"Int*", "Bool*"}},
+                {"&", {"Int", "Bool"}}
             };
             if (!(acceptedTypes.contains(operatorName))) {
                 throwTypeError(expression, std::string("'") + operatorName + "' is not a recognized unary operator");
-            } else if (acceptedTypes.at(operatorName) != valueType) {
+            } else if (!(acceptedTypes.at(operatorName).contains(valueType))) {
                 throwTypeError(
                     expression, 
                     std::string("The type '") + valueType + 
                     "' is not a valid operand type for the unary operator '" + operatorName + "'"
                 );
+            }
+            if (operatorName == "&") {
+                valueType = valueType + "*";
             }
             return context;
         }
