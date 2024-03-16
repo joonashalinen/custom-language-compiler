@@ -14,7 +14,7 @@ namespace Test {
 }
 
 int main(int argc, char* argv[]) {
-    auto input = "2 * 3;";
+    auto input = "var a = 3; var b: Int* = &a; var c: Int** = &b;";
     auto tokens = Test::tokenizer.tokenizer.tokenize(input);
     auto root = Test::parser.parse(tokens, 0);
     Test::typeChecker.check(root);
