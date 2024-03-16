@@ -21,19 +21,27 @@ void Expression::setType(std::string type) {
 Text::Location Expression::startLocation() {
 	auto childLocation = this->_children.size() > 0 ? this->_children.front()->startLocation() : Text::Location{};
 	auto firstTokenLocation = this->_tokens.size() > 0 ? this->_tokens.front().startLocation : Text::Location{};
-	if (childLocation.positionIndex() != -1 && childLocation.positionIndex() < firstTokenLocation.positionIndex()) {
+	if (firstTokenLocation.positionIndex() == -1) {
 		return childLocation;
-	}else {
+	} else if (childLocation.positionIndex() == -1) {
+		return firstTokenLocation;
+	} else if (childLocation.positionIndex() < firstTokenLocation.positionIndex()) {
+		return childLocation;
+	} else {
 		return firstTokenLocation;
 	}
 }
 
 Text::Location Expression::endLocation() {
 	auto childLocation = this->_children.size() > 0 ? this->_children.back()->endLocation() : Text::Location{};
-	auto firstTokenLocation = this->_tokens.size() > 0 ? this->_tokens.back().startLocation : Text::Location{};
-	if (childLocation.positionIndex() != -1 && childLocation.positionIndex() > firstTokenLocation.positionIndex()) {
+	auto firstTokenLocation = this->_tokens.size() > 0 ? this->_tokens.back().endLocation : Text::Location{};
+	if (firstTokenLocation.positionIndex() == -1) {
 		return childLocation;
-	}else {
+	} else if (childLocation.positionIndex() == -1) {
+		return firstTokenLocation;
+	} else if (childLocation.positionIndex() > firstTokenLocation.positionIndex()) {
+		return childLocation;
+	} else {
 		return firstTokenLocation;
 	}
 }
