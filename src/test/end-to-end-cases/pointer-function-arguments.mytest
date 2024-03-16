@@ -1,0 +1,19 @@
+fun f(x: Int*, y: Int**) {
+    *x = *x + 10;
+    **y = **y + 10;
+}
+
+var a: Int = 2;
+var ap: Int* = &a;
+
+var b: Int = 3;
+var bp: Int* = &b;
+var bpp: Int** = &bp;
+
+f(ap, bpp);
+print_int(*ap);
+print_int(**bpp);
+
+!expect!
+12
+13
