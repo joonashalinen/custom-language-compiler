@@ -158,7 +158,6 @@ namespace MyLanguage {
             // If the left hand expression is a pointer dereference.
             if (leftHand->type() == "unary-operator") {
                 // Find the variable identifier expression.
-                dereferenceLevel = 1;
                 while (leftHand->type() == "unary-operator") {
                     leftHand = leftHand->children().at(0);
                     dereferenceLevel = dereferenceLevel + 1;
