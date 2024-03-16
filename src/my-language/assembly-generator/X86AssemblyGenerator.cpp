@@ -256,7 +256,7 @@ namespace MyLanguage {
             auto argumentVars = command->children().at(1)->extractChildSubTypeValues("variable", "name");
             auto outputVarName = command->children().at(2)->subTypes().at("name");
 
-            if ((std::set<std::string>{"-", "not", "*", "&"}).contains(functionName)) {
+            if (argumentVars.size() == 1 && (std::set<std::string>{"-", "not", "*", "&"}).contains(functionName)) {
                 return generateUnaryOperator(variableStack, indent, argumentVars.at(0), outputVarName, functionName);
             } else if ((std::set<std::string>{"+", "-", "*", "/", "%"}).contains(functionName)) {
                 return generateNumericBinaryOperator(
