@@ -11,11 +11,14 @@ DToken TokenSequence::peek() {
     if (this->_position < (int) (this->_tokens.size())) {
         return this->_tokens.at(this->_position);
     } else {
+        auto lastToken = (*(this->_tokens.end() - 1));
         auto endToken = DToken{
             "end",
             "",
-            (*(this->_tokens.end() - 1)).endPos,
-            (*(this->_tokens.end() - 1)).endPos
+            lastToken.endPos,
+            lastToken.endPos,
+            lastToken.endLocation,
+            lastToken.endLocation
         };
         return endToken;
     }

@@ -49,7 +49,14 @@ std::vector<DToken> Tokenization::Tokenizer::tokenize(std::string text) {
         // If we have reached the end of the text.
         if (pos == (int) (text.size())) {
             // Add the end token.
-            DToken token {"end", "", pos, pos};
+            DToken token {
+                "end", 
+                "", 
+                pos, 
+                pos,
+                Text::Location{pos, text.begin()},
+                Text::Location{pos, text.begin()}
+            };
             tokens.insert(tokens.end(), token);
             // Return from the loop.
             break;
