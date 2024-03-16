@@ -14,7 +14,10 @@ class IParseable {
             try {
                 this->parse(tokens, position);
                 return true;
-            } catch (...) {
+            } /* catch (std::exception& e) {
+                std::cout << e.what() << std::endl;
+                return false;
+            } */ catch (...) {
                 return false;
             }
         }

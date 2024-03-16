@@ -15,6 +15,7 @@ class Expression {
     public:
         Expression();
         Expression(std::string type, int startPos, int endPos);
+        void setType(std::string type);
         Text::Location startLocation();
         Text::Location endLocation();
         std::map<std::string, std::string>& subTypes();
@@ -24,6 +25,7 @@ class Expression {
         DToken rootToken();
         std::string type();
         int startPos();
+        void setStartPos(int endPos);
         int endPos();
         void setEndPos(int endPos);
         std::vector<std::shared_ptr<Expression>>& children();

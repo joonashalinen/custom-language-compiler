@@ -14,6 +14,10 @@ Expression::Expression(
 {
 }
 
+void Expression::setType(std::string type) {
+	this->_type = type;
+}
+
 Text::Location Expression::startLocation() {
 	auto childLocation = this->_children.size() > 0 ? this->_children.front()->startLocation() : Text::Location{};
 	auto firstTokenLocation = this->_tokens.size() > 0 ? this->_tokens.front().startLocation : Text::Location{};
@@ -71,6 +75,11 @@ std::string Expression::type()
 int Expression::startPos()
 {
 	return this->_startPos;
+}
+
+void Expression::setStartPos(int startPos)
+{
+	this->_startPos = startPos;
 }
 
 int Expression::endPos()

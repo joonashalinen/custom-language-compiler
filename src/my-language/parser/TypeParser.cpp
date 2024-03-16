@@ -2,7 +2,7 @@
 
 MyLanguage::TypeParser::TypeParser()
 {
-    this->_literalParser = std::unique_ptr<LiteralParser>(new LiteralParser{"type"});
+    this->_literalParser = std::unique_ptr<LiteralParser>(new LiteralParser{"identifier"});
     this->_parentheticalParser = std::unique_ptr<Parsing::ParentheticalParser>(
         new Parsing::ParentheticalParser{"parenthetical", "(", ")", *this}
     );
@@ -16,6 +16,8 @@ std::shared_ptr<Expression> MyLanguage::TypeParser::parse(std::vector<DToken>& t
         auto typeExpression = expression->children().at(0);
         auto& typeName = typeExpression->subTypes().at("literal-value");
         typeName = "(" + typeName + ")";
+        typeExpression->setStartPos(position);
+        typeExpression->setEndPos(typeExpression->endPos() + 1);
         expression = typeExpression;
     }
     // Parse any potential following pointer asterisks.
@@ -26,5 +28,8 @@ std::shared_ptr<Expression> MyLanguage::TypeParser::parse(std::vector<DToken>& t
         typeName = typeName + "*";
         sequence.consume();
     }
+    expression->setEndPos(sequence.position());
+    expression->setType("type");
+    expression->subTypes().insert({"name", expression->subTypes().at("literal-value")});
     return expression;
 }
