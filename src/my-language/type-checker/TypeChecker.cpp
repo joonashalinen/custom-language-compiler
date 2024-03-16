@@ -131,13 +131,16 @@ namespace MyLanguage {
             auto leftHand = expression->children().at(0);
             // If the left side of the assignment is not an identifier or a pointer dereference.
             if (
-                leftHand->type() != "identifier" || 
-                leftHand->type() != "unary-operator" || 
+                leftHand->type() != "identifier" && 
                 (
-                    leftHand->type() == "unary-operator" && 
-                    leftHand->subTypes().at("name") != "*"
+                    leftHand->type() != "unary-operator" || 
+                    (
+                        leftHand->type() == "unary-operator" && 
+                        leftHand->subTypes().at("name") != "*"
+                    )
                 )
             ) {
+                std::cout << leftHand->type() << std::endl;
                 throwTypeError(
                     expression,
                     std::string("Left-hand side of assignment is not an identifier or a pointer dereference")
