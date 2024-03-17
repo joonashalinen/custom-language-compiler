@@ -1,0 +1,8 @@
+var a: (Int) => Unit = print_int;
+var b: ((Int) => Unit)* = &a;
+var c = *b;
+a(1);
+c(2);
+!expect!
+1
+2

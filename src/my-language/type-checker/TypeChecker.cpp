@@ -119,7 +119,7 @@ namespace MyLanguage {
             context->typeStack.stack().push("Unit");
             context->typeSymbolTable.insert(variableName, rightHandType);
             // If the right hand expression is a function.
-            if (rightHandType.find("=>") != std::string::npos) {
+            if (rightHandType.find("=>") != std::string::npos && rightHandType.back() != '*') {
                 // Add the variable also as a function to the symbol table of functions.
                 auto functionType = context->functionTypes.at(rightHandType);
                 context->functionTypeSymbolTable.insert(variableName, functionType);
@@ -250,12 +250,19 @@ namespace MyLanguage {
                     throwTypeError(expression, invalidTypeError);
                 }
            } else if (operatorName == "&") {
+                // If the type is a function type, then we want to surround it in parentheses before 
+                // suffixing it with the pointer asterisk.
+                valueType = ((valueType.find("=>") != std::string::npos) && valueType.back() != '*') ? "(" + valueType + ")" : valueType;
                 valueType = valueType + "*";
             } else if (operatorName == "*") {
                 if (valueType.back() != '*') {
                     throwTypeError(expression, invalidTypeError);
                 }
                 valueType.pop_back();
+                // If the type is surrounded in parentheses we want to strip them.
+                if (valueType.back() == ')') {
+                    valueType = valueType.substr(1, valueType.size() - 2);
+                }
             } else {
                 throwTypeError(expression, std::string("'") + operatorName + "' is not a recognized unary operator");
             }
