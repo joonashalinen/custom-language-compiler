@@ -39,9 +39,9 @@ namespace MyLanguage {
                 std::map<std::string, TTypeChecker>* postTypeCheckers {nullptr};
                 DataStructures::BatchStack<std::string> typeStack {};
                 DataStructures::LinkedMap<std::string> typeSymbolTable {};
-                DataStructures::LinkedMap<FunctionType> functionTypeSymbolTable {};
+                DataStructures::LinkedMap<std::shared_ptr<FunctionType>> functionTypeSymbolTable {};
                 DataStructures::BatchStack<std::string> loopBreakTypeStack {};
-                DataStructures::BatchStack<FunctionType> functionTypeStack {};
+                DataStructures::BatchStack<std::shared_ptr<FunctionType>> functionTypeStack {};
             };
 
             TypeChecker();

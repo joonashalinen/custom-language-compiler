@@ -297,7 +297,7 @@ namespace MyLanguage {
             std::string variableType = (
                 context->typeSymbolTable.contains(variableName) ? 
                 context->typeSymbolTable.at(variableName) : 
-                context->functionTypeSymbolTable.at(variableName).toString()
+                context->functionTypeSymbolTable.at(variableName)->toString()
             );
             
             context->typeStack.stack().push(variableType);
@@ -446,9 +446,9 @@ namespace MyLanguage {
             if (!(context->functionTypeSymbolTable.contains(functionName))) {
                 throwTypeError(expression, "No function with name '" + functionName + "' found");
             } else {
-                auto& functionType = context->functionTypeSymbolTable.at(functionName);
+                auto functionType = context->functionTypeSymbolTable.at(functionName);
                 auto parameterTypes = context->typeStack.pop(expression->children().size());
-                if (functionType.parameterTypes().size() != parameterTypes.size()) {
+                if (functionType->parameterTypes().size() != parameterTypes.size()) {
                     throwTypeError(expression, "Mismatching amount of arguments given to function call");
                 } else {
                     auto parameterTypesMatch = (std::accumulate(
@@ -456,7 +456,7 @@ namespace MyLanguage {
                         parameterTypes.end(),
                         std::pair<int, bool>{0, true}, // Iteration index and the accumulated boolean.
                         [&functionType](auto acc, auto parameterType) {
-                            auto& acceptedParameter = functionType.parameterTypes().at(acc.first);
+                            auto& acceptedParameter = functionType->parameterTypes().at(acc.first);
                             return std::pair<int, bool>{
                                 acc.first + 1,
                                 acc.second && (
@@ -473,7 +473,7 @@ namespace MyLanguage {
                             "Types of given arguments do not match the expected parameters in function call"
                         );
                     } else {
-                        context->typeStack.stack().push(functionType.returnType()->toString());
+                        context->typeStack.stack().push(functionType->returnType()->toString());
                     }
                 }
             }
@@ -487,7 +487,7 @@ namespace MyLanguage {
             TypeChecker::DTypeCheckContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            auto expectedReturnType = context->functionTypeStack.stack().top().returnType()->toString();
+            auto expectedReturnType = context->functionTypeStack.stack().top()->returnType()->toString();
             auto returnType = context->typeStack.pop();
             if (expectedReturnType != "Any" && returnType != expectedReturnType) {
                 throwTypeError(expression, "Type of returned value does not match the expected return type");
@@ -504,7 +504,7 @@ namespace MyLanguage {
         ) {
             auto returnType = expression->subTypes().at("return-type");
             auto functionName = expression->subTypes().at("name");
-            auto& functionType = context->functionTypeSymbolTable.at(functionName);
+            auto functionType = context->functionTypeSymbolTable.at(functionName);
             if (expression->subTypes().at("returns-amount") == "0" && returnType != "Unit") {
                 throwTypeError(expression, "Missing return statement in function that should return a value");
             }
@@ -564,7 +564,9 @@ namespace MyLanguage {
                         }
                     );
 
-                    auto functionType = FunctionType{parameterTypes, std::shared_ptr<IType>(new Type{returnType})};
+                    auto functionType = std::shared_ptr<FunctionType>(
+                        new FunctionType{parameterTypes, std::shared_ptr<IType>(new Type{returnType})}
+                    );
                     context->functionTypeSymbolTable.insert(functionName, functionType);
                 }
             });
@@ -653,18 +655,24 @@ namespace MyLanguage {
         auto context = TypeChecker::DTypeCheckContext{&(this->_preTypeCheckers), &(this->_postTypeCheckers)};
 
         // Set types of global built-in functions.
-        context.functionTypeSymbolTable.insert("print_int", FunctionType{
-            {std::shared_ptr<IType>(new Type{"Int"})},
-            std::shared_ptr<IType>(new Type{"Unit"})
-        });
-        context.functionTypeSymbolTable.insert("print_bool", FunctionType{
-            {std::shared_ptr<IType>(new Type{"Bool"})}, 
-            std::shared_ptr<IType>(new Type{"Unit"})
-        });
-        context.functionTypeSymbolTable.insert("read_int", FunctionType{
-            {},
-            std::shared_ptr<IType>(new Type{"Int"})
-        });
+        context.functionTypeSymbolTable.insert("print_int", std::shared_ptr<FunctionType>(
+            new FunctionType{
+                {std::shared_ptr<IType>(new Type{"Int"})},
+                std::shared_ptr<IType>(new Type{"Unit"})
+            }
+        ));
+        context.functionTypeSymbolTable.insert("print_bool", std::shared_ptr<FunctionType>(
+            new FunctionType{
+                {std::shared_ptr<IType>(new Type{"Bool"})}, 
+                std::shared_ptr<IType>(new Type{"Unit"})
+            }
+        ));
+        context.functionTypeSymbolTable.insert("read_int", std::shared_ptr<FunctionType>(
+            new FunctionType{
+                {},
+                std::shared_ptr<IType>(new Type{"Int"})
+            }
+        ));
 
         auto foldable = DataStructures::FoldableNode<TypeChecker::DTypeCheckContext*, TypeChecker::TExpression>{root};
         foldable.setPreFolder(TypeCheckers::preCheckAny);
