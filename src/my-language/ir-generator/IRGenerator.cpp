@@ -197,33 +197,42 @@ namespace MyLanguage {
             std::shared_ptr<Expression> expression
         ) {
             assert(expression->subTypes().contains("name"));
-
             // Gather the variable names storing the argument values.
             auto argumentVars = context->variableStack.pop(expression->children().size());
             // Reserve the next variable we want to store the function call's result in.
             auto resultVariable = context->commandFactory->nextVariable();
 
             auto functionName = expression->subTypes().at("name");
-            functionName = (
-                !(context->symbolTable.contains(functionName)) ?
-                    functionName :
-                    context->symbolTable.at(functionName)
-            );
-            if (functionName == "new") {
-                functionName = "malloc";
-            }
-            if (functionName == "delete") {
-                functionName = "free";
-            }
-            // Create the IR command for the function call.
-            auto callCommand = context->commandFactory->createCall(
-                functionName,
-                argumentVars,
-                resultVariable
-            );
 
-            context->irCommands.insert(context->irCommands.end(), callCommand);
-            context->variableStack.push({resultVariable});
+            // If the function call is not a type constructor call.
+            if (
+                (std::set<std::string>{"Int", "Bool"}).contains(functionName) || 
+                functionName.find("Int*") != std::string::npos || 
+                functionName.find("Bool*") != std::string::npos
+            ) {
+                context->variableStack.stack().push(argumentVars.at(0));
+            } else {
+                functionName = (
+                    !(context->symbolTable.contains(functionName)) ?
+                        functionName :
+                        context->symbolTable.at(functionName)
+                );
+                if (functionName == "new") {
+                    functionName = "malloc";
+                }
+                if (functionName == "delete") {
+                    functionName = "free";
+                }
+                // Create the IR command for the function call.
+                auto callCommand = context->commandFactory->createCall(
+                    functionName,
+                    argumentVars,
+                    resultVariable
+                );
+
+                context->irCommands.insert(context->irCommands.end(), callCommand);
+                context->variableStack.push({resultVariable});
+            }
 
             return context;
         }
