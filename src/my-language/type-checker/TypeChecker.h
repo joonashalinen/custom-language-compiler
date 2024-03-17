@@ -5,6 +5,9 @@
 #include "../../components/data_structures/BatchStack.h"
 #include "../../components/data_structures/LinkedMap.h"
 #include "../../components/parsing/Expression.h"
+#include "FunctionType.h"
+#include "Type.h"
+#include "IType.h"
 #include <map>
 #include <algorithm>
 #include <set>
@@ -27,11 +30,6 @@ namespace MyLanguage {
                 )
             >;
 
-            struct DFunctionType {
-                std::vector<std::string> parameterTypes {};
-                std::string returnType {};
-            };
-
             /**
              * Type of the context object being passed around when type checking 
              *  the abstract syntax tree by folding over it.
@@ -41,9 +39,9 @@ namespace MyLanguage {
                 std::map<std::string, TTypeChecker>* postTypeCheckers {nullptr};
                 DataStructures::BatchStack<std::string> typeStack {};
                 DataStructures::LinkedMap<std::string> typeSymbolTable {};
-                DataStructures::LinkedMap<DFunctionType> functionTypeSymbolTable {};
+                DataStructures::LinkedMap<FunctionType> functionTypeSymbolTable {};
                 DataStructures::BatchStack<std::string> loopBreakTypeStack {};
-                DataStructures::BatchStack<DFunctionType> functionTypeStack {};
+                DataStructures::BatchStack<FunctionType> functionTypeStack {};
             };
 
             TypeChecker();

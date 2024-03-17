@@ -41,15 +41,9 @@ std::shared_ptr<Expression> MyLanguage::TypeParser::parse(std::vector<DToken>& t
     if (expression->type() == "parenthetical") {
         auto typeExpression = expression->children().at(0);
 
-        if (typeExpression->type() == "identifier") {
-            auto& typeName = typeExpression->subTypes().at("name");
-            typeName = "(" + typeName + ")";
-            
-        } else if (typeExpression->type() == "function-type") {
-            auto& typeName = typeExpression->subTypes().at("name");
-            typeName = "(" + typeName + ")";
-        }
-
+        auto& typeName = typeExpression->subTypes().at("name");
+        typeName = "(" + typeName + ")";
+        
         typeExpression->setStartPos(position);
         typeExpression->setEndPos(typeExpression->endPos() + 1);
         expression = typeExpression;
