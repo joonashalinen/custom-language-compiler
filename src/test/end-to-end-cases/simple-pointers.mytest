@@ -2,6 +2,7 @@ var a: Int = 2;
 var ap: Int* = &a;
 print_int(*ap);
 *ap = 3;
+print_int(*ap);
 !expect!
 2
 3
