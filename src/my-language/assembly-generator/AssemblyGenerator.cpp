@@ -32,6 +32,7 @@ namespace MyLanguage {
             [this, &variableStack](std::string assembly, TIRCommand command) {
                 auto commandType = command->subTypes().at("command");
                 if (this->_generators.contains(commandType)) {
+                    assembly = assembly + this->_indent + "# " + commandType + "\n";
                     auto generator = this->_generators.at(commandType);
                     return assembly + generator(variableStack, this->_indent, command);
                 } else {

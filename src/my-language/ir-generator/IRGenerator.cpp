@@ -229,11 +229,19 @@ namespace MyLanguage {
             } else {
                 // Else, the left hand expression is a pointer dereference.
 
-                // The left hand IR variable we care about then is the one storing 
-                // the memory address pointed to. This is the variable that was generated before 
-                // the left hand IR variable.
-                auto previousVariableNum = std::stoi(leftIRVariable.substr(1, leftIRVariable.size() - 1)) - 1;
-                leftIRVariable = std::string("x") + std::to_string(previousVariableNum);
+                // If there is only one level of dereference operators.
+                if (leftHand->children().at(0)->type() == "identifier") {
+                    // Then we want to find the IR variable of the left hand variable being dereferenced.
+                    auto variableName = leftHand->children().at(0)->subTypes().at("literal-value");
+                    leftIRVariable = context->symbolTable.at(variableName);
+                } else {
+                    // There is more than one level of dereference operators.
+                    // Then, we want the IR variable that was generated 
+                    // during IR generation right before the left hand variable.
+                    auto previousVariableNum = std::stoi(leftIRVariable.substr(1, leftIRVariable.size() - 1)) - 1;
+                    leftIRVariable = std::string("x") + std::to_string(previousVariableNum);
+                }
+
                 // Copy the right value to the address pointed to by the left hand variable.
                 command = context->commandFactory->createCopyToAddressOf(rightIRVariable, leftIRVariable);                
             }
