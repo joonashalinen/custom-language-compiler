@@ -3,6 +3,13 @@ var b: ((Int) => Unit)* = &a;
 var c = *b;
 a(1);
 c(2);
+var d = print_int;
+var e = &a;
+var f = *e;
+d(3);
+f(4);
 !expect!
 1
 2
+3
+4
