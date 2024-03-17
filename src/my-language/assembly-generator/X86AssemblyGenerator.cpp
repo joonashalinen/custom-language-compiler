@@ -319,6 +319,8 @@ namespace MyLanguage {
             indent + ".extern print_int" + "\n" +
             indent + ".extern print_bool" + "\n" +
             indent + ".extern read_int" + "\n" +
+            indent + ".extern malloc" + "\n" +
+            indent + ".extern free" + "\n" +
             indent + ".global main" + "\n" +
             indent + "\n" +
             indent + ".section .text" + "\n" +
