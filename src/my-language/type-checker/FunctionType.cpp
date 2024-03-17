@@ -25,7 +25,7 @@ namespace MyLanguage {
         return result + ")" + " => " + this->_returnType->toString();
     }
 
-    std::vector<std::shared_ptr<IType>> FunctionType::parameterTypes()
+    std::vector<std::shared_ptr<IType>>& FunctionType::parameterTypes()
     {
         return this->_parameterTypes;
     }

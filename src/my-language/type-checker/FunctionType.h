@@ -15,7 +15,7 @@ namespace MyLanguage {
         public:
             FunctionType(std::vector<std::shared_ptr<IType>> parameterTypes, std::shared_ptr<IType> returnType);
             std::string toString();
-            std::vector<std::shared_ptr<IType>> parameterTypes();
+            std::vector<std::shared_ptr<IType>>& parameterTypes();
             std::shared_ptr<IType> returnType();
         private:
             std::vector<std::shared_ptr<IType>> _parameterTypes;
