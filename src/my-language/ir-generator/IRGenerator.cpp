@@ -81,8 +81,16 @@ namespace MyLanguage {
             std::shared_ptr<Expression> expression
         ) {
             auto name = expression->subTypes().at("name");
-            auto irVariable = context->symbolTable.at(name);
-            context->variableStack.push({irVariable});
+            // If the variable name is a recognized variable that has been declared previously.
+            if (context->symbolTable.contains(name)) {
+                auto irVariable = context->symbolTable.at(name);
+                context->variableStack.push({irVariable});
+            } else {
+                // Else, the variable name is the name of a function, in which case we use 
+                // it directly as an IR variable name. We suffix the name with 'F' to prevent 
+                // clashes with normal IR variables.
+                context->variableStack.push({name + std::string("F")});
+            }
             return context;
         }
 
@@ -194,9 +202,15 @@ namespace MyLanguage {
             auto argumentVars = context->variableStack.pop(expression->children().size());
             // Reserve the next variable we want to store the function call's result in.
             auto resultVariable = context->commandFactory->nextVariable();
+
+            auto functionName = expression->subTypes().at("name");
             // Create the IR command for the function call.
             auto callCommand = context->commandFactory->createCall(
-                expression->subTypes().at("name"), 
+                (
+                    !(context->symbolTable.contains(functionName)) ?
+                        functionName :
+                        context->symbolTable.at(functionName)
+                ),
                 argumentVars,
                 resultVariable
             );

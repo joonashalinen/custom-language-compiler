@@ -34,6 +34,10 @@ namespace StructuredLanguage {
              * Amount of bytes that the variable stack uses in total.
              */
             int size();
+            /**
+             * Map storing the location values of the stored variables.
+             */
+            std::map<std::string, int>& locations();
         private:
             std::map<std::string, int> _locations;
             int _currentLocation = 0;

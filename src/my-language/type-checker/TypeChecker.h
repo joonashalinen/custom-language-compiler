@@ -42,6 +42,7 @@ namespace MyLanguage {
                 DataStructures::LinkedMap<std::shared_ptr<FunctionType>> functionTypeSymbolTable {};
                 DataStructures::BatchStack<std::string> loopBreakTypeStack {};
                 DataStructures::BatchStack<std::shared_ptr<FunctionType>> functionTypeStack {};
+                std::map<std::string, std::shared_ptr<FunctionType>> functionTypes;
             };
 
             TypeChecker();

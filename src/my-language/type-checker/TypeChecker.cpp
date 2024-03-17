@@ -118,6 +118,12 @@ namespace MyLanguage {
             }
             context->typeStack.stack().push("Unit");
             context->typeSymbolTable.insert(variableName, rightHandType);
+            // If the right hand expression is a function.
+            if (rightHandType.find("=>") != std::string::npos) {
+                // Add the variable also as a function to the symbol table of functions.
+                auto functionType = context->functionTypes.at(rightHandType);
+                context->functionTypeSymbolTable.insert(variableName, functionType);
+            }
             return context;
         }
 
@@ -568,6 +574,7 @@ namespace MyLanguage {
                         new FunctionType{parameterTypes, std::shared_ptr<IType>(new Type{returnType})}
                     );
                     context->functionTypeSymbolTable.insert(functionName, functionType);
+                    context->functionTypes.insert({functionType->toString(), functionType});
                 }
             });
 
@@ -654,25 +661,41 @@ namespace MyLanguage {
     {
         auto context = TypeChecker::DTypeCheckContext{&(this->_preTypeCheckers), &(this->_postTypeCheckers)};
 
+        // Temporary solution for getting a proper function type object from a function type signature string.
+        context.functionTypes = std::map<std::string, std::shared_ptr<FunctionType>>{
+            {
+                "(Int) => Unit",
+                std::shared_ptr<FunctionType>(
+                new FunctionType{
+                        {std::shared_ptr<IType>(new Type{"Int"})},
+                        std::shared_ptr<IType>(new Type{"Unit"})
+                    }
+                )
+            },
+            {
+                "() => Int",
+                std::shared_ptr<FunctionType>(
+                    new FunctionType{
+                        {std::shared_ptr<IType>(new Type{"Bool"})}, 
+                        std::shared_ptr<IType>(new Type{"Unit"})
+                    }
+                )
+            },
+            {
+                "(Bool) => Unit",
+                std::shared_ptr<FunctionType>(
+                new FunctionType{
+                        {},
+                        std::shared_ptr<IType>(new Type{"Int"})
+                    }
+                )
+            }
+        };
+
         // Set types of global built-in functions.
-        context.functionTypeSymbolTable.insert("print_int", std::shared_ptr<FunctionType>(
-            new FunctionType{
-                {std::shared_ptr<IType>(new Type{"Int"})},
-                std::shared_ptr<IType>(new Type{"Unit"})
-            }
-        ));
-        context.functionTypeSymbolTable.insert("print_bool", std::shared_ptr<FunctionType>(
-            new FunctionType{
-                {std::shared_ptr<IType>(new Type{"Bool"})}, 
-                std::shared_ptr<IType>(new Type{"Unit"})
-            }
-        ));
-        context.functionTypeSymbolTable.insert("read_int", std::shared_ptr<FunctionType>(
-            new FunctionType{
-                {},
-                std::shared_ptr<IType>(new Type{"Int"})
-            }
-        ));
+        context.functionTypeSymbolTable.insert("print_int", context.functionTypes.at("(Int) => Unit"));
+        context.functionTypeSymbolTable.insert("print_bool", context.functionTypes.at("(Bool) => Unit"));
+        context.functionTypeSymbolTable.insert("read_int", context.functionTypes.at("() => Int"));
 
         auto foldable = DataStructures::FoldableNode<TypeChecker::DTypeCheckContext*, TypeChecker::TExpression>{root};
         foldable.setPreFolder(TypeCheckers::preCheckAny);

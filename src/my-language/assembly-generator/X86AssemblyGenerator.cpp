@@ -98,12 +98,18 @@ namespace MyLanguage {
         ) {
             auto variables = command->extractChildSubTypeValues("variable", "name");
             assert(variables.size() == 2);
-            auto fromVarLocation = variableStack.negativeEndLocation(variables.at(0));
             auto toVarLocation = variableStack.negativeEndLocation(variables.at(1));
-            return (
-                indent + "movq " + std::to_string(fromVarLocation) + "(%rbp)" + ", %rax" + "\n" +
-                indent + "movq " + "%rax, " + std::to_string(toVarLocation) + "(%rbp)" + "\n"
-            );
+            std::string result = "";
+            // If the value copied from is not a function but a proper IR variable.
+            if (variables.at(0).back() != 'F') {
+                auto fromVarLocation = variableStack.negativeEndLocation(variables.at(0));
+                result = indent + "movq " + std::to_string(fromVarLocation) + "(%rbp)" + ", %rax" + "\n";
+            } else {
+                // Strip the F-suffix.
+                auto functionName = variables.at(0).substr(0, variables.at(0).size() - 1);
+                result = indent + "movq $" + functionName + ", %rax" + "\n";
+            }
+            return result + indent + "movq " + "%rax, " + std::to_string(toVarLocation) + "(%rbp)" + "\n";
         }
 
         std::string generateCopyToAddressOf(
@@ -227,11 +233,19 @@ namespace MyLanguage {
             }
 
             auto outputLocation = variableStack.negativeEndLocation(outputVar);
-            return (
-                storeArguments +
-                indent + "call " + functionName + "\n" +
-                indent + "movq " + "%rax, " + std::to_string(outputLocation) + "(%rbp)" + "\n"
-            );
+
+            std::string result = storeArguments;
+
+            // If the called function is the name of an assembly function.
+            if (!(variableStack.locations().contains(functionName))) {
+                result = result + indent + "call " + functionName + "\n";
+            } else {
+                // Else, the called function is an IR variable.
+                auto variableLocation = variableStack.negativeEndLocation(functionName);
+                result = result + indent + "callq *" + std::to_string(variableLocation) + "(%rbp)" + "\n";
+            }
+
+            return result + indent + "movq " + "%rax, " + std::to_string(outputLocation) + "(%rbp)" + "\n";
         }
 
         std::string generateWriteFunctionReturn(

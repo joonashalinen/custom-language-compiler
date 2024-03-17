@@ -37,4 +37,8 @@ namespace StructuredLanguage {
 	{
 		return this->_locations.size() * 8;
 	}
+
+	std::map<std::string, int>& VariableStack::locations() {
+		return this->_locations;
+	}
 }

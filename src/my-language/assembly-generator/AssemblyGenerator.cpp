@@ -13,7 +13,11 @@ namespace MyLanguage {
         std::for_each(irCommands.begin(), irCommands.end(), [&variableNames](TIRCommand command) {
             std::for_each(command->children().begin(), command->children().end(), [&variableNames](TExpression child) {
                 if (child->type() == "variable") {
-                    variableNames.insert(child->subTypes().at("name"));
+                    auto variableName = child->subTypes().at("name");
+                    // If the variable is not a function.
+                    if (variableName.back() != 'F') {
+                        variableNames.insert(variableName);                    
+                    }
                 }
             });
         });
