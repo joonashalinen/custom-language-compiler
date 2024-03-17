@@ -23,7 +23,7 @@ Tokenizer::Tokenizer(Tokenization::Tokenizer tokenizer):
     this->tokenizer.addRegexPattern("asterisk", "\\*");
     this->tokenizer.addRegexPattern("ampersand", "\\&");
     this->tokenizer.addRegexPattern("minus", "-");
-    this->tokenizer.addRegexPattern("unary-operator", "not");
+    this->tokenizer.addRegexPattern("unary-operator", "(not|new|delete)");
     this->tokenizer.addRegexPattern("parentheses", "[(){}]");
     this->tokenizer.addRegexPattern("colon", ":");
     this->tokenizer.addRegexPattern("statement-separator", ";");

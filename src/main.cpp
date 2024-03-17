@@ -57,8 +57,8 @@ int main(int argc, char* argv[]) {
 
     // Link the object files to produce the final executable.
     #if _WIN32
-        system("ld -o program.exe -static files/_program.o files/_stdlib.o");
+        system("ld -o program.exe -static files/_program.o files/_stdlib.o -lc");
     #else
-        system("ld -o program.out -static files/_program.o files/_stdlib.o");
+        system("ld -o program.out -static files/_program.o files/_stdlib.o -lc");
     #endif
 }

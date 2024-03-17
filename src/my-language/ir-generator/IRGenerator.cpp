@@ -204,13 +204,20 @@ namespace MyLanguage {
             auto resultVariable = context->commandFactory->nextVariable();
 
             auto functionName = expression->subTypes().at("name");
+            functionName = (
+                !(context->symbolTable.contains(functionName)) ?
+                    functionName :
+                    context->symbolTable.at(functionName)
+            );
+            if (functionName == "new") {
+                functionName = "malloc";
+            }
+            if (functionName == "delete") {
+                functionName = "free";
+            }
             // Create the IR command for the function call.
             auto callCommand = context->commandFactory->createCall(
-                (
-                    !(context->symbolTable.contains(functionName)) ?
-                        functionName :
-                        context->symbolTable.at(functionName)
-                ),
+                functionName,
                 argumentVars,
                 resultVariable
             );

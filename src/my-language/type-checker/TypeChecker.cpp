@@ -241,7 +241,17 @@ namespace MyLanguage {
                 std::string("The type '") + valueType + 
                 "' is not a valid operand type for the unary operator '" + operatorName + "'"
             );
-            if (operatorName == "not" || operatorName == "-") {
+            if (operatorName == "new") {
+                if (valueType == "Unit") {
+                    throwTypeError(expression, "Cannot allocate a value of type 'Unit' to the heap.");
+                }
+                valueType = valueType + "*";
+            } else if (operatorName == "delete") {
+                if (!(valueType.find("*") != std::string::npos)) {
+                    throwTypeError(expression, invalidTypeError);
+                }
+                valueType = "Unit";
+            } else if ((std::set<std::string>{"not", "-"}).contains(operatorName)) {
                 auto acceptedTypes = std::map<std::string, std::set<std::string>>{
                     {"not", {"Bool"}},
                     {"-", {"Int"}}
@@ -456,7 +466,24 @@ namespace MyLanguage {
             std::shared_ptr<Expression> expression
         ) {
             auto functionName = expression->subTypes().at("name");
-            if (!(context->functionTypeSymbolTable.contains(functionName))) {
+            // If the called function is a type constructor.
+            if (
+                (std::set<std::string>{"Int", "Bool"}).contains(functionName) || 
+                functionName.find("Int*") != std::string::npos || 
+                functionName.find("Bool*") != std::string::npos
+            ) {
+                if (expression->children().size() != 1) {
+                    throwTypeError(expression, "Type constructor calls must have exactly one argument");
+                }
+                auto argumentType = context->typeStack.pop();
+                if (functionName != argumentType) {
+                    throwTypeError(
+                        expression, 
+                        "Type constructor '" + functionName + "' was given an argument of type " + argumentType
+                    );
+                }
+                context->typeStack.stack().push(functionName);
+            } else if (!(context->functionTypeSymbolTable.contains(functionName))) {
                 throwTypeError(expression, "No function with name '" + functionName + "' found");
             } else {
                 auto functionType = context->functionTypeSymbolTable.at(functionName);
