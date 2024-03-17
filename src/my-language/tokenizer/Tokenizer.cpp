@@ -7,6 +7,7 @@ Tokenizer::Tokenizer(Tokenization::Tokenizer tokenizer):
     this->tokenizer.addRegexPattern("whitespace", "\\s+");
     this->tokenizer.addRegexPattern("comment", "(//|#).*\n");
     this->tokenizer.addRegexPattern("number", "[0-9]+");
+    this->tokenizer.addRegexPattern("fat-right-arrow", "=>");
     this->tokenizer.addRegexPattern("function-keyword", "fun");
     this->tokenizer.addRegexPattern("return", "return");
     this->tokenizer.addRegexPattern("if", "if");
