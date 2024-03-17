@@ -143,7 +143,6 @@ namespace MyLanguage {
                     )
                 )
             ) {
-                std::cout << leftHand->type() << std::endl;
                 throwTypeError(
                     expression,
                     std::string("Left-hand side of assignment is not an identifier or a pointer dereference")

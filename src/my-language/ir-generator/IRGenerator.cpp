@@ -215,15 +215,29 @@ namespace MyLanguage {
             std::shared_ptr<Expression> expression
         ) {
             assert(expression->children().size() == 2);
-            // Name of the variable being assigned to.
-            auto variableName = expression->children().at(0)->subTypes().at("literal-value");
-            // Name of the corresponding IR variable.
-            auto leftIRVariable = context->symbolTable.at(variableName);
-            // The value on the right side of the variable is given by the IR variable
-            // at the top of the variable stack.
-            auto rightIRVariable = (context->variableStack.pop(1)).at(0);
-            // Assign the value on the right side to the newly created variable.
-            auto command = context->commandFactory->createCopy(rightIRVariable, leftIRVariable);
+            auto leftHand = expression->children().at(0);
+            auto irVariables = context->variableStack.pop(2);
+            auto rightIRVariable = irVariables.at(1);
+            auto leftIRVariable = irVariables.at(0);
+            
+            std::shared_ptr<Expression> command;
+
+            // If the left hand expression is a variable name.
+            if (leftHand->type() == "identifier") {
+                // Assign the value on the right side to the result variable of the left hand expression.
+                command = context->commandFactory->createCopy(rightIRVariable, leftIRVariable);
+            } else {
+                // Else, the left hand expression is a pointer dereference.
+
+                // The left hand IR variable we care about then is the one storing 
+                // the memory address pointed to. This is the variable that was generated before 
+                // the left hand IR variable.
+                auto previousVariableNum = std::stoi(leftIRVariable.substr(1, leftIRVariable.size() - 1)) - 1;
+                leftIRVariable = std::string("x") + std::to_string(previousVariableNum);
+                // Copy the right value to the address pointed to by the left hand variable.
+                command = context->commandFactory->createCopyToAddressOf(rightIRVariable, leftIRVariable);                
+            }
+
             context->irCommands.insert(context->irCommands.end(), command);
             // Push Unit to the variable stack. Assignment operations 
             // always return Unit instead of an actual value.

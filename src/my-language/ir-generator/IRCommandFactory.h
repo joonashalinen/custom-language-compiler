@@ -18,6 +18,7 @@ namespace MyLanguage {
             TIRCommand createWriteFunctionReturn(std::string fromVar);
             TIRCommand createLoadFunctionReturn(std::string toVar);
             TIRCommand createCopy(std::string fromVar, std::string toVar);
+            TIRCommand createCopyToAddressOf(std::string fromVar, std::string toVar);
             TIRCommand createCall(std::string functionName, std::vector<std::string> argumentVars, std::string outputVar);
             TIRCommand createCondJump(std::string conditionVar, std::string onTrueLabel, std::string onFalseLabel);
             TIRCommand createJump(std::string label);

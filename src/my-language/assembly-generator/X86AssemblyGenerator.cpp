@@ -106,6 +106,22 @@ namespace MyLanguage {
             );
         }
 
+        std::string generateCopyToAddressOf(
+            StructuredLanguage::VariableStack& variableStack, 
+            std::string indent,
+            TIRCommand command
+        ) {
+            auto variables = command->extractChildSubTypeValues("variable", "name");
+            assert(variables.size() == 2);
+            auto fromVarLocation = variableStack.negativeEndLocation(variables.at(0));
+            auto toVarLocation = variableStack.negativeEndLocation(variables.at(1));
+            return (
+                indent + "movq " + std::to_string(fromVarLocation) + "(%rbp)" + ", %rax" + "\n" +
+                indent + "movq " + std::to_string(toVarLocation) + "(%rbp)" + ", %rbx" + "\n" +
+                indent + "movq " + "%rax, (%rbx)" + "\n"
+            );
+        }
+
         std::string generateCondJump(
             StructuredLanguage::VariableStack& variableStack, 
             std::string indent,
@@ -304,6 +320,7 @@ namespace MyLanguage {
         this->_assemblyGenerator.generators().insert({"FunctionLabel", X86AssemblyGenerators::generateFunctionLabel});
         this->_assemblyGenerator.generators().insert({"Call", X86AssemblyGenerators::generateCall});
         this->_assemblyGenerator.generators().insert({"Copy", X86AssemblyGenerators::generateCopy});
+        this->_assemblyGenerator.generators().insert({"CopyToAddressOf", X86AssemblyGenerators::generateCopyToAddressOf});
         this->_assemblyGenerator.generators().insert({"WriteFunctionReturn", X86AssemblyGenerators::generateWriteFunctionReturn});
         this->_assemblyGenerator.generators().insert({"LoadFunctionParam", X86AssemblyGenerators::generateLoadFunctionParam});
     }

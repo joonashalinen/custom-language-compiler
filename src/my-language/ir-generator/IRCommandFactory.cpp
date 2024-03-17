@@ -102,6 +102,20 @@ namespace MyLanguage {
         return command;
     }
 
+    TIRCommand IRCommandFactory::createCopyToAddressOf(
+        std::string fromVar, 
+        std::string toVar
+    ) {
+        auto command = this->createExpression("irCommand", "command", "CopyToAddressOf");
+        auto fromVarExpression = this->createExpression("variable", "name", fromVar);
+        auto toVarExpression = this->createExpression("variable", "name", toVar);
+        
+        Expression::addChild(command, fromVarExpression);
+        Expression::addChild(command, toVarExpression);
+
+        return command;
+    }
+
     TIRCommand IRCommandFactory::createLabel(std::string label) {
         auto command = this->createExpression("irCommand", "command", "Label");
         auto labelExpression = this->createExpression("label", "name", label);
