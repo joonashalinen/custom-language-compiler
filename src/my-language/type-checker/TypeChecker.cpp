@@ -673,7 +673,7 @@ namespace MyLanguage {
                 )
             },
             {
-                "() => Int",
+                "(Bool) => Unit",
                 std::shared_ptr<FunctionType>(
                     new FunctionType{
                         {std::shared_ptr<IType>(new Type{"Bool"})}, 
@@ -682,7 +682,7 @@ namespace MyLanguage {
                 )
             },
             {
-                "(Bool) => Unit",
+                "() => Int",
                 std::shared_ptr<FunctionType>(
                 new FunctionType{
                         {},
