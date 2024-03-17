@@ -164,7 +164,7 @@ namespace MyLanguage {
             }
 
             // Name of the variable present in the left hand expression.
-            auto variableName = leftHand->subTypes().at("literal-value");
+            auto variableName = leftHand->subTypes().at("name");
 
             // Next, we want to check that the left hand variable exists in the symbol table.
 
@@ -282,7 +282,7 @@ namespace MyLanguage {
             TypeChecker::DTypeCheckContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            auto variableName = expression->subTypes().at("literal-value");
+            auto variableName = expression->subTypes().at("name");
             if (!(context->typeSymbolTable.contains(variableName))) {
                 throwTypeError(
                     expression, 

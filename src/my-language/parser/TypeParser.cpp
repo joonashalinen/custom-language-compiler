@@ -42,7 +42,7 @@ std::shared_ptr<Expression> MyLanguage::TypeParser::parse(std::vector<DToken>& t
         auto typeExpression = expression->children().at(0);
 
         if (typeExpression->type() == "identifier") {
-            auto& typeName = typeExpression->subTypes().at("literal-value");
+            auto& typeName = typeExpression->subTypes().at("name");
             typeName = "(" + typeName + ")";
             
         } else if (typeExpression->type() == "function-type") {
@@ -58,12 +58,12 @@ std::shared_ptr<Expression> MyLanguage::TypeParser::parse(std::vector<DToken>& t
     auto sequence = TokenSequence{tokens};
     sequence.setPosition(expression->endPos());
     while (sequence.peek().value == "*") {
-        auto& typeName = expression->subTypes().at("literal-value");
+        auto& typeName = expression->subTypes().at("name");
         typeName = typeName + "*";
         sequence.consume();
     }
     expression->setEndPos(sequence.position());
     expression->setType("type");
-    expression->subTypes().insert({"name", expression->subTypes().at("literal-value")});
+    expression->subTypes().insert({"name", expression->subTypes().at("name")});
     return expression;
 }

@@ -80,7 +80,7 @@ namespace MyLanguage {
             IRGenerator::DGeneratorContext* context,
             std::shared_ptr<Expression> expression
         ) {
-            auto name = expression->subTypes().at("literal-value");
+            auto name = expression->subTypes().at("name");
             auto irVariable = context->symbolTable.at(name);
             context->variableStack.push({irVariable});
             return context;
@@ -232,7 +232,7 @@ namespace MyLanguage {
                 // If there is only one level of dereference operators.
                 if (leftHand->children().at(0)->type() == "identifier") {
                     // Then we want to find the IR variable of the left hand variable being dereferenced.
-                    auto variableName = leftHand->children().at(0)->subTypes().at("literal-value");
+                    auto variableName = leftHand->children().at(0)->subTypes().at("name");
                     leftIRVariable = context->symbolTable.at(variableName);
                 } else {
                     // There is more than one level of dereference operators.

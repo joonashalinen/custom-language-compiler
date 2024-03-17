@@ -28,14 +28,14 @@ std::shared_ptr<Expression> MyLanguage::FunctionParameterParser::parse(std::vect
     // instead of proper child expressions.
 
     auto parameter = expression->children().at(0);
-    auto parameterName = parameter->subTypes().at("literal-value");
+    auto parameterName = parameter->subTypes().at("name");
     expression->subTypes().insert({"name", parameterName});
     Expression::removeChild(expression, parameter);
     
     // If the function parameter has a type declaration.
     if (expression->children().size() > 0) {
         auto type = expression->children().at(0);
-        auto typeName = type->subTypes().at("literal-value");
+        auto typeName = type->subTypes().at("name");
         expression->subTypes().insert({"value-type", typeName});
         Expression::removeChild(expression, type);
     } else {

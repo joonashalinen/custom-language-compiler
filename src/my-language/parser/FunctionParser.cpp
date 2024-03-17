@@ -87,7 +87,7 @@ std::shared_ptr<Expression> MyLanguage::FunctionParser::parse(std::vector<DToken
         // Switch the return type from an expression into a subtype.
         auto returnType = functionExpression->children().at(1);
         Expression::removeChild(functionExpression, returnType);
-        functionExpression->subTypes().insert({"return-type", returnType->subTypes().at("literal-value")});
+        functionExpression->subTypes().insert({"return-type", returnType->subTypes().at("name")});
     } else {
         // The return type is Unit.
         functionExpression->subTypes().insert({"return-type", "Unit"});
