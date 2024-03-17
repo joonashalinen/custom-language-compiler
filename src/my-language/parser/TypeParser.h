@@ -6,6 +6,7 @@
 #include "../../components/parsing/ParentheticalParser.h"
 #include "../../components/parsing/ListParser.h"
 #include "../../components/parsing/ConflictParser.h"
+#include <numeric>
 
 namespace MyLanguage {
     class TypeParser: public IParseable {
