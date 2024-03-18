@@ -22,7 +22,7 @@ This repository is for a compiler of a simple custom programming language. The p
 * `src/my-language/assembly-generator/AssemblyGenerator.cpp` and `X86AssemblyGenerator.cpp` contain the code for assembly generation.
 
 # Building the project
-The compiler is already prebuilt in the file `src/main.out`. However, if you want to rebuild the executable yourself, you need to have gcc 13.1 installed and available for use via the shell command `g++-13`. Then, you can build the project on Linux by running `make -f make_linux.mk all` in the `src` folder.
+The compiler is already prebuilt in the file `src/main.out`. However, if you want to rebuild the executable yourself, you need to have gcc 13.1 installed and available for use via the shell command `g++-13`. You can install gcc 13.1 for example via `apt install g++-13`. Then, you can build the project on Linux by running `make -f make_linux.mk all` in the `src` folder.
 
 # End-to-end tests
 The end-to-end tests located in `src/test/end-to-end-cases` are of the form:
